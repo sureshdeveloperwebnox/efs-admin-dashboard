@@ -1,2 +1,1 @@
-# efs-admin-dashboard
-Easy Field Services Admin Dashboard
+This is starter template for [Learn Next.js](https://nextjs.org/learn)

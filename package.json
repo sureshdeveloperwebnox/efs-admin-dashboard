@@ -21,9 +21,12 @@
     "@mui/lab": "6.0.0-beta.24",
     "@mui/material": "6.4.1",
     "@mui/system": "6.4.1",
+    "@types/joi": "^17.2.2",
     "axios": "1.7.9",
     "formik": "2.4.6",
     "framer-motion": "12.0.6",
+    "joi": "^17.13.3",
+    "libphonenumber-js": "^1.12.7",
     "lodash-es": "4.17.21",
     "mapbox-gl": "3.9.4",
     "next": "15.1.6",
@@ -34,11 +37,13 @@
     "react-dom": "18.3.1",
     "react-intl": "7.1.5",
     "react-otp-input": "3.1.1",
+    "react-phone-input-2": "^2.15.1",
     "react-timer-hook": "3.0.8",
     "simplebar-react": "3.3.0",
     "stylis-plugin-rtl": "2.1.1",
     "swr": "2.3.0",
-    "yup": "1.6.1"
+    "yup": "1.6.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.5",

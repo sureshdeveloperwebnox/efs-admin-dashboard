@@ -5,7 +5,7 @@ import React, { useState, FocusEvent, SyntheticEvent } from 'react';
 // next
 import Image from 'next/legacy/image';
 import NextLink from 'next/link';
-import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 // material-ui
 import { Theme } from '@mui/material/styles';
@@ -23,6 +23,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // third-party
 import * as Yup from 'yup';
@@ -40,17 +41,18 @@ import { fetcher } from 'utils/axios';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import { login } from 'api/services/login';
 
-const Auth0 = '/assets/images/icons/auth0.svg';
-const Cognito = '/assets/images/icons/aws-cognito.svg';
-const Google = '/assets/images/icons/google.svg';
+const GoogleIcon = '/assets/images/icons/google.svg';
 
-// ============================|| AWS CONNITO - LOGIN ||============================ //
+// ============================|| AUTH LOGIN ||============================ //
 
 export default function AuthLogin({ providers, csrfToken }: any) {
+  const router = useRouter();
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
   const [checked, setChecked] = useState(false);
   const [capsWarning, setCapsWarning] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -69,12 +71,53 @@ export default function AuthLogin({ providers, csrfToken }: any) {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    setGoogleLoading(true);
+
+    // Get current URL for proper redirect after authentication
+    // const currentUrl = window.location.origin + APP_DEFAULT_PATH;
+
+    // Redirect to backend Google auth endpoint with redirect URL as query parameter
+    window.location.href = `http://localhost:3000/api/auth/google`;
+  };
+
   return (
     <>
+      {/* Social Login Options */}
+      <Box sx={{ mt: 3 }}>
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
+          <AnimateButton>
+            <Button
+              variant="outlined"
+              color="secondary"
+              fullWidth={downSM}
+              startIcon={
+                googleLoading ?
+                  <CircularProgress size={16} color="inherit" /> :
+                  <Image src={GoogleIcon} alt="Google" width={16} height={16} />
+              }
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+              sx={{
+                justifyContent: 'center',
+                height: 46,
+                borderRadius: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(66, 133, 244, 0.04)'
+                }
+              }}
+            >
+              {!downSM && (googleLoading ? 'Connecting...' : 'Sign in with Google')}
+            </Button>
+          </AnimateButton>
+        </Stack>
+      </Box>
+
+
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
+          email: '',
+          password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -84,28 +127,24 @@ export default function AuthLogin({ providers, csrfToken }: any) {
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
             .max(10, 'Password must be less than 10 characters')
         })}
-        onSubmit={(values, { setErrors, setSubmitting }) => {
-          const trimmedEmail = values.email.trim();
-          signIn('login', {
-            redirect: false,
-            email: trimmedEmail,
-            password: values.password,
-            callbackUrl: APP_DEFAULT_PATH
-          }).then(
-            (res: any) => {
-              if (res?.error) {
-                setErrors({ submit: res.error });
-                setSubmitting(false);
-              } else {
-                preload('api/menu/dashboard', fetcher); // load menu on login success
-                setSubmitting(false);
-              }
-            },
-            (res) => {
-              setErrors({ submit: res.error });
-              setSubmitting(false);
+        onSubmit={async (values, { setErrors, setSubmitting }) => {
+          try {
+            const trimmedEmail = values.email.trim();
+
+            const payload = {
+              email: trimmedEmail,
+              password: values.password
             }
-          );
+            const response = await login(payload)
+            
+            if (response) {
+
+              router.push(APP_DEFAULT_PATH);
+            }
+          } catch (error: any) {
+            console.error('Login error:', error);
+            setSubmitting(false);
+          }
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
@@ -205,8 +244,16 @@ export default function AuthLogin({ providers, csrfToken }: any) {
               )}
               <Grid size={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                  <Button
+                    disableElevation
+                    disabled={isSubmitting}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                   </Button>
                 </AnimateButton>
               </Grid>
@@ -214,69 +261,14 @@ export default function AuthLogin({ providers, csrfToken }: any) {
           </form>
         )}
       </Formik>
-      {providers && (
-        <Stack
-          direction="row"
-          sx={{
-            gap: { xs: 1, sm: 2 },
-            justifyContent: { xs: 'space-around', sm: 'space-between' },
-            mt: 3,
-            '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 }, ml: { xs: 0, sm: -0.5 } }
-          }}
-        >
-          {Object.values(providers).map((provider: any) => {
-            if (provider.id === 'login' || provider.id === 'register') {
-              return;
-            }
+      {Object.values(providers).map((provider: any) => {
 
-            return (
-              <Box key={provider.name} sx={{ width: '100%' }}>
-                <Divider sx={{ mt: 2 }}>
-                  <Typography variant="caption"> Login with</Typography>
-                </Divider>
-                {provider.id === 'google' && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    fullWidth={!downSM}
-                    startIcon={<Image src={Google} alt="Twitter" width={16} height={16} />}
-                    onClick={() => signIn(provider.id, { callbackUrl: APP_DEFAULT_PATH })}
-                  >
-                    {!downSM && 'Google'}
-                  </Button>
-                )}
-                {provider.id === 'auth0' && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    fullWidth={!downSM}
-                    startIcon={<Image src={Auth0} alt="Twitter" width={16} height={16} />}
-                    onClick={() => signIn(provider.id, { callbackUrl: APP_DEFAULT_PATH })}
-                  >
-                    {!downSM && 'Auth0'}
-                  </Button>
-                )}
-                {provider.id === 'cognito' && (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    fullWidth={!downSM}
-                    startIcon={<Image src={Cognito} alt="Twitter" width={16} height={16} />}
-                    onClick={() => signIn(provider.id, { callbackUrl: APP_DEFAULT_PATH })}
-                  >
-                    {!downSM && 'Cognito'}
-                  </Button>
-                )}
-              </Box>
-            );
-          })}
-        </Stack>
-      )}
-      {!providers && (
-        <Box sx={{ mt: 3 }}>
-          <FirebaseSocial />
-        </Box>
-      )}
+console.log("provider", provider);
+
+if (provider.id === 'login' || provider.id === 'register') {
+  return;
+}
+})}
     </>
   );
 }

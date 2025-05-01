@@ -1,6 +1,7 @@
 // next
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 // project imports
 import axios from 'utils/axios';
@@ -76,6 +77,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error(errorMessage);
         }
       }
+    }),
+    GoogleProvider({
+      clientId: process.env.NEXT_GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET!
     })
   ],
   callbacks: {
@@ -106,5 +111,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
     newUser: '/register'
-  }
+  },
+  
 };

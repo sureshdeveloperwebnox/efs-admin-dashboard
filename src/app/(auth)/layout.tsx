@@ -1,11 +1,15 @@
-// project imports
 import GuestGuard from 'utils/route-guard/GuestGuard';
-
-// types
+import { Toaster } from 'sonner';
 import { GuardProps } from 'types/auth';
-
-// ==============================|| DASHBOARD LAYOUT ||============================== //
+import React from 'react';
 
 export default function Layout({ children }: GuardProps) {
-  return <GuestGuard>{children}</GuestGuard>;
+  return (
+    <GuestGuard>
+      <>
+        <Toaster richColors position="top-right" />
+        {children}
+      </>
+    </GuestGuard>
+  );
 }

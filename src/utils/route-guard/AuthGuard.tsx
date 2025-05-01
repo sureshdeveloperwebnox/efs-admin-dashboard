@@ -22,6 +22,9 @@ export default function AuthGuard({ children }: GuardProps) {
     const fetchData = async () => {
       const res = await fetch('/api/auth/protected');
       const json = await res?.json();
+
+      console.log('json', json);
+      
       if (!json?.protected) {
         router.push('/login');
       }

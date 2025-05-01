@@ -36,6 +36,7 @@ import PhoneInputField from 'components/phone/PhoneInputField';
 import { IconButton } from '@mui/material';
 import { StringColorProps } from 'types/password';
 import AnimateButton from 'components/@extended/AnimateButton';
+import { authOrganizationRegister } from 'api/services/authOrganizationRegister';
 
 // Assets
 const Auth0 = '/assets/images/icons/auth0.svg';
@@ -47,7 +48,7 @@ interface AuthRegisterProps {
   csrfToken?: any;
 }
 
-export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps) {
+export default function AuthOrganizationRegister({ providers, csrfToken }: AuthRegisterProps) {
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
   const [level, setLevel] = useState<StringColorProps>();
   const [showPassword, setShowPassword] = useState(false);
@@ -74,25 +75,23 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
     try {
       const trimmedEmail = values.email.trim();
       
-      if (!phone) {
-        setErrors({ submit: 'Phone number is required' });
-        return;
-      }
+
 
       const payload = {
-        first_name: values.firstname.trim(),
-        last_name: values.lastname.trim(),
+        organization_name: values.organization_name.trim(),
+        industry_name: values.industry_name.trim(),
         email: trimmedEmail,
-        password: values.password,
-        phone: phone
+        pincode: values.pincode,
+        website: values.website,
+        address: values.address
       };
 
-      const result = await authRegister(payload);
+      const result = await authOrganizationRegister(payload);
       
       if (result.error) {
         setErrors({ submit: result.error });
       } else {
-        window.location.href = "/organization-register";
+        window.location.href = APP_DEFAULT_PATH;
       }
     } catch (error: any) {
       setErrors({ submit: error.message || 'Registration failed. Please try again.' });
@@ -105,32 +104,24 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
     <>
       <Formik
         initialValues={{
-          firstname: '',
-          lastname: '',
+          organization_name: '',
+          industry_name: '',
           email: '',
-          password: '',
+          pincode: '',
+          website: '',
+          address: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          firstname: Yup.string().max(255).required('First Name is required'),
-          lastname: Yup.string().max(255).required('Last Name is required'),
-          email: Yup.string()
+        organization_name: Yup.string().max(255).required('Organization Name is required'),
+        industry_name: Yup.string().max(255).required('Industry Name is required'),
+        email: Yup.string()
             .email('Must be a valid email')
             .max(255)
             .required('Email is required'),
-          password: Yup.string()
-            .required('Password is required')
-            .test(
-              'no-leading-trailing-whitespace',
-              'Password cannot start or end with spaces',
-              (value) => value === value.trim()
-            )
-            .min(8, 'Password must be at least 8 characters')
-            .max(20, 'Password must be less than 20 characters')
-            .matches(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-              'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-            )
+        pincode: Yup.string().required("Pincode is required"),
+        website: Yup.string().required("Website is required"),
+        address: Yup.string().required("Address is required"),
         })}
         onSubmit={handleSubmit}
       >
@@ -138,44 +129,44 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
           <form noValidate onSubmit={handleSubmit}>
             {csrfToken && <input name="csrfToken" type="hidden" defaultValue={csrfToken} />}
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
+                  <InputLabel htmlFor="organization_name-signup">Organization Name*</InputLabel>
                   <OutlinedInput
-                    id="firstname-signup"
+                    id="organization_name-signup"
                     type="text"
-                    value={values.firstname}
-                    name="firstname"
+                    value={values.organization_name}
+                    name="organization_name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter your first name"
+                    placeholder="Enter your organization name"
                     fullWidth
-                    error={Boolean(touched.firstname && errors.firstname)}
+                    error={Boolean(touched.organization_name && errors.organization_name)}
                   />
-                  {touched.firstname && errors.firstname && (
-                    <FormHelperText error id="helper-text-firstname-signup">
-                      {errors.firstname}
+                  {touched.organization_name && errors.organization_name && (
+                    <FormHelperText error id="helper-text-organization_name-signup">
+                      {errors.organization_name}
                     </FormHelperText>
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
+                  <InputLabel htmlFor="industry_name-signup">Industry Name*</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.lastname && errors.lastname)}
-                    id="lastname-signup"
+                    error={Boolean(touched.industry_name && errors.industry_name)}
+                    id="industry_name-signup"
                     type="text"
-                    value={values.lastname}
-                    name="lastname"
+                    value={values.industry_name}
+                    name="industry_name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter your last name"
+                    placeholder="Enter your industry name"
                   />
-                  {touched.lastname && errors.lastname && (
-                    <FormHelperText error id="helper-text-lastname-signup">
-                      {errors.lastname}
+                  {touched.industry_name && errors.industry_name && (
+                    <FormHelperText error id="helper-text-industry_name-signup">
+                      {errors.industry_name}
                     </FormHelperText>
                   )}
                 </Stack>
@@ -201,70 +192,75 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
                   )}
                 </Stack>
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={12} sm={12}>
                 <Stack spacing={1}>
-                  <PhoneInputField
-                    value={phone}
-                    onChange={setPhone}
-                    label="Mobile Number*"
-                    defaultCountry="IN"
-                  />
-                  {errors.submit && !phone && (
-                    <FormHelperText error id="helper-text-phone-signup">
-                      Phone number is required
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password*</InputLabel>
+                  <InputLabel htmlFor="pincode-signup">Pincode</InputLabel>
                   <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
-                    type={showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    name="password"
+                    id="pincode-signup"
+                    type="text"
+                    value={values.pincode}
+                    name="pincode"
                     onBlur={handleBlur}
-                    onChange={(e) => {
-                      handleChange(e);
-                      changePassword(e.target.value);
-                    }}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          color="secondary"
-                        >
-                          {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    placeholder="Enter password"
+                    onChange={handleChange}
+                    placeholder="Enter your pincode"
+                    fullWidth
+                    error={Boolean(touched.pincode && errors.pincode)}
                   />
-                  {touched.password && errors.password && (
-                    <FormHelperText error id="helper-text-password-signup">
-                      {errors.password}
+                  {touched.pincode && errors.pincode && (
+                    <FormHelperText error id="helper-text-pincode-signup">
+                      {errors.pincode}
                     </FormHelperText>
                   )}
                 </Stack>
-                <FormControl fullWidth sx={{ mt: 2 }}>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                      <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="subtitle1" fontSize="0.75rem">
-                        {level?.label}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </FormControl>
               </Grid>
+           
+              <Grid item xs={12} sm={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="website-signup">Website</InputLabel>
+                  <OutlinedInput
+                    id="website-signup"
+                    type="text"
+                    value={values.website}
+                    name="website"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter your website"
+                    fullWidth
+                    error={Boolean(touched.website && errors.website)}
+                  />
+                  {touched.website && errors.website && (
+                    <FormHelperText error id="helper-text-website-signup">
+                      {errors.website}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+
+
+              <Grid item xs={12} sm={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="website-address">Address</InputLabel>
+                  <OutlinedInput
+                    id="address-signup"
+                    type="text"
+                    value={values.address}
+                    name="address"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter your address"
+                    fullWidth
+                    error={Boolean(touched.address && errors.address)}
+                  />
+                  {touched.address && errors.address && (
+                    <FormHelperText error id="helper-text-address-signup">
+                      {errors.address}
+                    </FormHelperText>
+                  )}
+                </Stack>
+              </Grid>
+           
+           
               <Grid item xs={12} sx={{ mt: -1 }}>
                 <Typography variant="body2">
                   By Signing up, you agree to our &nbsp;
@@ -301,51 +297,7 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
           </form>
         )}
       </Formik>
-      {providers && (
-        <>
-          <Divider sx={{ mt: 3, mb: 2 }}>
-            <Typography variant="caption">Or sign up with</Typography>
-          </Divider>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="center"
-            sx={{ mt: 2 }}
-          >
-            {Object.values(providers).map((provider: any) => {
-              if (provider.id === 'login' || provider.id === 'register') return null;
-
-              let iconSrc = '';
-              switch (provider.id) {
-                case 'google': iconSrc = Google; break;
-                case 'auth0': iconSrc = Auth0; break;
-                case 'cognito': iconSrc = Cognito; break;
-                default: return null;
-              }
-
-              return (
-                <IconButton
-                  key={provider.name}
-                  onClick={() => signIn(provider.id, { callbackUrl: APP_DEFAULT_PATH })}
-                  sx={{
-                    p: 1.5,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                  }}
-                >
-                  <Image src={iconSrc} alt={provider.name} width={24} height={24} />
-                </IconButton>
-              );
-            })}
-          </Stack>
-        </>
-      )}
-      {!providers && (
-        <Box sx={{ mt: 3 }}>
-          <FirebaseSocial />
-        </Box>
-      )}
+     
     </>
   );
 }

@@ -23,7 +23,7 @@ export const login = async (data: LoginPayload) => {
     const result = await response.json();
     const accessToken = result.data.accessToken;
 
-    console.log('accessToken',);
+    // console.log('accessToken', accessToken);
 
 
     setCookie('accessToken', accessToken, {

@@ -1,19 +1,9 @@
-// next
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
 // project imports
 import axios from 'utils/axios';
-
-const users = [
-  {
-    id: 1,
-    name: 'Jone Doe',
-    email: 'info@codedthemes.com',
-    password: '123456'
-  }
-];
 
 declare module 'next-auth' {
   interface User {
@@ -24,6 +14,7 @@ declare module 'next-auth' {
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
   providers: [
+    // Credentials provider for login
     CredentialsProvider({
       id: 'login',
       name: 'login',
@@ -33,84 +24,64 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const user = await axios.post('/api/account/login', {
-            password: credentials?.password,
-            email: credentials?.email
+          // Backend API call to your login endpoint
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+            email: credentials?.email,
+            password: credentials?.password
           });
 
-          if (user) {
-            user.data.user['accessToken'] = user.data.serviceToken;
-            return user.data.user;
+          const { accessToken, user } = response.data;
+
+          if (accessToken) {
+            // Attach the accessToken to the user object
+            user.accessToken = accessToken;
+            return user; // Return user data including accessToken
           }
+
+          throw new Error('Authentication failed'); // Throw an error if no accessToken
+
         } catch (e: any) {
           const errorMessage = e?.message || e?.response?.data?.message || 'Something went wrong!';
-          throw new Error(errorMessage);
+          throw new Error(errorMessage); // Throw an error if the API call fails
         }
       }
     }),
-    CredentialsProvider({
-      id: 'register',
-      name: 'Register',
-      credentials: {
-        firstname: { name: 'firstname', label: 'Firstname', type: 'text', placeholder: 'Enter Firstname' },
-        lastname: { name: 'lastname', label: 'Lastname', type: 'text', placeholder: 'Enter Lastname' },
-        email: { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' },
-        company: { name: 'company', label: 'Company', type: 'text', placeholder: 'Enter Company' },
-        password: { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' }
-      },
-      async authorize(credentials) {
-        try {
-          const user = await axios.post('/api/account/register', {
-            firstName: credentials?.firstname,
-            lastName: credentials?.lastname,
-            company: credentials?.company,
-            password: credentials?.password,
-            email: credentials?.email
-          });
 
-          if (user) {
-            users.push(user.data);
-            return user.data;
-          }
-        } catch (e: any) {
-          const errorMessage = e?.message || e?.response?.data?.message || 'Something went wrong!';
-          throw new Error(errorMessage);
-        }
-      }
-    }),
+    // Optional: Google provider for OAuth login
     GoogleProvider({
       clientId: process.env.NEXT_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET!
     })
   ],
   callbacks: {
+    // Handling JWT callback to store the access token in the JWT
     jwt: async ({ token, user, account }) => {
       if (user) {
-        token.accessToken = user.accessToken;
+        token.accessToken = user.accessToken; // Attach the accessToken to the JWT token
         token.id = user.id;
         token.provider = account?.provider;
       }
-      return token;
+      return token; // Return the updated token
     },
+    // Handling session callback to make sure the session contains the JWT token
     session: ({ session, token }) => {
       if (token) {
         session.id = token.id;
         session.provider = token.provider;
-        session.token = token;
+        session.token = token; // Attach the JWT token to the session
       }
-      return session;
+      return session; // Return the session with the token
     }
   },
   session: {
-    strategy: 'jwt',
-    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT!)
+    strategy: 'jwt', // Use JWT strategy for session
+    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT!) // Set session timeout
   },
   jwt: {
-    secret: process.env.NEXT_PUBLIC_JWT_SECRET
+    secret: process.env.NEXT_PUBLIC_JWT_SECRET, // Secret key for JWT
   },
   pages: {
-    signIn: '/login',
-    newUser: '/register'
-  },
-  
+    signIn: '/login', // Custom signIn page
+    newUser: '/register' // Custom registration page
+  }
 };

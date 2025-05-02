@@ -18,6 +18,13 @@ const mainmenu: NavItemType = {
         type: 'item',
         url: '/organization',
         icon: ApartmentOutlined 
+      },
+      {
+        id: 'Customers',
+        title: 'Customers',
+        type: 'item',
+        url: '/customers',
+        icon: ApartmentOutlined 
       }
   ]
 };

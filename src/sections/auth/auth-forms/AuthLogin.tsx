@@ -41,7 +41,7 @@ import { fetcher } from 'utils/axios';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import { login } from 'api/services/login';
+import { login } from 'api/services/login/index';
 
 const GoogleIcon = '/assets/images/icons/google.svg';
 
@@ -135,12 +135,9 @@ export default function AuthLogin({ providers, csrfToken }: any) {
               email: trimmedEmail,
               password: values.password
             }
-            const response = await login(payload)
-            
-            if (response) {
+            const response = await login(payload);
 
-              router.push(APP_DEFAULT_PATH);
-            }
+            router.push("/dashboard")
           } catch (error: any) {
             console.error('Login error:', error);
             setSubmitting(false);

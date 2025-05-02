@@ -1,7 +1,7 @@
-import Organization from 'views/organization/organization-page';
+import OrganizationTable from 'sections/organization/OrganizationTable';
 
 // ==============================|| PAGE ||============================== //
 
 export default function DashboardViewPage() {
-  return <Organization />;
+  return <OrganizationTable />
 }

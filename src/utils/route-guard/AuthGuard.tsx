@@ -25,16 +25,16 @@ export default function AuthGuard({ children }: GuardProps) {
 
       console.log('json', json);
       
-      if (!json?.protected) {
-        router.push('/login');
-      }
+      // if (!json?.protected) {
+      //   router.push('/login');
+      // }
     };
     fetchData();
 
     // eslint-disable-next-line
   }, [session]);
 
-  if (status === 'loading' || !session?.user) return <Loader />;
+  // if (status === 'loading' || !session?.user) return <Loader />;
 
   return children;
 }

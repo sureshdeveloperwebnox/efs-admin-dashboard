@@ -1,87 +1,146 @@
-import type { NextAuthOptions } from 'next-auth';
+import { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
-// project imports
-import axios from 'utils/axios';
-
+// Extend next-auth types
 declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      provider: string;
+      category: string;
+    };
+    accessToken: string;
+    refreshToken: string;
+  }
+
   interface User {
-    accessToken?: string;
+    id: number;
+    name: string;
+    email: string;
+    provider: string;
+    category: string;
+    accessToken: string;
+    refreshToken: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: number;
+    name: string;
+    email: string;
+    provider: string;
+    category: string;
+    accessToken: string;
+    refreshToken: string;
   }
 }
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+
   providers: [
-    // Credentials provider for login
     CredentialsProvider({
       id: 'login',
-      name: 'login',
+      name: 'Login',
       credentials: {
-        email: { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' },
-        password: { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' }
+        email: { label: 'Email', type: 'email', placeholder: 'Enter Email' },
+        password: { label: 'Password', type: 'password', placeholder: 'Enter Password' },
       },
       async authorize(credentials) {
         try {
-          // Backend API call to your login endpoint
-          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-            email: credentials?.email,
-            password: credentials?.password
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
           });
 
-          const { accessToken, user } = response.data;
+          const result = await response.json();
 
-          if (accessToken) {
-            // Attach the accessToken to the user object
-            user.accessToken = accessToken;
-            return user; // Return user data including accessToken
+          if (!response.ok || !result?.data?.accessToken) {
+            throw new Error(result?.message || 'Invalid login credentials');
           }
 
-          throw new Error('Authentication failed'); // Throw an error if no accessToken
+          const user = result.data;
 
-        } catch (e: any) {
-          const errorMessage = e?.message || e?.response?.data?.message || 'Something went wrong!';
-          throw new Error(errorMessage); // Throw an error if the API call fails
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            provider: user.provider,
+            category: user.category,
+            accessToken: user.accessToken,
+            refreshToken: user.refreshToken,
+          };
+        } catch (error: any) {
+          throw new Error(error?.message || 'Login failed');
         }
-      }
+      },
     }),
-
-    // Optional: Google provider for OAuth login
     GoogleProvider({
       clientId: process.env.NEXT_GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET!
+      clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     })
   ],
+
   callbacks: {
-    // Handling JWT callback to store the access token in the JWT
-    jwt: async ({ token, user, account }) => {
+    async jwt({ token, user, account  }) {
       if (user) {
-        token.accessToken = user.accessToken; // Attach the accessToken to the JWT token
-        token.id = user.id;
-        token.provider = account?.provider;
+        token.id = Number(user.id); // 🔧 fix
+        token.name = user.name;
+        token.email = user.email;
+        token.provider = user.provider || account?.provider || 'google';;
+        token.category = user.category;
+        token.accessToken = user.accessToken  || account?.access_token || '';
+        token.refreshToken = user.refreshToken || account?.refresh_token || '';
       }
-      return token; // Return the updated token
+      return token;
     },
-    // Handling session callback to make sure the session contains the JWT token
-    session: ({ session, token }) => {
+
+    async session({ session, token }) {
       if (token) {
-        session.id = token.id;
-        session.provider = token.provider;
-        session.token = token; // Attach the JWT token to the session
+        session.user = {
+          id: Number(token.id),  // 👈 fix here
+          name: token.name,
+          email: token.email,
+          provider: token.provider,
+          category: token.category,
+        };
+        session.accessToken = token.accessToken;
+        session.refreshToken = token.refreshToken;
       }
-      return session; // Return the session with the token
-    }
+      return session;
+    },
+   
   },
+
   session: {
-    strategy: 'jwt', // Use JWT strategy for session
-    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT!) // Set session timeout
+    strategy: 'jwt',
+    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT) || 3600,
   },
+
   jwt: {
-    secret: process.env.NEXT_PUBLIC_JWT_SECRET, // Secret key for JWT
+    secret: process.env.NEXT_PUBLIC_JWT_SECRET,
   },
+
   pages: {
-    signIn: '/login', // Custom signIn page
-    newUser: '/register' // Custom registration page
-  }
+    signIn: '/login',
+    error: '/auth/error', // ✅ add this line
+
+  },
 };

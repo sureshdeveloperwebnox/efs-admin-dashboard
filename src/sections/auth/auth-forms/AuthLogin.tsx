@@ -1,89 +1,74 @@
 'use client';
 
-import React, { useState, FocusEvent, SyntheticEvent } from 'react';
+import React, { useState, FocusEvent, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
 
-// next
 import Image from 'next/legacy/image';
 import NextLink from 'next/link';
-import { useRouter } from 'next/navigation';
 
-// material-ui
-import { Theme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+// MUI
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import Grid from '@mui/material/Grid2';
-import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Link from '@mui/material/Link';
+import { Theme } from '@mui/material/styles';
 
-// third-party
-import * as Yup from 'yup';
-import { preload } from 'swr';
-import { Formik } from 'formik';
-
-// project imports
-import FirebaseSocial from './FirebaseSocial';
-import IconButton from 'components/@extended/IconButton';
-import AnimateButton from 'components/@extended/AnimateButton';
-
-import { APP_DEFAULT_PATH } from 'config';
-import { fetcher } from 'utils/axios';
-
-// assets
+// Icons
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import { login } from 'api/services/login/index';
+
+// Formik & Yup
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
+// Project Components
+import AnimateButton from 'components/@extended/AnimateButton';
+import IconButton from 'components/@extended/IconButton';
+
+// Config
+import { APP_DEFAULT_PATH } from 'config';
 
 const GoogleIcon = '/assets/images/icons/google.svg';
 
-// ============================|| AUTH LOGIN ||============================ //
-
-export default function AuthLogin({ providers, csrfToken }: any) {
+export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
   const [checked, setChecked] = useState(false);
   const [capsWarning, setCapsWarning] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
 
-  const handleMouseDownPassword = (event: SyntheticEvent) => {
-    event.preventDefault();
-  };
+  useEffect(() => {
+    console.log('Session status:', status);
+    console.log('Session data:', session);
+  }, [session, status]);
 
-  const onKeyDown = (keyEvent: any) => {
-    if (keyEvent.getModifierState('CapsLock')) {
-      setCapsWarning(true);
-    } else {
-      setCapsWarning(false);
-    }
-  };
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.SyntheticEvent) => event.preventDefault();
+  const onKeyDown = (e: React.KeyboardEvent) => setCapsWarning(e.getModifierState('CapsLock'));
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
-
-    // Get current URL for proper redirect after authentication
-    // const currentUrl = window.location.origin + APP_DEFAULT_PATH;
-
-    // Redirect to backend Google auth endpoint with redirect URL as query parameter
-    window.location.href = `http://localhost:3000/api/auth/google`;
+    await signIn('google', { callbackUrl: '/google', redirect: true });
   };
+  
 
   return (
     <>
-      {/* Social Login Options */}
+      {/* Google Sign-in */}
       <Box sx={{ mt: 3 }}>
         <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
           <AnimateButton>
@@ -92,9 +77,11 @@ export default function AuthLogin({ providers, csrfToken }: any) {
               color="secondary"
               fullWidth={downSM}
               startIcon={
-                googleLoading ?
-                  <CircularProgress size={16} color="inherit" /> :
+                googleLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
                   <Image src={GoogleIcon} alt="Google" width={16} height={16} />
+                )
               }
               onClick={handleGoogleSignIn}
               disabled={googleLoading}
@@ -113,33 +100,34 @@ export default function AuthLogin({ providers, csrfToken }: any) {
         </Stack>
       </Box>
 
-
+      {/* Login Form */}
       <Formik
-        initialValues={{
-          email: '',
-          password: '',
-          submit: null
-        }}
+        initialValues={{ email: '', password: '', submit: null }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          email: Yup.string().email('Must be a valid email').required('Email is required'),
           password: Yup.string()
             .required('Password is required')
-            .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .max(10, 'Password must be less than 10 characters')
+            .test('no-whitespace', 'Password cannot start or end with spaces', (val) => val === val?.trim())
+            .max(20, 'Password must be less than 20 characters')
         })}
         onSubmit={async (values, { setErrors, setSubmitting }) => {
           try {
-            const trimmedEmail = values.email.trim();
+            const result = await signIn('login', {
+              redirect: false,
+              email: values.email.trim(),
+              password: values.password,
+              callbackUrl: APP_DEFAULT_PATH
+            });
 
-            const payload = {
-              email: trimmedEmail,
-              password: values.password
+            if (result?.ok) {
+              router.push(APP_DEFAULT_PATH);
+            } else {
+              setErrors({ submit: 'Invalid email or password' });
             }
-            const response = await login(payload);
-
-            router.push("/dashboard")
           } catch (error: any) {
             console.error('Login error:', error);
+            setErrors({ submit: error?.message || 'Login failed' });
+          } finally {
             setSubmitting(false);
           }
         }}
@@ -147,15 +135,17 @@ export default function AuthLogin({ providers, csrfToken }: any) {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+
             <Grid container spacing={3}>
-              <Grid size={12}>
+              {/* Email */}
+              <Grid item xs={12}>
                 <Stack sx={{ gap: 1 }}>
                   <InputLabel htmlFor="email-login">Email Address</InputLabel>
                   <OutlinedInput
                     id="email-login"
                     type="email"
-                    value={values.email}
                     name="email"
+                    value={values.email}
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="Enter email address"
@@ -163,29 +153,28 @@ export default function AuthLogin({ providers, csrfToken }: any) {
                     error={Boolean(touched.email && errors.email)}
                   />
                 </Stack>
-                {touched.email && errors.email && (
-                  <FormHelperText error id="standard-weight-helper-text-email-login">
-                    {errors.email}
-                  </FormHelperText>
-                )}
+                {touched.email && errors.email && <FormHelperText error>{errors.email}</FormHelperText>}
               </Grid>
-              <Grid size={12}>
+
+              {/* Password */}
+              <Grid item xs={12}>
                 <Stack sx={{ gap: 1 }}>
                   <InputLabel htmlFor="password-login">Password</InputLabel>
                   <OutlinedInput
-                    fullWidth
-                    color={capsWarning ? 'warning' : 'primary'}
-                    error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
+                    id="password-login"
                     type={showPassword ? 'text' : 'password'}
-                    value={values.password}
                     name="password"
-                    onBlur={(event: FocusEvent<any, Element>) => {
+                    value={values.password}
+                    onBlur={(e: FocusEvent<any>) => {
                       setCapsWarning(false);
-                      handleBlur(event);
+                      handleBlur(e);
                     }}
-                    onKeyDown={onKeyDown}
                     onChange={handleChange}
+                    onKeyDown={onKeyDown}
+                    placeholder="Enter password"
+                    fullWidth
+                    error={Boolean(touched.password && errors.password)}
+                    color={capsWarning ? 'warning' : 'primary'}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
@@ -199,56 +188,54 @@ export default function AuthLogin({ providers, csrfToken }: any) {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
                   />
                   {capsWarning && (
-                    <Typography variant="caption" sx={{ color: 'warning.main' }} id="warning-helper-text-password-login">
+                    <Typography variant="caption" sx={{ color: 'warning.main' }}>
                       Caps lock on!
                     </Typography>
                   )}
                 </Stack>
-                {touched.password && errors.password && (
-                  <FormHelperText error id="standard-weight-helper-text-password-login">
-                    {errors.password}
-                  </FormHelperText>
-                )}
+                {touched.password && errors.password && <FormHelperText error>{errors.password}</FormHelperText>}
               </Grid>
 
-              <Grid sx={{ mt: -1 }} size={12}>
-                <Stack direction="row" sx={{ gap: 2, alignItems: 'baseline', justifyContent: 'space-between' }}>
+              {/* Options */}
+              <Grid item xs={12}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <FormControlLabel
                     control={
                       <Checkbox
                         checked={checked}
-                        onChange={(event) => setChecked(event.target.checked)}
-                        name="checked"
+                        onChange={(e) => setChecked(e.target.checked)}
                         color="primary"
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
-
-                  <Link variant="h6" component={NextLink} href={'/forget-pass'} color="text.primary">
+                  <Link component={NextLink} href="/forget-pass" variant="h6">
                     Forgot Password?
                   </Link>
                 </Stack>
               </Grid>
+
+              {/* Submit error */}
               {errors.submit && (
-                <Grid size={12}>
+                <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
-              <Grid size={12}>
+
+              {/* Submit button */}
+              <Grid item xs={12}>
                 <AnimateButton>
                   <Button
-                    disableElevation
-                    disabled={isSubmitting}
-                    fullWidth
-                    size="large"
                     type="submit"
+                    fullWidth
                     variant="contained"
+                    size="large"
                     color="primary"
+                    disabled={isSubmitting}
+                    disableElevation
                   >
                     {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                   </Button>
@@ -258,14 +245,6 @@ export default function AuthLogin({ providers, csrfToken }: any) {
           </form>
         )}
       </Formik>
-      {Object.values(providers).map((provider: any) => {
-
-console.log("provider", provider);
-
-if (provider.id === 'login' || provider.id === 'register') {
-  return;
-}
-})}
     </>
   );
 }

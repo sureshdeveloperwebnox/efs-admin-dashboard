@@ -25,9 +25,9 @@ export default function AuthGuard({ children }: GuardProps) {
 
       console.log('json', json);
       
-      // if (!json?.protected) {
-      //   router.push('/login');
-      // }
+      if (!json?.protected) {
+        router.push('/login');
+      }
     };
     fetchData();
 

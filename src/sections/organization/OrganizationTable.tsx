@@ -1,28 +1,28 @@
 'use client';
 
-import React from 'react';
-import { useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
+import TablePagination from '@mui/material/TablePagination';
+import { GetOrganizationService } from 'api/services/OrganizationService';
 
-type Props = {};
-
-const rows = [
-  { id: 1, name: 'Org A', industry: 'Technology', employees: 120, status: 'Active' },
-  { id: 2, name: 'Org B', industry: 'Finance', employees: 85, status: 'Inactive' },
-  { id: 3, name: 'Org C', industry: 'Manufacturing', employees: 200, status: 'Active' },
-  { id: 4, name: 'Org D', industry: 'Education', employees: 60, status: 'Pending' },
-  { id: 5, name: 'Org E', industry: 'Healthcare', employees: 150, status: 'Active' }
-];
+type Organization = {
+  id: number;
+  name: string;
+  industry: string;
+  status: string;
+  // Add any other fields returned by your API
+};
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
   const { children, value, index, ...other } = props;
@@ -43,35 +43,94 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function OrganizationTable({}: Props) {
+export default function OrganizationTable() {
   const [tab, setTab] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rows, setRows] = useState<Organization[]>([]);
 
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const organizationRows = await GetOrganizationService(2);
+        setRows(organizationRows || []);
+      } catch (error) {
+        console.error('Failed to fetch organizations:', error);
+      }
+    };
+
+    fetchOrganizations();
+  }, []);
+
+  const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    setPage(0); // reset to first page on tab change
   };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const filteredRows = rows.filter((row) => {
+    if (tab === 1) return row.status === 'Active';
+    if (tab === 2) return row.status === 'Inactive';
+    return true; // All
+  });
+
+  const currentRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box>
-      <Tabs value={tab} onChange={handleChange} aria-label="organization tabs">
-        <Tab label="All" />
-        <Tab label="Active" />
-        <Tab label="Inactive" />
+      <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
+        <Tab
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              All
+              <Chip label={rows.length} size="small" variant="outlined" color="primary" />
+            </Box>
+          }
+        />
+        <Tab
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              Active
+              <Chip label={rows.filter((row) => row.status === 'Active').length} size="small" variant="outlined" color="primary" />
+            </Box>
+          }
+        />
+        <Tab
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              Inactive
+              <Chip label={rows.filter((row) => row.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
+            </Box>
+          }
+        />
       </Tabs>
 
-      <TabPanel value={tab} index={0}>
-        <OrganizationTableContent rows={rows} />
+      <TabPanel value={tab} index={tab}>
+        <OrganizationTableContent rows={currentRows} />
       </TabPanel>
-      <TabPanel value={tab} index={1}>
-        <OrganizationTableContent rows={rows.filter(row => row.status === 'Active')} />
-      </TabPanel>
-      <TabPanel value={tab} index={2}>
-        <OrganizationTableContent rows={rows.filter(row => row.status === 'Inactive')} />
-      </TabPanel>
+
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredRows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </Box>
   );
 }
 
-function OrganizationTableContent({ rows }: { rows: typeof rows }) {
+function OrganizationTableContent({ rows }: { rows: Organization[] }) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -88,9 +147,9 @@ function OrganizationTableContent({ rows }: { rows: typeof rows }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row: any) => (
+          {rows.map((row, index) => (
             <TableRow key={row.id}>
-              <TableCell>{row.id}</TableCell>
+              <TableCell>{index + 1}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.industry}</TableCell>
               <TableCell>-</TableCell>

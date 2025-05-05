@@ -11,6 +11,7 @@ import Loader from 'components/Loader';
 
 // types
 import { GuardProps } from 'types/auth';
+import { setCookie } from 'cookies-next';
 
 // ==============================|| AUTH GUARD ||============================== //
 
@@ -24,6 +25,18 @@ export default function AuthGuard({ children }: GuardProps) {
       const json = await res?.json();
 
       console.log('json', json);
+
+      console.log("sessionsss", session);
+
+
+      setCookie('accessToken', session?.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+      });
+    
+      
       
       if (!json?.protected) {
         router.push('/login');
@@ -34,7 +47,7 @@ export default function AuthGuard({ children }: GuardProps) {
     // eslint-disable-next-line
   }, [session]);
 
-  // if (status === 'loading' || !session?.user) return <Loader />;
+  if (status === 'loading' || !session?.user) return <Loader />;
 
   return children;
 }

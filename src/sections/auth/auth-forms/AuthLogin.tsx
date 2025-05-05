@@ -38,6 +38,7 @@ import IconButton from 'components/@extended/IconButton';
 
 // Config
 import { APP_DEFAULT_PATH } from 'config';
+import { login } from 'api/services/login';
 
 const GoogleIcon = '/assets/images/icons/google.svg';
 
@@ -118,6 +119,15 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
               password: values.password,
               callbackUrl: APP_DEFAULT_PATH
             });
+
+            console.log("result", result);
+
+            const payload = {
+              email: values.email.trim(),
+              password: values.password,
+            }
+            
+            await login(payload)
 
             if (result?.ok) {
               router.push(APP_DEFAULT_PATH);

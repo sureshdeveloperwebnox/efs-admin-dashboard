@@ -4,11 +4,14 @@ import { setCookie } from 'cookies-next';
 export interface LoginPayload {
   email: string;
   password: string;
+  organization?: string;
+  pincode?: string;
+  website?: string;
+  address?: string;
 }
 
 export const login = async (data: LoginPayload) => {
-
-  console.log("user", data);
+  console.log("data", data);
   
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/login`, {
@@ -22,14 +25,14 @@ export const login = async (data: LoginPayload) => {
     const result = await response.json();
     const accessToken = result.data.accessToken;
 
-    // console.log('accessToken', accessToken);
+    console.log('accessToken', accessToken);
 
 
-    // setCookie('accessToken', accessToken, {
-    //   path: '/',
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'lax',
-    // });
+    setCookie('accessToken', accessToken, {
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
 
     if (!response.ok) {
       throw new Error(result.message || 'Login failed');

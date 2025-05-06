@@ -113,27 +113,14 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
         })}
         onSubmit={async (values, { setErrors, setSubmitting }) => {
           try {
-            const result = await signIn('login', {
+             await signIn('login', {
               redirect: false,
               email: values.email.trim(),
               password: values.password,
               callbackUrl: APP_DEFAULT_PATH
             });
 
-            console.log("result", result);
 
-            const payload = {
-              email: values.email.trim(),
-              password: values.password,
-            }
-            
-            await login(payload)
-
-            if (result?.ok) {
-              router.push(APP_DEFAULT_PATH);
-            } else {
-              setErrors({ submit: 'Invalid email or password' });
-            }
           } catch (error: any) {
             console.error('Login error:', error);
             setErrors({ submit: error?.message || 'Login failed' });

@@ -28,11 +28,11 @@ export const login = async (data: LoginPayload) => {
     console.log('accessToken', accessToken);
 
 
-    setCookie('accessToken', accessToken, {
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+    // setCookie('accessToken', accessToken, {
+    //   path: '/',
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'lax',
+    // });
 
     if (!response.ok) {
       throw new Error(result.message || 'Login failed');

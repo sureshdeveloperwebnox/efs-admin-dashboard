@@ -43,7 +43,7 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function OrganizationTable() {
+export default function CompanyTable() {
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -114,7 +114,7 @@ export default function OrganizationTable() {
       </Tabs>
 
       <TabPanel value={tab} index={tab}>
-        <OrganizationTableContent rows={currentRows} />
+        <CompanyTableContent rows={currentRows} />
       </TabPanel>
 
       <TablePagination
@@ -130,7 +130,7 @@ export default function OrganizationTable() {
   );
 }
 
-function OrganizationTableContent({ rows }: { rows: Organization[] }) {
+function CompanyTableContent({ rows }: { rows: Organization[] }) {
   return (
     <TableContainer component={Paper}>
       <Table>

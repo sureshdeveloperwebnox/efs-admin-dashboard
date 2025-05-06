@@ -13,6 +13,13 @@ const mainmenu: NavItemType = {
       icon: DashboardOutlined
     },
     {
+      id: 'Company',
+      title: 'Company',
+      type: 'item',
+      url: '/company',
+      icon: DashboardOutlined
+    },
+    {
         id: 'Organization',
         title: 'Organization',
         type: 'item',

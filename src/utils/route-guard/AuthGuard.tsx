@@ -29,13 +29,7 @@ export default function AuthGuard({ children }: GuardProps) {
       console.log("sessionsss", session);
 
 
-      setCookie('accessToken', session?.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-      });
-    
+
       
       
       if (!json?.protected) {

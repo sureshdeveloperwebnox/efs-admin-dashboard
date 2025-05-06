@@ -32,6 +32,7 @@ import useUser from 'hooks/useUser';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
+import { deleteCookie } from 'cookies-next';
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -67,6 +68,15 @@ export default function Profile() {
   const provider = session?.provider;
 
   const handleLogout = () => {
+
+    // Delete Access Token from Cooke
+       deleteCookie('accessToken', {
+          path: '/',
+          secure: true,
+          sameSite: 'lax',
+        });
+
+
     switch (provider) {
       case 'auth0':
         signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/api/auth/logout/auth0` });

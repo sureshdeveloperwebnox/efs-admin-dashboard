@@ -48,19 +48,19 @@ export const authOptions: NextAuthOptions = {
       name: 'Login',
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'Enter Email' },
-        password: { label: 'Password', type: 'password', placeholder: 'Enter Password' },
+        password: { label: 'Password', type: 'password', placeholder: 'Enter Password' }
       },
       async authorize(credentials) {
         try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/login`, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify({
               email: credentials?.email,
-              password: credentials?.password,
-            }),
+              password: credentials?.password
+            })
           });
 
           const result = await response.json();
@@ -78,35 +78,35 @@ export const authOptions: NextAuthOptions = {
             provider: user.provider,
             category: user.category,
             accessToken: user.accessToken,
-            refreshToken: user.refreshToken,
+            refreshToken: user.refreshToken
           };
         } catch (error: any) {
           throw new Error(error?.message || 'Login failed');
         }
-      },
+      }
     }),
     GoogleProvider({
       clientId: process.env.NEXT_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.NEXT_GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code'
         }
       }
     })
   ],
 
   callbacks: {
-    async jwt({ token, user, account  }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = Number(user.id); // 🔧 fix
         token.name = user.name;
         token.email = user.email;
-        token.provider = user.provider || account?.provider || 'google';;
+        token.provider = user.provider || account?.provider || 'google';
         token.category = user.category;
-        token.accessToken = user.accessToken  || account?.access_token || '';
+        token.accessToken = user.accessToken || account?.access_token || '';
         token.refreshToken = user.refreshToken || account?.refresh_token || '';
       }
       return token;
@@ -115,32 +115,38 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user = {
-          id: Number(token.id),  // 👈 fix here
+          id: Number(token.id), // 👈 fix here
           name: token.name,
           email: token.email,
           provider: token.provider,
-          category: token.category,
+          category: token.category
         };
         session.accessToken = token.accessToken;
         session.refreshToken = token.refreshToken;
       }
       return session;
     },
-   
-  },
+    async redirect({ baseUrl, url }) {
+      if (url === '/dashboard') {
+        // You'll need to retrieve the accessToken somehow
+        // We can't access the token here directly, so you can handle it client-side
+        return `${baseUrl}/dashboard`;
+      }
+      return baseUrl;
 
+    }
+  },
   session: {
     strategy: 'jwt',
-    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT) || 3600,
+    maxAge: Number(process.env.NEXT_PUBLIC_JWT_TIMEOUT) || 3600
   },
 
   jwt: {
-    secret: process.env.NEXT_PUBLIC_JWT_SECRET,
+    secret: process.env.NEXT_PUBLIC_JWT_SECRET
   },
 
   pages: {
     signIn: '/login',
-    error: '/auth/error', // ✅ add this line
-
-  },
+    error: '/auth/error' // ✅ add this line
+  }
 };

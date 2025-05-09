@@ -1,7 +1,7 @@
-import ViewPage from 'views/organization/view-organization-page';
+import EditOrganization from 'views/organization/EditOrganization';
 
 // ==============================|| PAGE ||============================== //
 
 export default function EditOrganizationPage() {
-  return <>Edit Organization</>
+  return <EditOrganization />
 }

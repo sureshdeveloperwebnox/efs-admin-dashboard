@@ -178,8 +178,8 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
     router.push(`/organization/${id}`);
   };
 
-  const handleEditPage = (id:number) => {
-    router.push(`/organization/edit${id}`);
+  const handleEditPage = (id:any) => {
+    router.push(`/organization/edit/${id}`);
   };
 
   if (rows.length === 0) {

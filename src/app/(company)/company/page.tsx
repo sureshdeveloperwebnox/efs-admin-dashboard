@@ -1,8 +1,7 @@
 import CompanyTable from 'sections/Company/CompanyTable';
-import Dashboard from 'views/dashboard';
 
 // ==============================|| PAGE ||============================== //
 
-export default function ViewPage() {
+export default function CompanyTablePage() {
   return <CompanyTable />
 }

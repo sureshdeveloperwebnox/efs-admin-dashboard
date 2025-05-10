@@ -7,9 +7,10 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MainCard from 'components/MainCard';
-import { GetOrganizationService, UpdateOrganizationService } from 'api/services/OrganizationService';
+import { CreateCompanySerVice } from 'api/services';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
+
 type Organization = {
   id: string;
   name: string;
@@ -23,10 +24,8 @@ type Organization = {
   phone: string;
 };
 
-export default function EditOrganizationPage() {
-  const params = useParams();
+export default function CreateCompany() {
   const router = useRouter();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [editedOrg, setEditedOrg] = useState<Organization | null>(null);
   const [formData, setFormData] = useState({
@@ -41,26 +40,17 @@ export default function EditOrganizationPage() {
   });
 
   useEffect(() => {
-    if (id) {
-      GetOrganizationService(Number(id))
-        .then((data: Organization) => {
-          setEditedOrg(data);
-          setFormData({
-            name: data?.name,
-            organization_name: data?.organization_name,
-            industry_name: data?.industry_name,
-            address: data?.address,
-            website: data?.website,
-            pincode: data?.pincode,
-            email: data?.email,
-            phone: data?.phone
-          });
-        })
-        .catch((err) => {
-          console.error('Failed to fetch organization:', err);
-        });
-    }
-  }, [id]);
+    setFormData({
+      name,
+      organization_name: data?.organization_name,
+      industry_name: data?.industry_name,
+      address: data?.address,
+      website: data?.website,
+      pincode: data?.pincode,
+      email: data?.email,
+      phone: data?.phone
+    });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -71,10 +61,10 @@ export default function EditOrganizationPage() {
     if (!editedOrg) return;
     try {
       const updatedOrg = { ...editedOrg, ...formData };
-      await UpdateOrganizationService(updatedOrg);
+      await CreateCompanySerVice(updatedOrg);
       router.back();
     } catch (error) {
-      console.error('Failed to update organization:', error);
+      console.error('Failed to create company:', error);
     }
   };
 

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const date_time = moment().format('YYYY-MM-DD HH:mm:ss');
 
-export const GetAllOrganizationService = async () => {
+export const GetAllCompanyService = async () => {
   try {
     // Get accessToken from cookies
     const getAccessTokenFromCookie = () => {
@@ -18,7 +18,7 @@ export const GetAllOrganizationService = async () => {
       throw new Error('Access token not found in cookies');
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}organization/getAllOrganization`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}company/getAllCompany`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export const GetAllOrganizationService = async () => {
   }
 };
 
-export const GetOrganizationService = async (id: number) => {
+export const GetCompanyService = async (id: number) => {
   try {
     // Get accessToken from cookies
     const getAccessTokenFromCookie = () => {
@@ -82,7 +82,7 @@ export const GetOrganizationService = async (id: number) => {
   }
 };
 
-export const UpdateOrganizationService = async (data: any) => {
+export const UpdateCompanyService = async (data: any) => {
   console.log('data', data);
   try {
     // Get accessToken from cookies

@@ -116,9 +116,9 @@ export default function OrganizationTable() {
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Search organizations..."
+            placeholder="Search"
             onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
+            
           />
         </Stack>
 

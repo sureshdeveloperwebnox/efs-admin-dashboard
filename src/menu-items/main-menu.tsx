@@ -1,4 +1,7 @@
-import { DashboardOutlined, ApartmentOutlined  } from '@ant-design/icons';
+import { DashboardOutlined, ApartmentOutlined } from '@ant-design/icons';
+import { GrOrganization } from 'react-icons/gr';
+import { GoPeople } from "react-icons/go";
+
 import { NavItemType } from 'types/menu';
 
 const mainmenu: NavItemType = {
@@ -17,22 +20,22 @@ const mainmenu: NavItemType = {
       title: 'Company',
       type: 'item',
       url: '/company',
-      icon: DashboardOutlined
+      icon: GrOrganization
     },
     {
-        id: 'Organization',
-        title: 'Organization',
-        type: 'item',
-        url: '/organization',
-        icon: ApartmentOutlined 
-      },
-      {
-        id: 'Customers',
-        title: 'Customers',
-        type: 'item',
-        url: '/customers',
-        icon: ApartmentOutlined 
-      }
+      id: 'Organization',
+      title: 'Organization',
+      type: 'item',
+      url: '/organization',
+      icon: ApartmentOutlined
+    },
+    {
+      id: 'Customers',
+      title: 'Customers',
+      type: 'item',
+      url: '/customers',
+      icon: GoPeople
+    }
   ]
 };
 

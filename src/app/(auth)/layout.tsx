@@ -1,3 +1,6 @@
+'use client'; // Add this at the top of the file
+
+
 import GuestGuard from 'utils/route-guard/GuestGuard';
 import { Toaster } from 'sonner';
 import { GuardProps } from 'types/auth';

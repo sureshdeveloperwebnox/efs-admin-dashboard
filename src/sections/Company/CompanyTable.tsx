@@ -14,58 +14,72 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import TablePagination from '@mui/material/TablePagination';
-import { GetAllOrganizationService } from 'api/services/OrganizationService';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import { FaSearch, FaPlus, FaEye, FaEdit } from 'react-icons/fa';
+import MainCard from 'components/MainCard';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { useRouter } from 'next/navigation';
+import { GetAllCompanyService } from 'api/services';
 
 type Organization = {
   id: number;
   name: string;
   industry: string;
+  industry_name?: string;
+  email?: string;
+  phone?: string;
+  plan_type?: string;
   status: string;
-  // Add any other fields returned by your API
 };
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
   const { children, value, index, ...other } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tab-panel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} {...other}>
       {value === index && (
         <Box sx={{ p: 2 }}>
-          <Typography component="div">{children}</Typography>
+          <Typography>{children}</Typography>
         </Box>
       )}
     </div>
   );
 }
 
-export default function CompanyTable() {
+export default function OrganizationTable() {
+  const router = useRouter();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rows, setRows] = useState<Organization[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const organizationRows = await GetAllOrganizationService();
+        setIsLoading(true);
+        const organizationRows = await GetAllCompanyService();
         setRows(organizationRows || []);
       } catch (error) {
         console.error('Failed to fetch organizations:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchOrganizations();
   }, []);
 
   const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
-    setPage(0); // reset to first page on tab change
+    setPage(0);
   };
+
+    const handleCreatePage = () => {
+    router.push(`company/create`);
+  }
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -76,87 +90,165 @@ export default function CompanyTable() {
     setPage(0);
   };
 
-  const filteredRows = rows.filter((row) => {
-    if (tab === 1) return row.status === 'Active';
-    if (tab === 2) return row.status === 'Inactive';
-    return true; // All
-  });
+  const filteredRows = rows
+    .filter((row) => {
+      if (tab === 1) return row.status === 'Active';
+      if (tab === 2) return row.status === 'Inactive';
+      return true;
+    })
+    .filter(
+      (row) =>
+        row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row.industry_name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row.email?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row.phone?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
+    );
 
   const currentRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Box>
-      <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
-        <Tab
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              All
-              <Chip label={rows.length} size="small" variant="outlined" color="primary" />
-            </Box>
-          }
-        />
-        <Tab
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              Active
-              <Chip label={rows.filter((row) => row.status === 'Active').length} size="small" variant="outlined" color="primary" />
-            </Box>
-          }
-        />
-        <Tab
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              Inactive
-              <Chip label={rows.filter((row) => row.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
-            </Box>
-          }
-        />
-      </Tabs>
+    <MainCard>
+      <Box>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h3">Company</Typography>
+          <Button variant="contained" onClick={() => handleCreatePage()} startIcon={<FaPlus />}>
+            Add
+          </Button>
+        </Stack>
 
-      <TabPanel value={tab} index={tab}>
-        <CompanyTableContent rows={currentRows} />
-      </TabPanel>
+        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+          <FaSearch />
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search organizations..."
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+          />
+        </Stack>
 
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Box>
+        {/* <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
+          <Tab
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                All
+                <Chip label={rows.length} size="small" variant="outlined" color="primary" />
+              </Box>
+            }
+          />
+          <Tab
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                Active
+                <Chip label={rows.filter((r) => r.status === 'Active').length} size="small" variant="outlined" color="primary" />
+              </Box>
+            }
+          />
+          <Tab
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                Inactive
+                <Chip label={rows.filter((r) => r.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
+              </Box>
+            }
+          />
+        </Tabs> */}
+
+        <TabPanel value={tab} index={tab}>
+          {isLoading ? (
+            <Typography>Loading companies...</Typography>
+          ) : (
+            <OrganizationTableContent rows={currentRows} />
+          )}
+        </TabPanel>
+
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredRows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Box>
+    </MainCard>
   );
 }
 
-function CompanyTableContent({ rows }: { rows: Organization[] }) {
+function OrganizationTableContent({ rows }: { rows: Organization[] }) {
+  const router = useRouter();
+
+
+
+  const handleViewPage = (id: number) => {
+    router.push(`/organization/${id}`);
+  };
+
+  const handleEditPage = (id:any) => {
+    router.push(`/organization/edit/${id}`);
+  };
+
+
+
+  if (rows.length === 0) {
+    return <Typography>No organizations found</Typography>;
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>
             <TableCell>S.NO</TableCell>
-            <TableCell>Organization Name</TableCell>
-            <TableCell>Industry Name</TableCell>
+            <TableCell>Company</TableCell>
+            <TableCell>Industry</TableCell>
+            <TableCell>Email</TableCell>
             <TableCell>Phone</TableCell>
-            <TableCell>Pincode</TableCell>
-            <TableCell>Address</TableCell>
-            <TableCell>Plan Type</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>Tax ID</TableCell>
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.industry}</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>{row.status}</TableCell>
+              <TableCell>{row.industry || '-'}</TableCell>
+              <TableCell>{row.email || '-'}</TableCell>
+              <TableCell>{row.phone || '-'}</TableCell>
+              <TableCell>{row.tax_id || '-'}</TableCell>
+              <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  <Tooltip title="View Details">
+                    <IconButton
+                      sx={{
+                        color: '#1778ff',
+                        '&:hover': {
+                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
+                        }
+                      }}
+                      onClick={() => handleViewPage(row.id)}
+                    >
+                      <FaEye />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Edit">
+                    <IconButton
+                      sx={{
+                        color: '#1778ff',
+                        '&:hover': {
+                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
+                        }
+                      }}
+                      onClick={() => handleEditPage(row?.id)}
+                    >
+                      <FaEdit />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

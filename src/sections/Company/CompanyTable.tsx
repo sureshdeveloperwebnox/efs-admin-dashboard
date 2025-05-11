@@ -33,6 +33,7 @@ type Organization = {
   phone?: string;
   plan_type?: string;
   status: string;
+  tax_id: string;
 };
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
@@ -89,6 +90,9 @@ export default function OrganizationTable() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  console.log("rows", rows);
+  
 
   const filteredRows = rows
     .filter((row) => {
@@ -182,11 +186,11 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
 
 
   const handleViewPage = (id: number) => {
-    router.push(`/organization/${id}`);
+    router.push(`/company/view/${id}`);
   };
 
   const handleEditPage = (id:any) => {
-    router.push(`/organization/edit/${id}`);
+    router.push(`/company/edit/${id}`);
   };
 
 
@@ -242,7 +246,7 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
                           backgroundColor: 'rgba(23, 120, 255, 0.1)'
                         }
                       }}
-                      onClick={() => handleEditPage(row?.id)}
+                      onClick={() => handleEditPage(Number(row?.id))}
                     >
                       <FaEdit />
                     </IconButton>

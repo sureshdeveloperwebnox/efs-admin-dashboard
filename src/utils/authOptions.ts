@@ -7,6 +7,7 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id: number;
+      organization_id: number;
       name: string;
       email: string;
       provider: string;
@@ -18,6 +19,7 @@ declare module 'next-auth' {
 
   interface User {
     id: number;
+    organization_id: number;
     name: string;
     email: string;
     provider: string;
@@ -27,9 +29,11 @@ declare module 'next-auth' {
   }
 }
 
+
 declare module 'next-auth/jwt' {
   interface JWT {
     id: number;
+    organization_id: number;
     name: string;
     email: string;
     provider: string;
@@ -73,6 +77,7 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: user.id,
+            organization_id: user.organization_id,
             name: user.name,
             email: user.email,
             provider: user.provider,
@@ -102,6 +107,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = Number(user.id); // 🔧 fix
+        token.organization_id = user.organization_id;
         token.name = user.name;
         token.email = user.email;
         token.provider = user.provider || account?.provider || 'google';
@@ -116,6 +122,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user = {
           id: Number(token.id), // 👈 fix here
+          organization_id: token.organization_id,
           name: token.name,
           email: token.email,
           provider: token.provider,

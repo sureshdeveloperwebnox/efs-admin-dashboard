@@ -38,12 +38,12 @@ import IconButton from 'components/@extended/IconButton';
 
 // Config
 import { APP_DEFAULT_PATH } from 'config';
-import { login } from 'api/services/login';
+// import { login } from 'api/services/login';
 
 const GoogleIcon = '/assets/images/icons/google.svg';
 
 export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
-  const router = useRouter();
+  // const router = useRouter();
   const { data: session, status } = useSession();
 
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));

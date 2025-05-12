@@ -22,18 +22,23 @@ import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
-import { GetAllCompanyService } from 'api/services';
-
+import { GetAllCustomerService, UpdateCustomerStatusService } from 'api/services';
+import Switch from '@mui/material/Switch';
 type Organization = {
   id: number;
   name: string;
-  industry: string;
-  industry_name?: string;
+};
+
+type Customer = {
+  id: number;
+  first_name: string;
+  last_name: string;
   email?: string;
   phone?: string;
-  plan_type?: string;
+  address?: string;
   status: string;
-  tax_id: string;
+  is_active: number;
+  organizations?: Organization[];
 };
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
@@ -49,28 +54,28 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function OrganizationTable() {
+export default function CustomerTable() {
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Organization[]>([]);
+  const [rows, setRows] = useState<Customer[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
+    const fetchCustomers = async () => {
       try {
         setIsLoading(true);
-        const organizationRows = await GetAllCompanyService();
-        setRows(organizationRows || []);
+        const customerRows = await GetAllCustomerService();
+        setRows(customerRows || []);
       } catch (error) {
-        console.error('Failed to fetch organizations:', error);
+        console.error('Failed to fetch customers:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchOrganizations();
+    fetchCustomers();
   }, []);
 
   const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
@@ -78,9 +83,9 @@ export default function OrganizationTable() {
     setPage(0);
   };
 
-    const handleCreatePage = () => {
-    router.push(`company/create`);
-  }
+  const handleCreatePage = () => {
+    router.push(`/customers/create`);
+  };
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -91,19 +96,16 @@ export default function OrganizationTable() {
     setPage(0);
   };
 
-  console.log("rows", rows);
-  
-
   const filteredRows = rows
     .filter((row) => {
-      if (tab === 1) return row.status === 'Active';
-      if (tab === 2) return row.status === 'Inactive';
+      if (tab === 1) return row.is_active === 1;
+      if (tab === 2) return row.is_active === 0;
       return true;
     })
     .filter(
       (row) =>
-        row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (row.industry_name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        row.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row.last_name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
         (row.email?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
         (row.phone?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
     );
@@ -114,55 +116,16 @@ export default function OrganizationTable() {
     <MainCard>
       <Box>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Company</Typography>
-          <Button variant="contained" onClick={() => handleCreatePage()} startIcon={<FaPlus />}>
+          <Typography variant="h3">Customers</Typography>
+          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
             Add
           </Button>
         </Stack>
 
-        {/* <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-          <FaSearch />
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search organizations..."
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-          />
-        </Stack> */}
-
-        {/* <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                All
-                <Chip label={rows.length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Active
-                <Chip label={rows.filter((r) => r.status === 'Active').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Inactive
-                <Chip label={rows.filter((r) => r.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-        </Tabs> */}
-
-
-
-            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+        {/* Modified section: Combined tabs and search in one row */}
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
-            {/* <Tab
+            <Tab
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   All
@@ -182,17 +145,17 @@ export default function OrganizationTable() {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   Inactive
-                  <Chip label={rows.filter((r) => r.status === 0).length} size="small" variant="outlined" color="primary" />
+                  <Chip label={rows.filter((r) => r.is_active === 0).length} size="small" variant="outlined" color="primary" />
                 </Box>
               }
-            /> */}
+            />
           </Tabs>
 
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
             <TextField
               variant="outlined"
               size="small"
-              placeholder="Search companies..."
+              placeholder="Search customers..."
               onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth
             />
@@ -200,11 +163,7 @@ export default function OrganizationTable() {
         </Stack>
 
         <TabPanel value={tab} index={tab}>
-          {isLoading ? (
-            <Typography>Loading companies...</Typography>
-          ) : (
-            <OrganizationTableContent rows={currentRows} />
-          )}
+          {isLoading ? <Typography>Loading customers...</Typography> : <CustomerTableContent rows={currentRows} />}
         </TabPanel>
 
         <TablePagination
@@ -221,23 +180,44 @@ export default function OrganizationTable() {
   );
 }
 
-function OrganizationTableContent({ rows }: { rows: Organization[] }) {
+function CustomerTableContent({ rows }: { rows: Customer[] }) {
   const router = useRouter();
+  const [localRows, setLocalRows] = useState<Customer[]>(rows);
 
-
+  useEffect(() => {
+    setLocalRows(rows);
+  }, [rows]);
 
   const handleViewPage = (id: number) => {
-    router.push(`/company/view/${id}`);
+    router.push(`/customers/view/${id}`);
   };
 
-  const handleEditPage = (id:any) => {
-    router.push(`/company/edit/${id}`);
+  const handleEditPage = (id: number) => {
+    router.push(`/customers/edit/${id}`);
   };
 
+  const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, row: Customer) => {
+    const newStatus = event.target.checked ? 1 : 0;
 
+    // Optimistic UI update
+    setLocalRows((prevRows) => prevRows.map((customer) => (customer.id === row.id ? { ...customer, is_active: newStatus } : customer)));
+
+    try {
+      await UpdateCustomerStatusService({
+        id: row.id,
+        status: newStatus
+      });
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      // Revert on error
+      setLocalRows((prevRows) =>
+        prevRows.map((customer) => (customer.id === row.id ? { ...customer, is_active: row.is_active } : customer))
+      );
+    }
+  };
 
   if (rows.length === 0) {
-    return <Typography>No organizations found</Typography>;
+    return <Typography>No customers found</Typography>;
   }
 
   return (
@@ -246,24 +226,24 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
         <TableHead>
           <TableRow>
             <TableCell>S.NO</TableCell>
-            <TableCell>Company</TableCell>
-            <TableCell>Industry</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Phone</TableCell>
-            <TableCell>Tax ID</TableCell>
+            <TableCell>Organization Name</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {localRows.map((row, index) => (
             <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.industry || '-'}</TableCell>
+              <TableCell>{row.first_name}</TableCell>
+              <TableCell>{row.last_name || '-'}</TableCell>
               <TableCell>{row.email || '-'}</TableCell>
               <TableCell>{row.phone || '-'}</TableCell>
-              <TableCell>{row.tax_id || '-'}</TableCell>
-              <TableCell align="center">
+              <TableCell>{row.organizations?.name || '-'}</TableCell>
+              <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">
                     <IconButton
@@ -287,9 +267,15 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
                           backgroundColor: 'rgba(23, 120, 255, 0.1)'
                         }
                       }}
-                      onClick={() => handleEditPage(Number(row?.id))}
+                      onClick={() => handleEditPage(row.id)}
                     >
                       <FaEdit />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title={row.is_active === 1 ? 'Deactivate' : 'Activate'}>
+                    <IconButton>
+                      <Switch checked={row.is_active === 1} size="small" onChange={(e) => handleStatusChange(e, row)} />
                     </IconButton>
                   </Tooltip>
                 </Stack>

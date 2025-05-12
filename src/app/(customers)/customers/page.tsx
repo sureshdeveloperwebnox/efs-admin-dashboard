@@ -1,7 +1,9 @@
-import Dashboard from 'views/dashboard';
+import CustomerTable from "sections/Customer/CustomerTable"
 
-// ==============================|| PAGE ||============================== //
+type Props = {}
 
-export default function ViewPage() {
-  return <>Customers Table</>
-}
+export default function CustomerTableViewPage({}: Props) {
+  return (
+    <CustomerTable />
+  )
+};

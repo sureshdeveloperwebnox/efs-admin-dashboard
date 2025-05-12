@@ -7,7 +7,6 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MainCard from 'components/MainCard';
-import { UpdateOrganizationService } from 'api/services/OrganizationService';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
 import { GetCompanyService, UpdateCompanyService } from 'api/services';

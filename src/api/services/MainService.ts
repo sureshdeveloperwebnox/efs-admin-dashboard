@@ -41,10 +41,12 @@ const handleResponse = async (response: Response): Promise<APIResponse> => {
         const errorResult = await response.json();
         throw new Error(errorResult.message || 'Request failed');
     }
+    // console.log("response", response);
+    
     return await response.json();
 };
 
-export const POSTAPIService = async <T = unknown, R = unknown>(data: POSTModel<T>): Promise<R> => {
+export const POSTAPIService = async <T = unknown>(data: POSTModel<T>): Promise<R> => {
     const { routename, payload } = data;
     console.log("payload", payload);
     
@@ -61,7 +63,7 @@ export const POSTAPIService = async <T = unknown, R = unknown>(data: POSTModel<T
 
         const result = await handleResponse(response);
         toast.success(result?.message);
-        return result?.data;
+        return result;
     } catch (error: any) {
         console.error('POST Error:', error);
         toast.error(error.message || 'Unexpected error occurred');
@@ -109,7 +111,7 @@ export const PUTAPIService = async <T = unknown, R = unknown>(data: PUTModel<T>)
 
         const result = await handleResponse(response);
         toast.success(result?.message);
-        return result?.data;
+        return result
     } catch (error: any) {
         console.error('PUT Error:', error);
         toast.error(error.message || 'Unexpected error occurred');

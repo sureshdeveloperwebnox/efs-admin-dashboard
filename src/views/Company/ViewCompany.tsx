@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
-import { GetOrganizationService } from 'api/services/OrganizationService';
 import Avatar from '@mui/material/Avatar';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -16,20 +15,10 @@ import TableCell from '@mui/material/TableCell';
 import BackButton from 'components/CustomComponents/BackButton';
 import { GetCompanyService } from 'api/services';
 
-type OrganizationData = {
-  name?: string;
-  industry?: string;
-  email?: string;
-  phone?: string;
-  tax_id?: string;
-  website?: string;
-  address?: string;
 
-};
-
-export default function ViewCompany({}: OrganizationData) {
+export default function ViewCompany() {
   const params = useParams();
-  const [data, setData] = useState<OrganizationData | null>(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const organizationId = params.id;
@@ -129,7 +118,7 @@ export default function ViewCompany({}: OrganizationData) {
                         <Typography variant="subtitle1">{data?.phone || '-'}</Typography>
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow>
                       <TableCell>
                         <Typography
@@ -142,9 +131,7 @@ export default function ViewCompany({}: OrganizationData) {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1">
-                          {data?.address}
-                        </Typography>{' '}
+                        <Typography variant="subtitle1">{data?.address}</Typography>{' '}
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -159,12 +146,10 @@ export default function ViewCompany({}: OrganizationData) {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1">
-                          {data?.website}
-                        </Typography>{' '}
+                        <Typography variant="subtitle1">{data?.website}</Typography>{' '}
                       </TableCell>
                     </TableRow>
-                         <TableRow>
+                    <TableRow>
                       <TableCell>
                         <Typography
                           variant="body"

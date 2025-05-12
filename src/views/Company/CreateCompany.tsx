@@ -11,15 +11,7 @@ import { CreateCompanyService } from 'api/services';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
 
-// type Organization = {
-//   name: string;
-//   industry_name: string;
-//   address: string;
-//   website: string;
-//   email: string;
-//   phone: string;
-//   tax_id: string;
-// };
+
 
 export default function CreateCompany() {
   const router = useRouter();
@@ -41,7 +33,10 @@ export default function CreateCompany() {
 
   const handleSave = async () => {
     try {
-      await CreateCompanyService(formData);
+     const result = await CreateCompanyService(formData);
+
+     console.log("company result", result);
+     
       router.back();
     } catch (error) {
       console.error('Failed to create company:', error);
@@ -56,19 +51,13 @@ export default function CreateCompany() {
     <Box sx={{ padding: 2 }}>
       <MainCard title="Create Company">
         <TextField name="name" label="Name" value={formData.name} onChange={handleChange} fullWidth margin="normal" />
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
             <TextField fullWidth name="email" label="Email" value={formData.email} onChange={handleChange} margin="normal" />
-          </Grid>
-          <Grid item xs={6}>
             <PhoneInputField
               label="Mobile Number*"
               value={formData.phone}
               onChange={(value) => handleChange({ target: { name: 'phone', value } } as any)}
               defaultCountry="IN"
             />
-          </Grid>
-        </Grid>
 
       
         <TextField

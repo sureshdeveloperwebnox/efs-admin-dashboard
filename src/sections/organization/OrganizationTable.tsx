@@ -111,43 +111,45 @@ export default function OrganizationTable() {
           </Button>
         </Stack>
 
-        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-          <FaSearch />
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            
-          />
-        </Stack>
 
-        <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                All
-                <Chip label={rows.length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Active
-                <Chip label={rows.filter((r) => r.status === 'Active').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Inactive
-                <Chip label={rows.filter((r) => r.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-        </Tabs>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
+            {/* <Tab
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  All
+                  <Chip label={rows.length} size="small" variant="outlined" color="primary" />
+                </Box>
+              }
+            />
+            <Tab
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  Active
+                  <Chip label={rows.filter((r) => r.is_active === 1).length} size="small" variant="outlined" color="primary" />
+                </Box>
+              }
+            />
+            <Tab
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  Inactive
+                  <Chip label={rows.filter((r) => r.status === 0).length} size="small" variant="outlined" color="primary" />
+                </Box>
+              }
+            /> */}
+          </Tabs>
+
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search organizations..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+            />
+          </Stack>
+        </Stack>
 
         <TabPanel value={tab} index={tab}>
           {isLoading ? (

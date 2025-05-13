@@ -46,8 +46,6 @@ export default function EditCustomer() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    id: 0,
-    user_id: 0,
     first_name: '',
     last_name: '',
     email: '',

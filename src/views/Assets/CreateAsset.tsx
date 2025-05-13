@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MainCard from 'components/MainCard';
-import { GetAllCompanyService, CreateAssetService } from 'api/services';
+import {  CreateAssetService,  GetAllCustomerByIDService } from 'api/services';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -18,16 +18,20 @@ import dayjs, { Dayjs } from 'dayjs';
 import LocationSearchInput from 'components/CustomComponents/LocationSearchInput';
 import { LoadScript } from '@react-google-maps/api';
 import DatePickerComponent from 'components/CustomComponents/DatePickerComponent';
+import { organization_id } from 'utils';
 
-interface Company {
+
+
+interface Customer {
   id: string;
-  name: string;
+  first_name: string;
 }
 
 export default function CreateAsset() {
+
   const router = useRouter();
-  const [companyData, setCompanyData] = useState<Company[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+    const [customerData, setCustomerData] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectStatus, setSelectStatus] = useState('');
 
@@ -43,28 +47,36 @@ export default function CreateAsset() {
     notes: '',
     purchase_date: dayjs().toISOString(),
     warranty_expiry: dayjs().toISOString(),
-    company_id: '',
     customer_id: ''
   });
 
   const AssetStatus = ['OPERATIONAL', 'NEEDS_MAINTENANCE', 'UNDER_REPAIR', 'DECOMMISSIONED'];
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        setIsLoading(true);
-        const response = await GetAllCompanyService();
-        const companies: Company[] = Array.isArray(response) ? response : [];
-        setCompanyData(companies);
-      } catch (error) {
-        console.error('Failed to fetch organizations:', error);
-        setCompanyData([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCompanies();
-  }, []);
+
+
+  // Fetch Customers
+ useEffect(() => {
+  const fetchCustomers = async () => {
+    if (!organization_id) return;
+    try {
+      setIsLoading(true);
+      const response = await GetAllCustomerByIDService({ organization_id: organization_id });
+      const customers: Customer[] = Array.isArray(response) ? response : [];
+      setCustomerData(customers);
+    } catch (error) {
+      console.error('Failed to fetch customers:', error);
+      setCustomerData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchCustomers();
+}, [organization_id]);
+
+
+
+
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult | null) => {
     if (place?.geometry?.location && place.formatted_address) {
@@ -83,11 +95,14 @@ export default function CreateAsset() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCompanyChange = (event: any, newValue: Company | null) => {
-    setSelectedCompany(newValue);
+
+
+
+    const handleCustomerChange = (event: any, newValue: Customer | null) => {
+    setSelectedCustomer(newValue);
     setFormData((prev) => ({
       ...prev,
-      company_id: newValue?.id || ''
+      customer_id: newValue?.id || ''
     }));
   };
 
@@ -115,8 +130,8 @@ export default function CreateAsset() {
   };
 
   const validateForm = () => {
-    const { asset_name, serial_number, status, company_id } = formData;
-    if (!asset_name || !serial_number || !status || !company_id) {
+    const { asset_name, serial_number, status } = formData;
+    if (!asset_name || !serial_number || !status ) {
       alert('Please fill in all required fields');
       return false;
     }
@@ -162,15 +177,17 @@ export default function CreateAsset() {
           }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+
+
+             <Grid item xs={12}>
               <Autocomplete
                 disablePortal
-                options={companyData}
-                getOptionLabel={(option) => option.name}
-                value={selectedCompany}
-                onChange={handleCompanyChange}
+                options={customerData}
+                getOptionLabel={(option) => option.first_name}
+                value={selectedCustomer}
+                onChange={handleCustomerChange}
                 loading={isLoading}
-                renderInput={(params) => <TextField {...params} label="Company" placeholder="Select a company" fullWidth required />}
+                renderInput={(params) => <TextField {...params} label="Customer" placeholder="Select a customer" fullWidth required />}
               />
             </Grid>
 
@@ -193,6 +210,10 @@ export default function CreateAsset() {
                 fullWidth
                 required
               />
+            </Grid>
+
+              <Grid item xs={12}>
+              <TextField name="manufacturer" label="Manufacturer" value={formData.manufacturer} onChange={handleChange} fullWidth />
             </Grid>
 
             <Grid item xs={12}>

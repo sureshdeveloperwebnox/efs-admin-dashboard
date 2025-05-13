@@ -1,6 +1,8 @@
 import { DashboardOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { GrOrganization } from 'react-icons/gr';
 import { GoPeople } from "react-icons/go";
+import { BsCassette } from "react-icons/bs";
+
 
 import { NavItemType } from 'types/menu';
 
@@ -35,6 +37,13 @@ const mainmenu: NavItemType = {
       type: 'item',
       url: '/customers',
       icon: GoPeople
+    },
+    {
+      id: 'Assets',
+      title: 'Assets',
+      type: 'item',
+      url: '/assets',
+      icon: BsCassette
     }
   ]
 };

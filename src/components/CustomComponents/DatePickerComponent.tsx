@@ -4,7 +4,6 @@ import React from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import TextField from '@mui/material/TextField';
 import dayjs, { Dayjs } from 'dayjs';
 
 interface ReusableDatePickerProps {
@@ -17,6 +16,8 @@ interface ReusableDatePickerProps {
   maxDate?: Dayjs;
   fullWidth?: boolean;
   required?: boolean;
+  error?: boolean;
+  helperText?: string;
 }
 
 const DatePickerComponent: React.FC<ReusableDatePickerProps> = ({
@@ -28,7 +29,9 @@ const DatePickerComponent: React.FC<ReusableDatePickerProps> = ({
   minDate,
   maxDate,
   fullWidth = true,
-  required = false
+  required = false,
+  error = false,
+  helperText = ''
 }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -43,7 +46,9 @@ const DatePickerComponent: React.FC<ReusableDatePickerProps> = ({
         slotProps={{
           textField: {
             fullWidth,
-            required
+            required,
+            error,
+            helperText
           }
         }}
       />

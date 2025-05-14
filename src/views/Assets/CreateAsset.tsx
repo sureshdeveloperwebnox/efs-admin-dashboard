@@ -85,7 +85,7 @@ export default function CreateAsset() {
       const address = place.formatted_address;
       setFormData((prev) => ({
         ...prev,
-        location: `${address} (${lat}, ${lng})`
+        location: `${address}`
       }));
     }
   };

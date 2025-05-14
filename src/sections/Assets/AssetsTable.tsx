@@ -17,7 +17,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { FaSearch, FaPlus, FaEye, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit } from 'react-icons/fa';
 import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -139,7 +139,7 @@ export default function AssetTable() {
         {/* Modified section: Combined tabs and search in one row */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
-            <Tab
+            {/* <Tab
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   All
@@ -162,7 +162,7 @@ export default function AssetTable() {
                   <Chip label={rows.filter((r) => r.is_active === 0).length} size="small" variant="outlined" color="primary" />
                 </Box>
               }
-            />
+            /> */}
           </Tabs>
 
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>

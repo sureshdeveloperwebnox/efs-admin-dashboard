@@ -22,37 +22,16 @@ import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
-import { UpdateCustomerStatusService } from 'api/services';
+import { GetAllAssetService, GetAllCustomerService, GetAllServiceService, UpdateCustomerStatusService } from 'api/services';
 import Switch from '@mui/material/Switch';
-import { GetAllAssetService } from 'api/services/AssetService';
-import Avatar from '@mui/material/Avatar';
-type Organization = {
-  id: number;
-  name: string;
-  organization_name: string;
-  email: string;
-  phone: string;
-};
 
 type Customer = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-};
-
-type Assets = {
-  asset_name: string;
-  serial_number: string;
-  model: string;
-  manufacturer: string;
-  status: string;
-  location: string;
-  notes: string;
-  purchase_date: string;
-  warranty_expiry: string;
-  organizations?: Organization[];
-  customers?: Customer[];
+  id: number;
+  name: string;
+  description: string;
+  duration?: string;
+  price?: string;
+  required_skills?: string;
 };
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
@@ -68,28 +47,28 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function AssetTable() {
+export default function ServiceTable() {
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Assets[]>([]);
+  const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAssets = async () => {
+    const fetchServices = async () => {
       try {
         setIsLoading(true);
-        const assetRows = await GetAllAssetService();
-        setRows(assetRows || []);
+        const serviceRows = await GetAllServiceService();
+        setRows(serviceRows || []);
       } catch (error) {
-        console.error('Failed to fetch assets:', error);
+        console.error('Failed to fetch services:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchAssets();
+    fetchServices();
   }, []);
 
   const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
@@ -98,7 +77,7 @@ export default function AssetTable() {
   };
 
   const handleCreatePage = () => {
-    router.push(`/assets/create`);
+    router.push(`/services/create`);
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -111,18 +90,12 @@ export default function AssetTable() {
   };
 
   const filteredRows = rows
-    .filter((row) => {
-      if (tab === 1) return row.is_active === 1;
-      if (tab === 2) return row.is_active === 0;
-      return true;
-    })
-    .filter(
-      (row) =>
-        row.asset_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (row.serial_number?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.model?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.manufacturer?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
-    );
+    // .filter((row) => {
+    //   if (tab === 1) return row.is_active === 1;
+    //   if (tab === 2) return row.is_active === 0;
+    //   return true;
+    // })
+    .filter((row) => row.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const currentRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -130,7 +103,7 @@ export default function AssetTable() {
     <MainCard>
       <Box>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Assets</Typography>
+          <Typography variant="h3">Services</Typography>
           <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
             Add
           </Button>
@@ -169,7 +142,7 @@ export default function AssetTable() {
             <TextField
               variant="outlined"
               size="small"
-              placeholder="Search assets..."
+              placeholder="Search services..."
               onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth
             />
@@ -177,7 +150,7 @@ export default function AssetTable() {
         </Stack>
 
         <TabPanel value={tab} index={tab}>
-          {isLoading ? <Typography>Loading assets...</Typography> : <AssetTableContent rows={currentRows} />}
+          {isLoading ? <Typography>Loading services...</Typography> : <ServiceTableContent rows={currentRows} />}
         </TabPanel>
 
         <TablePagination
@@ -194,42 +167,25 @@ export default function AssetTable() {
   );
 }
 
-function AssetTableContent({ rows }: { rows: Assets[] }) {
+function ServiceTableContent({ rows }: { rows: Customer[] }) {
   const router = useRouter();
-  const [localRows, setLocalRows] = useState<Assets[]>(rows);
+  const [localRows, setLocalRows] = useState<Customer[]>(rows);
 
   useEffect(() => {
     setLocalRows(rows);
   }, [rows]);
 
   const handleViewPage = (id: number) => {
-    router.push(`/assets/view/${id}`);
+    router.push(`/services/view/${id}`);
   };
 
   const handleEditPage = (id: number) => {
-    router.push(`/assets/edit/${id}`);
+    router.push(`/services/edit/${id}`);
   };
 
-  const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, row: Assets) => {
-    const newStatus = event.target.checked ? 1 : 0;
-
-    // Optimistic UI update
-    setLocalRows((prevRows) => prevRows.map((asset) => (asset.id === row.id ? { ...asset, is_active: newStatus } : asset)));
-
-    try {
-      await UpdateCustomerStatusService({
-        id: row.id,
-        status: newStatus
-      });
-    } catch (error) {
-      console.error('Failed to update status:', error);
-      // Revert on error
-      setLocalRows((prevRows) => prevRows.map((asset) => (asset.id === row.id ? { ...asset, is_active: row.is_active } : asset)));
-    }
-  };
 
   if (rows.length === 0) {
-    return <Typography>No assets found</Typography>;
+    return <Typography>No services found</Typography>;
   }
 
   return (
@@ -238,12 +194,10 @@ function AssetTableContent({ rows }: { rows: Assets[] }) {
         <TableHead>
           <TableRow>
             <TableCell>S.NO</TableCell>
-            <TableCell>Asset Name</TableCell>
-            <TableCell>Serial Number</TableCell>
-            <TableCell>Model</TableCell>
-            <TableCell>ManuFacturer</TableCell>
-            <TableCell>Customer</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>Service Name</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Duration</TableCell>
+            <TableCell>Price</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -251,34 +205,10 @@ function AssetTableContent({ rows }: { rows: Assets[] }) {
           {localRows.map((row, index) => (
             <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.asset_name}</TableCell>
-              <TableCell>{row.serial_number || '-'}</TableCell>
-              <TableCell>{row.model || '-'}</TableCell>
-              <TableCell>{row.manufacturer || '-'}</TableCell>
-              <TableCell>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: 2,
-                    alignItems: 'center'
-                  }}
-                >
-                  <Avatar src={row?.customers?.first_name} />
-                  <Box>
-                    <Typography variant="body1" color="initial">
-                      {row?.customers?.first_name + row?.customers?.last_name || '-'}
-                    </Typography>
-                    <Typography variant="body2" color="primary">
-                      {row?.customers?.email || '-'}
-                    </Typography>
-                    <Typography variant="body2" color="secondary">
-                      {row?.customers?.phone || '-'}
-                    </Typography>
-                  </Box>
-                </Box>
-              </TableCell>
-              <TableCell>{row.status || '-'}</TableCell>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.description || '-'}</TableCell>
+              <TableCell>{row.duration || '-'}</TableCell>
+              <TableCell>{row.price || '-'}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">

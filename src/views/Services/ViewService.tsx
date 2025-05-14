@@ -13,10 +13,10 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import BackButton from 'components/CustomComponents/BackButton';
-import { GetAssetService } from 'api/services';
+import { GetServiceService } from 'api/services';
 import dayjs from 'dayjs';
-
-export default function ViewAsset() {
+import Chip from '@mui/material/Chip';
+export default function ViewService() {
   const params = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,10 +27,10 @@ export default function ViewAsset() {
     const fetchAssets = async () => {
       try {
         setLoading(true);
-        const assetRows = await GetAssetService(Number(id));
+        const assetRows = await GetServiceService(Number(id));
         setData(assetRows);
       } catch (error) {
-        console.error('Failed to fetch assets:', error);
+        console.error('Failed to fetch services:', error);
       } finally {
         setLoading(false);
       }
@@ -48,7 +48,7 @@ export default function ViewAsset() {
   console.log('data', data);
 
   if (!data) {
-    return <Typography>No assets data found</Typography>;
+    return <Typography>No services data found</Typography>;
   }
 
   return (
@@ -56,7 +56,7 @@ export default function ViewAsset() {
       <Grid item xs={12} md={12}>
         <BackButton />
 
-        <MainCard title="Asset Details">
+        <MainCard title="Service Details">
           <Grid container spacing={2}>
             <Grid item xs={12} md={12}>
               <TableContainer>
@@ -64,56 +64,13 @@ export default function ViewAsset() {
                   <TableBody>
                     <TableRow>
                       <TableCell>
-                        <Typography variant="button">Asset Name :</Typography>
+                        <Typography variant="button">Service Name :</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1">{data?.asset_name || '-'}</Typography>
+                        <Typography variant="subtitle1">{data?.name || '-'}</Typography>
                       </TableCell>
                     </TableRow>
 
-                    <TableRow>
-                      <TableCell>
-                        <Typography variant="button">Serial Number :</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography color="primary" variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {data?.serial_number || ''}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>
-                        <Typography variant="button">Model :</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography color="primary" variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {data?.model || ''}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>
-                        <Typography variant="button">Manufacturer :</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {data?.manufacturer || ''}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>
-                        <Typography variant="button">Location :</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {data?.location || ''}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
                     <TableRow>
                       <TableCell>
                         <Typography
@@ -122,32 +79,51 @@ export default function ViewAsset() {
                             textWrap: 'nowrap'
                           }}
                         >
-                          Notes :
+                          Description :
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1">{data?.notes || '-'}</Typography>
+                        <Typography variant="subtitle1">{data?.description || '-'}</Typography>
                       </TableCell>
                     </TableRow>
 
                     <TableRow>
                       <TableCell>
-                        <Typography variant="button">Purchase Date :</Typography>
+                        <Typography variant="button">Duration :</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {dayjs(data?.purchase_date).isValid() ? dayjs(data.purchase_date).format('DD-MM-YYYY') : ''}
+                          {data?.duration || ''}
                         </Typography>
                       </TableCell>
                     </TableRow>
 
                     <TableRow>
                       <TableCell>
-                        <Typography variant="button">Warranty Expiry Date :</Typography>
+                        <Typography variant="button">Price :</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
-                          {dayjs(data?.warranty_expiry).isValid() ? dayjs(data.warranty_expiry).format('DD-MM-YYYY') : ''}
+                          {data?.price || ''}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                      <TableCell>
+                        <Typography variant="button">Required Skills :</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="subtitle1" sx={{ textWrap: 'nowrap' }}>
+                          {data?.required_skills.map((skill, index) => (
+                            <Chip
+                              key={index}
+                              label={skill}
+                              size="small"
+                              variant="outlined" // 'light' is not a valid variant in MUI by default
+                              color="primary"
+                            />
+                          ))}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -159,7 +135,7 @@ export default function ViewAsset() {
         </MainCard>
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={12}>
         <MainCard title="Organization Details">
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={3}>
@@ -244,89 +220,7 @@ export default function ViewAsset() {
         </MainCard>
       </Grid>
 
-      <Grid item xs={12} md={6}>
-        <MainCard title="Customers Details">
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={3}>
-              <Stack spacing={0.5} alignItems="center">
-                <Avatar
-                  src={data?.customers?.first_name}
-                  alt={data?.customers?.first_name || 'Customer Avatar'}
-                  style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={12} md={9}>
-              <TableContainer>
-                <Table>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>
-                        <Typography
-                          variant="body"
-                          sx={{
-                            textWrap: 'nowrap'
-                          }}
-                        >
-                          First Name:
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1">{data?.customers?.first_name}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography
-                          variant="body"
-                          sx={{
-                            textWrap: 'nowrap'
-                          }}
-                        >
-                          Last Name:
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1">{data?.customers?.last_name}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography
-                          variant="body"
-                          sx={{
-                            textWrap: 'nowrap'
-                          }}
-                        >
-                          Phone:
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1">{data?.customers?.phone}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography
-                          variant="body"
-                          sx={{
-                            textWrap: 'nowrap'
-                          }}
-                        >
-                          Email:
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle1">{data?.customers?.email || '-'}</Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-          </Grid>
-        </MainCard>
-      </Grid>
+    
     </Grid>
   );
 }

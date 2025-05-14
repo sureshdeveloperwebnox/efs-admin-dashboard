@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MainCard from 'components/MainCard';
-import {  CreateAssetService,  GetAllCustomerByIDService } from 'api/services';
+import { CreateAssetService, GetAllCustomerByIDService } from 'api/services';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -20,17 +20,14 @@ import { LoadScript } from '@react-google-maps/api';
 import DatePickerComponent from 'components/CustomComponents/DatePickerComponent';
 import { organization_id } from 'utils';
 
-
-
 interface Customer {
   id: string;
   first_name: string;
 }
 
 export default function CreateAsset() {
-
   const router = useRouter();
-    const [customerData, setCustomerData] = useState([]);
+  const [customerData, setCustomerData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectStatus, setSelectStatus] = useState('');
@@ -52,31 +49,25 @@ export default function CreateAsset() {
 
   const AssetStatus = ['OPERATIONAL', 'NEEDS_MAINTENANCE', 'UNDER_REPAIR', 'DECOMMISSIONED'];
 
-
-
   // Fetch Customers
- useEffect(() => {
-  const fetchCustomers = async () => {
-    if (!organization_id) return;
-    try {
-      setIsLoading(true);
-      const response = await GetAllCustomerByIDService({ organization_id: organization_id });
-      const customers: Customer[] = Array.isArray(response) ? response : [];
-      setCustomerData(customers);
-    } catch (error) {
-      console.error('Failed to fetch customers:', error);
-      setCustomerData([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      if (!organization_id) return;
+      try {
+        setIsLoading(true);
+        const response = await GetAllCustomerByIDService({ organization_id: organization_id });
+        const customers: Customer[] = Array.isArray(response) ? response : [];
+        setCustomerData(customers);
+      } catch (error) {
+        console.error('Failed to fetch customers:', error);
+        setCustomerData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  fetchCustomers();
-}, [organization_id]);
-
-
-
-
+    fetchCustomers();
+  }, [organization_id]);
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult | null) => {
     if (place?.geometry?.location && place.formatted_address) {
@@ -95,10 +86,7 @@ export default function CreateAsset() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
-
-
-    const handleCustomerChange = (event: any, newValue: Customer | null) => {
+  const handleCustomerChange = (event: any, newValue: Customer | null) => {
     setSelectedCustomer(newValue);
     setFormData((prev) => ({
       ...prev,
@@ -131,7 +119,7 @@ export default function CreateAsset() {
 
   const validateForm = () => {
     const { asset_name, serial_number, status } = formData;
-    if (!asset_name || !serial_number || !status ) {
+    if (!asset_name || !serial_number || !status) {
       alert('Please fill in all required fields');
       return false;
     }
@@ -177,9 +165,7 @@ export default function CreateAsset() {
           }}
         >
           <Grid container spacing={2}>
-
-
-             <Grid item xs={12}>
+            <Grid item xs={12}>
               <Autocomplete
                 disablePortal
                 options={customerData}
@@ -192,14 +178,7 @@ export default function CreateAsset() {
             </Grid>
 
             <Grid item xs={6}>
-              <TextField
-                name="asset_name"
-                label="Asset Name"
-                value={formData.asset_name}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
+              <TextField name="asset_name" label="Asset Name" value={formData.asset_name} onChange={handleChange} fullWidth required />
             </Grid>
             <Grid item xs={6}>
               <TextField
@@ -212,7 +191,7 @@ export default function CreateAsset() {
               />
             </Grid>
 
-              <Grid item xs={12}>
+            <Grid item xs={12}>
               <TextField name="manufacturer" label="Manufacturer" value={formData.manufacturer} onChange={handleChange} fullWidth />
             </Grid>
 
@@ -249,12 +228,7 @@ export default function CreateAsset() {
             <Grid item xs={12}>
               <FormControl fullWidth required>
                 <InputLabel id="asset-status-label">Status</InputLabel>
-                <Select
-                  labelId="asset-status-label"
-                  value={selectStatus}
-                  label="Status"
-                  onChange={handleStatusChange}
-                >
+                <Select labelId="asset-status-label" value={selectStatus} label="Status" onChange={handleStatusChange}>
                   {AssetStatus.map((status) => (
                     <MenuItem key={status} value={status}>
                       {status}
@@ -265,15 +239,7 @@ export default function CreateAsset() {
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                name="notes"
-                label="Notes"
-                value={formData.notes}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={2}
-              />
+              <TextField name="notes" label="Notes" value={formData.notes} onChange={handleChange} fullWidth multiline rows={2} />
             </Grid>
           </Grid>
         </form>

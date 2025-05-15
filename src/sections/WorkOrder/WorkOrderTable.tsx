@@ -75,11 +75,11 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
   const router = useRouter();
 
   const handleViewPage = (id: number) => {
-    router.push(`/work-order/view/${id}`);
+    router.push(`/work-orders/view/${id}`);
   };
 
   const handleEditPage = (id: number) => {
-    router.push(`/work-order/edit/${id}`);
+    router.push(`/work-orders/edit/${id}`);
   };
 
   const formatCurrency = (value?: number) => {
@@ -104,7 +104,7 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
         overflow: 'hidden'
       }}
     >
-      <Table aria-label="Work orders table" sx={{ minWidth: 1200 }}>
+      <Table aria-label="Work orders table">
         <TableHead sx={{ backgroundColor: (theme) => theme.palette.grey[100] }}>
           <TableRow>
             <TableCell sx={{ fontWeight: 600 }}>S.NO</TableCell>
@@ -142,12 +142,12 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
                       width: 32,
                       height: 32,
                       fontSize: 14,
-                      bgcolor: stringToColor(row.customer.name || '')
+                      bgcolor: stringToColor(row?.customer?.name || '')
                     }}
                   >
-                    {getInitials(row.customer.name || '')}
+                    {getInitials(row?.customer?.name || '')}
                   </Avatar>
-                  <Typography>{row.customer.name || '-'}</Typography>
+                  <Typography>{row?.customer?.name || '-'}</Typography>
                 </Box>
               </TableCell>
               <TableCell>
@@ -317,11 +317,11 @@ export default function WorkOrderTable() {
 
       // Filter by search query
       const matchesSearch =
-        (row.customer.email?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.customer.phone?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.title?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.work_order_number?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
-        (row.customer.name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase());
+        (row?.customer?.email?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row?.customer?.phone?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row?.title?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row?.work_order_number?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()) ||
+        (row?.customer.name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase());
 
       return matchesTab && matchesSearch;
     });
@@ -364,7 +364,7 @@ export default function WorkOrderTable() {
 
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="Work order tabs">
-            <Tab
+            {/* <Tab
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   All
@@ -393,7 +393,7 @@ export default function WorkOrderTable() {
               }
               id="tab-2"
               aria-controls="tabpanel-2"
-            />
+            /> */}
           </Tabs>
 
           <TextField

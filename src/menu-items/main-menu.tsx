@@ -1,7 +1,7 @@
 import { DashboardOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { GrOrganization } from 'react-icons/gr';
 import { GoPeople } from "react-icons/go";
-import { BsCassette } from "react-icons/bs";
+import { BsCassette, BsClipboard2Check } from "react-icons/bs";
 import { GrServices } from "react-icons/gr";
 
 
@@ -58,7 +58,7 @@ const mainmenu: NavItemType = {
       title: 'Work Orders',
       type: 'item',
       url: '/work-orders',
-      icon: GrServices
+      icon: BsClipboard2Check
     }
   ]
 };

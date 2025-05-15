@@ -44,7 +44,7 @@ export const GetAllServiceService = async () => {
 
 export const GetAllServiceByIDService = async (customerdata: any) => {
    const response = await GETALLAPIBYIDService({
-    routename: "customers/getAllCustomerByID",
+    routename: "service/getAllServiceByID",
     payload: customerdata
    });
     return response;

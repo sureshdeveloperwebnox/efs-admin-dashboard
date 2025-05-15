@@ -1,5 +1,5 @@
 import { organization_id } from 'utils';
-import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService } from './MainService';
+import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainService';
 
 
 
@@ -51,3 +51,10 @@ export const UpdateAssetStatusService = async (assetdata: any) => {
 
 
 
+export const GetAllAssetByIDService = async (assetdata: any) => {
+   const response = await GETALLAPIBYIDService({
+    routename: "assets/getAllAssetByID",
+    payload: assetdata
+   });
+    return response;
+};

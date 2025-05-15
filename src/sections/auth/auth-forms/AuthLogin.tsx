@@ -70,7 +70,7 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
   return (
     <>
       {/* Google Sign-in */}
-      <Box sx={{ mt: 3 }}>
+      {/* <Box sx={{ mt: 3 }}>
         <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
           <AnimateButton>
             <Button
@@ -99,7 +99,7 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
             </Button>
           </AnimateButton>
         </Stack>
-      </Box>
+      </Box> */}
 
       {/* Login Form */}
       <Formik
@@ -209,9 +209,9 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
                     }
                     label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
-                  <Link component={NextLink} href="/forget-pass" variant="h6">
+                  {/* <Link component={NextLink} href="/forget-pass" variant="h6">
                     Forgot Password?
-                  </Link>
+                  </Link> */}
                 </Stack>
               </Grid>
 

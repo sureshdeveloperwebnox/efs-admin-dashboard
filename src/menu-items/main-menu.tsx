@@ -52,6 +52,13 @@ const mainmenu: NavItemType = {
       type: 'item',
       url: '/services',
       icon: GrServices
+    },
+     {
+      id: 'WorkOrders',
+      title: 'Work Orders',
+      type: 'item',
+      url: '/work-orders',
+      icon: GrServices
     }
   ]
 };

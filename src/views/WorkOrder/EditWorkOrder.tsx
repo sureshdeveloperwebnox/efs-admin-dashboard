@@ -51,7 +51,6 @@ export default function EditWorkOrder() {
     const [companyData, setCompanyData] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [serviceData, setServiceData] = useState([]);
-    const [selectedService, setSelectedService] = useState(null);
 
     const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
 
@@ -59,7 +58,6 @@ export default function EditWorkOrder() {
         title: '',
         company_id: '',
         customer_id: '',
-        asset_id: '',
         description: '',
         priority: '',
         status: '',
@@ -173,11 +171,15 @@ export default function EditWorkOrder() {
                 try {
                     setIsLoading(true);
                     const data = await GetWorkOrderService(id);
+                                        console.log("data", data);
+
                     if (!data) {
                         alert('Work Order not found');
                         router.back();
                         return;
                     }
+
+                    
 
                     // Convert numeric IDs to strings for form compatibility
                     const formattedData = {
@@ -185,7 +187,6 @@ export default function EditWorkOrder() {
                         title: data.title || '',
                         company_id: data.company_id?.toString() || '',
                         customer_id: data.customer_id?.toString() || '',
-                        asset_id: data.asset_id?.toString() || '',
                         description: data.description || '',
                         priority: data.priority || '',
                         status: data.status || '',
@@ -208,9 +209,8 @@ export default function EditWorkOrder() {
                         tasks: data.tasks?.map((task: any) => ({
                             task_name: task.task_name || '',
                             task_description: task.task_description || '',
-                            assigned_to: task.assigned_to || '',
                             status: task.status || '',
-                            due_date: task || ''
+                            due_date: task.due_date || ''
                         })) || [],
                         assets: data.assets?.map((asset: any) => ({
                             asset_id: asset.asset_id || '',
@@ -424,8 +424,8 @@ export default function EditWorkOrder() {
     };
 
     const validateForm = () => {
-        const { title, customer_id, asset_id, status } = formData;
-        if (!title || !customer_id || !asset_id || !status) {
+        const { title, customer_id, status } = formData;
+        if (!title || !customer_id  || !status) {
             alert('Please fill in all required fields');
             return false;
         }
@@ -439,7 +439,8 @@ export default function EditWorkOrder() {
         try {
             const workOrderData = {
                 ...formData,
-                id: id
+                id: id,
+                organization_id: organization_id
             };
             const result = await UpdateWorkOrderService(workOrderData);
             if (result) {
@@ -502,17 +503,6 @@ export default function EditWorkOrder() {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
-                            <Autocomplete
-                                disablePortal
-                                options={assetData}
-                                getOptionLabel={(option) => option.asset_name}
-                                value={selectedAsset}
-                                onChange={handleAssetChange}
-                                loading={isLoading}
-                                renderInput={(params) => <TextField {...params} label="Asset" placeholder="Select a asset" fullWidth required />}
-                            />
-                        </Grid>
 
                         <Grid item xs={12}>
                             <TextField

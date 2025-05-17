@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
-import { GetOrganizationService } from 'api/services/OrganizationService';
+import { GetOrganizationService } from 'api/services/OrganizationAPIService';
 import Avatar from '@mui/material/Avatar';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';

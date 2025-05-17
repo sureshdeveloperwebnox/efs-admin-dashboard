@@ -1,5 +1,5 @@
 import { organization_id } from 'utils';
-import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainService';
+import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService, GETALLAPIBYService } from './MainAPIService';
 
 
 
@@ -32,8 +32,9 @@ export const UpdateAssetService = async (assetdata: any) => {
 
 
 export const GetAllAssetService = async () => {
-   const response = await GETALLAPIService({
-    routename: "assets/getAllAssets"
+   const response = await GETALLAPIBYIDService({
+    routename: "assets/getAllAssets",
+    payload: {organization_id: organization_id}
    });
     return response;
 };

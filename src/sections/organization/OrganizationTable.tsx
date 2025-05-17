@@ -18,7 +18,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FaSearch, FaPlus, FaEye, FaEdit } from 'react-icons/fa';
-import { GetAllOrganizationService } from 'api/services/OrganizationService';
+import { GetAllOrganizationService } from 'api/services/OrganizationAPIService';
 import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';

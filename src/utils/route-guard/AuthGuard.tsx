@@ -1,47 +1,55 @@
 'use client';
 
-import { useEffect } from 'react';
-
-// next
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-
-// project imports
 import Loader from 'components/Loader';
-
-// types
 import { GuardProps } from 'types/auth';
-import { setCookie } from 'cookies-next';
-
-// ==============================|| AUTH GUARD ||============================== //
 
 export default function AuthGuard({ children }: GuardProps) {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('/api/auth/protected');
-      const json = await res?.json();
+    const verifyAuth = () => {
+      try {
+        // Client-side token check
+        const cookies = document.cookie;
+        const accessToken = cookies.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+        
+        if (!accessToken) {
+          throw new Error('No token found');
+        }
 
-      console.log('json', json);
+        // Simple token presence check - for more security, implement proper JWT validation
+        // or call an API endpoint to verify the token
+        const tokenParts = accessToken.split('.');
+        if (tokenParts.length !== 3) {
+          throw new Error('Invalid token format');
+        }
 
-      console.log("sessionsss", session);
-
-
-
-      
-      
-      if (!json?.protected) {
+        // For actual JWT validation without jsonwebtoken package, you could:
+        // 1. Just check token presence (as above) and rely on backend validation
+        // 2. Use a lightweight JWT library like jwt-decode
+        // 3. Call an API endpoint to validate the token
+        
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Authentication error:', error);
+        setIsAuthenticated(false);
         router.push('/login');
       }
     };
-    fetchData();
 
-    // eslint-disable-next-line
-  }, [session]);
+    verifyAuth();
+  }, [router]);
 
-  if (status === 'loading' || !session?.user) return <Loader />;
+  if (isAuthenticated === null) {
+    return <Loader />;
+  }
+
+  if (!isAuthenticated) {
+    return null; // or redirect to login (handled by useEffect)
+  }
 
   return children;
 }

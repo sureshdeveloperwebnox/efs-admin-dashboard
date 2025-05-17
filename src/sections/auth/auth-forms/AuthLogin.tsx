@@ -1,14 +1,12 @@
 'use client';
 
-import React, { useState, FocusEvent, useEffect } from 'react';
+import React, { useState, FocusEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
-
 import Image from 'next/legacy/image';
 import NextLink from 'next/link';
 
-// MUI
-import Box from '@mui/material/Box';
+// MUI imports (unchanged)
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -24,117 +22,82 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Link from '@mui/material/Link';
 import { Theme } from '@mui/material/styles';
 
-// Icons
+// Icons (unchanged)
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
-// Formik & Yup
+// Formik & Yup (unchanged)
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-// Project Components
+// Project Components (unchanged)
 import AnimateButton from 'components/@extended/AnimateButton';
 import IconButton from 'components/@extended/IconButton';
 
-// Config
+// Config (unchanged)
 import { APP_DEFAULT_PATH } from 'config';
-// import { login } from 'api/services/login';
+import { Login } from 'api/services/AuthenticationAPI.Service';
 
-const GoogleIcon = '/assets/images/icons/google.svg';
+interface FormValues {
+  email: string;
+  password: string;
+  submit: string | null;
+}
 
 export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
-  // const router = useRouter();
+  const router = useRouter();
   const { data: session, status } = useSession();
-
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+  
   const [checked, setChecked] = useState(false);
   const [capsWarning, setCapsWarning] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    console.log('Session status:', status);
-    console.log('Session data:', session);
-  }, [session, status]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event: React.SyntheticEvent) => event.preventDefault();
   const onKeyDown = (e: React.KeyboardEvent) => setCapsWarning(e.getModifierState('CapsLock'));
 
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
-    await signIn('google', { callbackUrl: '/google', redirect: true });
+  const handleSubmit = async (values: FormValues, { setErrors, setSubmitting }: { 
+    setErrors: (errors: { submit?: string }) => void;
+    setSubmitting: (isSubmitting: boolean) => void;
+  }) => {
+    try {
+      const result = await Login({
+        email: values.email,
+        password: values.password
+      });
+
+      if (result) {
+        router.push(APP_DEFAULT_PATH); // Use configured default path
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setErrors({ submit: error.message || 'Login failed. Please check your credentials.' });
+    } finally {
+      setSubmitting(false);
+    }
   };
-  
 
   return (
     <>
-      {/* Google Sign-in */}
-      {/* <Box sx={{ mt: 3 }}>
-        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
-          <AnimateButton>
-            <Button
-              variant="outlined"
-              color="secondary"
-              fullWidth={downSM}
-              startIcon={
-                googleLoading ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  <Image src={GoogleIcon} alt="Google" width={16} height={16} />
-                )
-              }
-              onClick={handleGoogleSignIn}
-              disabled={googleLoading}
-              sx={{
-                justifyContent: 'center',
-                height: 46,
-                borderRadius: '8px',
-                '&:hover': {
-                  backgroundColor: 'rgba(66, 133, 244, 0.04)'
-                }
-              }}
-            >
-              {!downSM && (googleLoading ? 'Connecting...' : 'Sign in with Google')}
-            </Button>
-          </AnimateButton>
-        </Stack>
-      </Box> */}
-
-      {/* Login Form */}
       <Formik
         initialValues={{ email: '', password: '', submit: null }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').required('Email is required'),
+          email: Yup.string()
+            .email('Must be a valid email')
+            .required('Email is required'),
           password: Yup.string()
             .required('Password is required')
             .test('no-whitespace', 'Password cannot start or end with spaces', (val) => val === val?.trim())
             .max(20, 'Password must be less than 20 characters')
         })}
-        onSubmit={async (values, { setErrors, setSubmitting }) => {
-          try {
-             await signIn('login', {
-              redirect: false,
-              email: values.email.trim(),
-              password: values.password,
-              callbackUrl: APP_DEFAULT_PATH
-            });
-
-
-          } catch (error: any) {
-            console.error('Login error:', error);
-            setErrors({ submit: error?.message || 'Login failed' });
-          } finally {
-            setSubmitting(false);
-          }
-        }}
+        onSubmit={handleSubmit}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
 
             <Grid container spacing={3}>
-              {/* Email */}
               <Grid item xs={12}>
                 <Stack sx={{ gap: 1 }}>
                   <InputLabel htmlFor="email-login">Email Address</InputLabel>
@@ -150,10 +113,11 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
                     error={Boolean(touched.email && errors.email)}
                   />
                 </Stack>
-                {touched.email && errors.email && <FormHelperText error>{errors.email}</FormHelperText>}
+                {touched.email && errors.email && (
+                  <FormHelperText error>{errors.email}</FormHelperText>
+                )}
               </Grid>
 
-              {/* Password */}
               <Grid item xs={12}>
                 <Stack sx={{ gap: 1 }}>
                   <InputLabel htmlFor="password-login">Password</InputLabel>
@@ -192,10 +156,11 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
                     </Typography>
                   )}
                 </Stack>
-                {touched.password && errors.password && <FormHelperText error>{errors.password}</FormHelperText>}
+                {touched.password && errors.password && (
+                  <FormHelperText error>{errors.password}</FormHelperText>
+                )}
               </Grid>
 
-              {/* Options */}
               <Grid item xs={12}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <FormControlLabel
@@ -209,20 +174,15 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
                     }
                     label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
-                  {/* <Link component={NextLink} href="/forget-pass" variant="h6">
-                    Forgot Password?
-                  </Link> */}
                 </Stack>
               </Grid>
 
-              {/* Submit error */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
 
-              {/* Submit button */}
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button

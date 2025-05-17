@@ -17,14 +17,14 @@ import TablePagination from '@mui/material/TablePagination';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { FaSearch, FaPlus, FaEye, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit } from 'react-icons/fa';
 import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
 import { GetAllCompanyService } from 'api/services';
 
-type Organization = {
+type Company = {
   id: number;
   name: string;
   industry: string;
@@ -49,12 +49,12 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function OrganizationTable() {
+export default function CompanyTable() {
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Organization[]>([]);
+  const [rows, setRows] = useState<Company[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -62,10 +62,10 @@ export default function OrganizationTable() {
     const fetchOrganizations = async () => {
       try {
         setIsLoading(true);
-        const organizationRows = await GetAllCompanyService();
-        setRows(organizationRows || []);
+        const companyRows = await GetAllCompanyService();
+        setRows(companyRows || []);
       } catch (error) {
-        console.error('Failed to fetch organizations:', error);
+        console.error('Failed to fetch companies:', error);
       } finally {
         setIsLoading(false);
       }
@@ -120,73 +120,10 @@ export default function OrganizationTable() {
           </Button>
         </Stack>
 
-        {/* <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-          <FaSearch />
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search organizations..."
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-          />
-        </Stack> */}
-
-        {/* <Tabs value={tab} onChange={handleChangeTab} aria-label="organization tabs">
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                All
-                <Chip label={rows.length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Active
-                <Chip label={rows.filter((r) => r.status === 'Active').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-          <Tab
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Inactive
-                <Chip label={rows.filter((r) => r.status === 'Inactive').length} size="small" variant="outlined" color="primary" />
-              </Box>
-            }
-          />
-        </Tabs> */}
-
-
-
+        
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
-            {/* <Tab
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  All
-                  <Chip label={rows.length} size="small" variant="outlined" color="primary" />
-                </Box>
-              }
-            />
-            <Tab
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  Active
-                  <Chip label={rows.filter((r) => r.is_active === 1).length} size="small" variant="outlined" color="primary" />
-                </Box>
-              }
-            />
-            <Tab
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  Inactive
-                  <Chip label={rows.filter((r) => r.status === 0).length} size="small" variant="outlined" color="primary" />
-                </Box>
-              }
-            /> */}
-          </Tabs>
+                   </Tabs>
 
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
             <TextField
@@ -203,7 +140,7 @@ export default function OrganizationTable() {
           {isLoading ? (
             <Typography>Loading companies...</Typography>
           ) : (
-            <OrganizationTableContent rows={currentRows} />
+            <CompanyTableContent rows={currentRows} />
           )}
         </TabPanel>
 
@@ -221,7 +158,7 @@ export default function OrganizationTable() {
   );
 }
 
-function OrganizationTableContent({ rows }: { rows: Organization[] }) {
+function CompanyTableContent({ rows }: { rows: Company[] }) {
   const router = useRouter();
 
 
@@ -237,7 +174,7 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
 
 
   if (rows.length === 0) {
-    return <Typography>No organizations found</Typography>;
+    return <Typography>No companies found</Typography>;
   }
 
   return (

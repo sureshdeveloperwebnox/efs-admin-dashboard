@@ -32,7 +32,8 @@ import useUser from 'hooks/useUser';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import { deleteCookie } from 'cookies-next';
+import { deleteCookie, getCookie } from 'cookies-next';
+import jwt from 'jsonwebtoken';
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -60,6 +61,8 @@ function a11yProps(index: number) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
+
+  
   const theme = useTheme();
   const user = useUser();
   const router = useRouter();
@@ -69,7 +72,7 @@ export default function Profile() {
 
   const handleLogout = () => {
 
-    // Delete Access Token from Cooke
+    // // Delete Access Token from Cooke
        deleteCookie('accessToken', {
           path: '/',
           secure: true,
@@ -127,7 +130,7 @@ export default function Profile() {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        {user && (
+        {(
           <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center', p: 0.5 }}>
             <Avatar alt="profile user" src={user.avatar} size="sm" />
             <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
@@ -162,13 +165,13 @@ export default function Profile() {
                   <CardContent sx={{ px: 2.5, pt: 3 }}>
                     <Grid container justifyContent="space-between" alignItems="center">
                       <Grid>
-                        {user && (
+                        {(
                           <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
                             <Avatar alt={user.name} src={user.avatar} sx={{ width: 32, height: 32 }} />
                             <Stack>
                               <Typography variant="h6">{user?.name}</Typography>
                               <Typography variant="body2" color="text.secondary">
-                                UI/UX Designer
+                                {user?.name}
                               </Typography>
                             </Stack>
                           </Stack>

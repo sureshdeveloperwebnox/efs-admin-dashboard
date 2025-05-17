@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MainCard from 'components/MainCard';
-import { GetOrganizationService, UpdateOrganizationService } from 'api/services/OrganizationService';
+import { GetOrganizationService, UpdateOrganizationService } from 'api/services/OrganizationAPIService';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
 type Organization = {

@@ -92,7 +92,6 @@ export default function CreateWorkOrder() {
     title: '',
     company_id: '',
     customer_id: '',
-    asset_id: '',
     description: '',
     priority: '',
     status: '',
@@ -362,8 +361,8 @@ export default function CreateWorkOrder() {
   };
 
   const validateForm = () => {
-    const { title, customer_id, asset_id, status } = formData;
-    if (!title || !customer_id || !asset_id || !status) {
+    const { title, customer_id,  status } = formData;
+    if (!title || !customer_id || !status) {
       alert('Please fill in all required fields');
       return false;
     }
@@ -437,17 +436,6 @@ export default function CreateWorkOrder() {
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <Autocomplete
-                disablePortal
-                options={assetData}
-                getOptionLabel={(option) => option.asset_name}
-                value={selectedAsset}
-                onChange={handleAssetChange}
-                loading={isLoading}
-                renderInput={(params) => <TextField {...params} label="Asset" placeholder="Select a asset" fullWidth required />}
-              />
-            </Grid>
 
             <Grid item xs={12}>
               <TextField

@@ -98,11 +98,6 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
   return (
     <TableContainer
       component={Paper}
-      sx={{
-        borderRadius: 2,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-        overflow: 'hidden'
-      }}
     >
       <Table aria-label="Work orders table">
         <TableHead sx={{ backgroundColor: (theme) => theme.palette.grey[100] }}>
@@ -145,7 +140,7 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
                       bgcolor: stringToColor(row?.customer?.name || '')
                     }}
                   >
-                    {getInitials(row?.customer?.name || '')}
+                    {getInitials(row?.customer?.first_name || '')}
                   </Avatar>
                   <Typography>{row?.customer?.name || '-'}</Typography>
                 </Box>
@@ -153,11 +148,11 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
               <TableCell>
                 <Box display="flex" flexDirection="column">
                   <Typography variant="body2" fontWeight={500}>
-                    {dayjs(row.scheduled_start_date).format('DD MMM YYYY')}
+                    {dayjs(row.scheduled_start_date).format('DD-MM-YYYY')}
                   </Typography>
                   {row.scheduled_end_date && (
                     <Typography variant="caption" color="text.secondary">
-                   to {dayjs(row.scheduled_end_date).format('DD MMM YYYY')}
+                   to {dayjs(row.scheduled_end_date).format('DD-MM-YYYY')}
                     </Typography>
                   )}
                 </Box>
@@ -165,11 +160,11 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
               <TableCell>
                 <Box display="flex" flexDirection="column">
                   <Typography variant="body2">
-                    {row.actual_start_date ? dayjs(row.actual_start_date).format('DD MMM YYYY') : '-'}
+                    {row.actual_start_date ? dayjs(row.actual_start_date).format('DD-MM-YYYY') : '-'}
                   </Typography>
                   {row.actual_end_date && (
                     <Typography variant="caption" color="text.secondary">
-                      to {dayjs(row.actual_end_date).format('DD MMM YYYY')}
+                      to {dayjs(row.actual_end_date).format('DD-MM-YYYY')}
                     </Typography>
                   )}
                 </Box>

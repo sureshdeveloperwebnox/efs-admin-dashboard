@@ -510,7 +510,7 @@ export default function ViewWorkOrder() {
                                     <TableRow key={index}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>
-                                            {asset.name}
+                                            {asset.asset_name}
                                         </TableCell>
                                         <TableCell>
                                             {asset?.serial_number}

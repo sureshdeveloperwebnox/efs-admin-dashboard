@@ -1,5 +1,5 @@
 import { organization_id } from 'utils';
-import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainService';
+import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainAPIService';
 
 
 

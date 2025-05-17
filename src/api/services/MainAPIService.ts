@@ -18,6 +18,7 @@ interface GETALLModel {
     routename: string;
 }
 
+
 interface POSTModel<T = unknown> {
     routename: string;
     payload: T;
@@ -51,7 +52,7 @@ const handleResponse = async (response: Response): Promise<APIResponse> => {
     return await response.json();
 };
 
-export const POSTAPIService = async <T = unknown>(data: POSTModel<T>): Promise<R> => {
+export const POSTAPIService = async <T = unknown>(data: POSTModel<T>) => {
     const { routename, payload } = data;
     console.log("payload", payload);
 
@@ -170,3 +171,5 @@ export const GETALLAPIBYIDService = async <R = unknown>(data: GETALLBYIDModel): 
         throw error;
     }
 };
+
+

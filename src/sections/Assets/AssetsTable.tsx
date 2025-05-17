@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
@@ -23,8 +21,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
 import { UpdateCustomerStatusService } from 'api/services';
-import Switch from '@mui/material/Switch';
-import { GetAllAssetService } from 'api/services/AssetService';
+import { GetAllAssetService } from 'api/services/AssetAPIService';
 import Avatar from '@mui/material/Avatar';
 type Organization = {
   id: number;

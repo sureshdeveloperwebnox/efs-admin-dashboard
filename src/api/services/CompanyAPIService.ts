@@ -1,5 +1,5 @@
 import { organization_id } from 'utils';
-import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService } from './MainService';
+import { GETAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainAPIService';
 
 
 
@@ -32,8 +32,9 @@ export const UpdateCompanyService = async (companydata: any) => {
 
 
 export const GetAllCompanyService = async () => {
-   const response = await GETALLAPIService({
-    routename: "company/getAllCompany"
+   const response = await GETALLAPIBYIDService({
+    routename: "company/getAllCompany",
+    payload: {organization_id: organization_id}
    });
     return response;
 };

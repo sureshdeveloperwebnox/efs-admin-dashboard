@@ -1,5 +1,4 @@
 import { toast } from "sonner";
-import { setCookie } from 'cookies-next';
 
 export interface LoginPayload {
   email: string;

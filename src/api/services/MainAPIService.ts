@@ -102,7 +102,7 @@ export const GETAPIService = async <R = unknown>(data: GETModel): Promise<R> => 
     }
 };
 
-export const PUTAPIService = async <T = unknown, R = unknown>(data: PUTModel<T>): Promise<R> => {
+export const PUTAPIService = async <T = unknown>(data: PUTModel<T>) => {
     const { routename, id, payload } = data;
     try {
         if (!accessToken) {
@@ -117,7 +117,7 @@ export const PUTAPIService = async <T = unknown, R = unknown>(data: PUTModel<T>)
 
         const result = await handleResponse(response);
         toast.success(result?.message);
-        return result
+        return result;
     } catch (error: any) {
         console.error('PUT Error:', error);
         toast.error(error.message || 'Unexpected error occurred');

@@ -23,6 +23,7 @@ import { useGetMenuMaster } from 'api/menu';
 
 // assets
 import RightOutlined from '@ant-design/icons/RightOutlined';
+import { deleteCookie } from 'cookies-next';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -58,22 +59,20 @@ export default function NavUser() {
 
   const user = useUser();
   const router = useRouter();
-  const { data: session } = useSession();
-  const provider = session?.provider;
+
 
   const handleLogout = () => {
-    switch (provider) {
-      case 'auth0':
-        signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/api/auth/logout/auth0` });
-        break;
-      case 'cognito':
-        signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/api/auth/logout/cognito` });
-        break;
-      default:
-        signOut({ redirect: false });
-    }
 
-    router.push('/login');
+    // // Delete Access Token from Cooke
+    deleteCookie('accessToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
+
+    signOut({ redirect: false });
+
+    // router.push('/login');
   };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -110,7 +109,7 @@ export default function NavUser() {
           <ListItemAvatar>
             {user && <Avatar alt="Avatar" src={user.avatar} sx={{ ...(drawerOpen && { width: 46, height: 46 }) }} />}
           </ListItemAvatar>
-          {user && <ListItemText primary={user?.name} secondary="UI/UX Designer" />}
+          {user && <ListItemText primary={user?.name} secondary={user?.category} />}
         </ListItem>
       </List>
       <Menu

@@ -9,7 +9,7 @@ export interface AuthOrganizationRegisterPayload {
   address: string;
 }
 
-export const authOrganizationRegister = async (data: AuthOrganizationRegisterPayload) => {
+export const authOrganizationRegister = async (data: any) => {
   console.log('data', data);
   
   try {

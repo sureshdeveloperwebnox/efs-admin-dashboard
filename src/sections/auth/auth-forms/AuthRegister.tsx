@@ -73,7 +73,7 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
   const handleSubmit = async (values: any, { setErrors, setSubmitting }: any) => {
     try {
       const trimmedEmail = values.email.trim();
-      
+
       if (!phone) {
         setErrors({ submit: 'Phone number is required' });
         return;
@@ -88,7 +88,7 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
       };
 
       const result = await authRegister(payload);
-      
+
       if (result.error) {
         setErrors({ submit: result.error });
       } else {
@@ -303,9 +303,11 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
       </Formik>
       {providers && (
         <>
-          <Divider sx={{ mt: 3, mb: 2 }}>
-            <Typography variant="caption">Or sign up with</Typography>
-          </Divider>
+          {/* <Divider sx={{ mt: 3, mb: 2 }}>
+            <Link variant="subtitle2" component={NextLink} href="/organization-register">
+              Register a organization
+            </Link>
+          </Divider> */}
           <Stack
             direction="row"
             spacing={2}

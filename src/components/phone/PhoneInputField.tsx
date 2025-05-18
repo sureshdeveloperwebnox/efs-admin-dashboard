@@ -50,7 +50,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
           style={{ 
             display: 'block', 
             marginBottom: '8px',
-            fontWeight: '500',
+            fontWeight: '150',
             fontSize: '14px'
           }}
         >

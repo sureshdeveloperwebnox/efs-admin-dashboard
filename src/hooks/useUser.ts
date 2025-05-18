@@ -69,7 +69,7 @@ export default function useUser() {
 
 
   if (userData) {
-    const user = userData?.user;
+    const user = userData;
     const provider = userData?.provider;
     let thumb = userData?.image || '/assets/images/users/avatar-1.png';
     if (provider === 'cognito') {
@@ -84,10 +84,12 @@ export default function useUser() {
 
     const newUser: UserData = {
       name: user?.name || '',
+      organization_id: user?.organization_id,
       email: user?.email || 'doe@codedthemes.com',
       avatar: user?.image || '/assets/images/users/avatar-1.png',
+      category: user?.category || 'User',
       thumb,
-      role: 'UI/UX Designer'
+      role: user?.category || ''
     };
 
     return newUser;

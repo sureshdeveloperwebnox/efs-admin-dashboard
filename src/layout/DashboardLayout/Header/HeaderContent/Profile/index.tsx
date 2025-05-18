@@ -62,34 +62,24 @@ function a11yProps(index: number) {
 
 export default function Profile() {
 
-  
+
   const theme = useTheme();
   const user = useUser();
   const router = useRouter();
-  const { data: session } = useSession();
-
-  const provider = session?.provider;
 
   const handleLogout = () => {
 
     // // Delete Access Token from Cooke
-       deleteCookie('accessToken', {
-          path: '/',
-          secure: true,
-          sameSite: 'lax',
-        });
+    deleteCookie('accessToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
 
 
-    switch (provider) {
-      case 'auth0':
-        signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/api/auth/logout/auth0` });
-        break;
-      case 'cognito':
-        signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/api/auth/logout/cognito` });
-        break;
-      default:
-        signOut({ redirect: false });
-    }
+
+    signOut({ redirect: false });
+
 
     router.push('/login');
   };
@@ -167,11 +157,11 @@ export default function Profile() {
                       <Grid>
                         {(
                           <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
-                            <Avatar alt={user.name} src={user.avatar} sx={{ width: 32, height: 32 }} />
+                            <Avatar alt={user.name} src={user.name} sx={{ width: 32, height: 32 }} />
                             <Stack>
                               <Typography variant="h6">{user?.name}</Typography>
                               <Typography variant="body2" color="text.secondary">
-                                {user?.name}
+                                {user?.category}
                               </Typography>
                             </Stack>
                           </Stack>

@@ -92,7 +92,7 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
       if (result.error) {
         setErrors({ submit: result.error });
       } else {
-        window.location.href = "/organization-register";
+        window.location.href = "/login";
       }
     } catch (error: any) {
       setErrors({ submit: error.message || 'Registration failed. Please try again.' });

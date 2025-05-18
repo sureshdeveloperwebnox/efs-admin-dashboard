@@ -23,6 +23,8 @@ import { useRouter } from 'next/navigation';
 import { UpdateCustomerStatusService } from 'api/services';
 import { GetAllAssetService } from 'api/services/AssetAPIService';
 import Avatar from '@mui/material/Avatar';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
+
 type Organization = {
   id: number;
   name: string;
@@ -225,9 +227,11 @@ function AssetTableContent({ rows }: { rows: Assets[] }) {
     }
   };
 
-  if (rows.length === 0) {
-    return <Typography>No assets found</Typography>;
-  }
+if (rows.length === 0) {
+  return (
+    <NoDataLottieComponent />
+  );
+}
 
   return (
     <TableContainer component={Paper}>

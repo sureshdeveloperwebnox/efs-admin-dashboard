@@ -23,6 +23,7 @@ import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 
 type Organization = {
   id: number;
@@ -106,9 +107,9 @@ export default function OrganizationTable() {
       <Box>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h3">Organizations</Typography>
-          <Button variant="contained" startIcon={<FaPlus />}>
+          {/* <Button variant="contained" startIcon={<FaPlus />}>
             Add
-          </Button>
+          </Button> */}
         </Stack>
 
 
@@ -185,7 +186,9 @@ function OrganizationTableContent({ rows }: { rows: Organization[] }) {
   };
 
   if (rows.length === 0) {
-    return <Typography>No organizations found</Typography>;
+    return (
+          <NoDataLottieComponent />
+    )
   }
 
   return (

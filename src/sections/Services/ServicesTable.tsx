@@ -24,6 +24,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
 import { GetAllAssetService, GetAllCustomerService, GetAllServiceService, UpdateCustomerStatusService } from 'api/services';
 import Switch from '@mui/material/Switch';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 
 type Customer = {
   id: number;
@@ -185,7 +186,9 @@ function ServiceTableContent({ rows }: { rows: Customer[] }) {
 
 
   if (rows.length === 0) {
-    return <Typography>No services found</Typography>;
+    return (
+          <NoDataLottieComponent />
+    )
   }
 
   return (

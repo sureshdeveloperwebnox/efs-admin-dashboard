@@ -69,13 +69,20 @@ export default function Profile() {
 
   const handleLogout = () => {
 
-    // // Delete Access Token from Cooke
+    // Delete Access Token from Cookie
     deleteCookie('accessToken', {
       path: '/',
       secure: true,
       sameSite: 'lax',
     });
 
+
+    // Delete Refresh Token from Cookie
+    deleteCookie('refreshToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
 
 
     signOut({ redirect: false });

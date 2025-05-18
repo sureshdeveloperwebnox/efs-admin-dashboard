@@ -28,6 +28,7 @@ import { GetAllWorkOrderService } from 'api/services';
 import dayjs from 'dayjs';
 import Avatar from '@mui/material/Avatar';
 import { getInitials, stringToColor } from 'utils/color.code';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 interface Customer {
   id: number;
   email?: string;
@@ -89,9 +90,7 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
 
   if (rows.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body1">No work orders found</Typography>
-      </Box>
+         <NoDataLottieComponent />
     );
   }
 

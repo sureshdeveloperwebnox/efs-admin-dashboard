@@ -69,6 +69,7 @@ export default function NavUser() {
       secure: true,
       sameSite: 'lax',
     });
+    
 
     signOut({ redirect: false });
 

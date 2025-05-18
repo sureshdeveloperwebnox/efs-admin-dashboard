@@ -24,6 +24,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
 import { GetAllCustomerService, UpdateCustomerStatusService } from 'api/services';
 import Switch from '@mui/material/Switch';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
+
 type Organization = {
   id: number;
   name: string;
@@ -51,6 +53,93 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
         </Box>
       )}
     </div>
+  );
+}
+
+function CustomerTableContent({ 
+  rows, 
+  onStatusChange,
+  onView,
+  onEdit 
+}: { 
+  rows: Customer[];
+  onStatusChange: (event: React.ChangeEvent<HTMLInputElement>, row: Customer) => void;
+  onView: (id: number) => void;
+  onEdit: (id: number) => void;
+}) {
+  if (rows.length === 0) {
+    return <NoDataLottieComponent />;
+  }
+
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>S.NO</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>Organization Name</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={row.id} hover>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{row.first_name}</TableCell>
+              <TableCell>{row.last_name || '-'}</TableCell>
+              <TableCell>{row.email || '-'}</TableCell>
+              <TableCell>{row.phone || '-'}</TableCell>
+              <TableCell>{row.organizations?.name || '-'}</TableCell>
+              <TableCell align="right">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  <Tooltip title="View Details">
+                    <IconButton
+                      sx={{
+                        color: '#1778ff',
+                        '&:hover': {
+                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
+                        }
+                      }}
+                      onClick={() => onView(row.id)}
+                    >
+                      <FaEye />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Edit">
+                    <IconButton
+                      sx={{
+                        color: '#1778ff',
+                        '&:hover': {
+                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
+                        }
+                      }}
+                      onClick={() => onEdit(row.id)}
+                    >
+                      <FaEdit />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title={row.is_active === 1 ? 'Deactivate' : 'Activate'}>
+                    <IconButton>
+                      <Switch 
+                        checked={row.is_active === 1} 
+                        size="small" 
+                        onChange={(e) => onStatusChange(e, row)} 
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
@@ -85,6 +174,40 @@ export default function CustomerTable() {
 
   const handleCreatePage = () => {
     router.push(`/customers/create`);
+  };
+
+  const handleViewPage = (id: number) => {
+    router.push(`/customers/view/${id}`);
+  };
+
+  const handleEditPage = (id: number) => {
+    router.push(`/customers/edit/${id}`);
+  };
+
+  const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, row: Customer) => {
+    const newStatus = event.target.checked ? 1 : 0;
+
+    // Optimistic UI update
+    setRows(prevRows =>
+      prevRows.map(customer =>
+        customer.id === row.id ? { ...customer, is_active: newStatus } : customer
+      )
+    );
+
+    try {
+      await UpdateCustomerStatusService({
+        id: row.id,
+        status: newStatus
+      });
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      // Revert on error
+      setRows(prevRows =>
+        prevRows.map(customer =>
+          customer.id === row.id ? { ...customer, is_active: row.is_active } : customer
+        )
+      );
+    }
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -122,7 +245,6 @@ export default function CustomerTable() {
           </Button>
         </Stack>
 
-        {/* Modified section: Combined tabs and search in one row */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
             <Tab
@@ -163,7 +285,16 @@ export default function CustomerTable() {
         </Stack>
 
         <TabPanel value={tab} index={tab}>
-          {isLoading ? <Typography>Loading customers...</Typography> : <CustomerTableContent rows={currentRows} />}
+          {isLoading ? (
+            <Typography>Loading customers...</Typography>
+          ) : (
+            <CustomerTableContent
+              rows={currentRows}
+              onStatusChange={handleStatusChange}
+              onView={handleViewPage}
+              onEdit={handleEditPage}
+            />
+          )}
         </TabPanel>
 
         <TablePagination
@@ -177,113 +308,5 @@ export default function CustomerTable() {
         />
       </Box>
     </MainCard>
-  );
-}
-
-function CustomerTableContent({ rows }: { rows: Customer[] }) {
-  const router = useRouter();
-  const [localRows, setLocalRows] = useState<Customer[]>(rows);
-
-  useEffect(() => {
-    setLocalRows(rows);
-  }, [rows]);
-
-  const handleViewPage = (id: number) => {
-    router.push(`/customers/view/${id}`);
-  };
-
-  const handleEditPage = (id: number) => {
-    router.push(`/customers/edit/${id}`);
-  };
-
-  const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, row: Customer) => {
-    const newStatus = event.target.checked ? 1 : 0;
-
-    // Optimistic UI update
-    setLocalRows((prevRows) => prevRows.map((customer) => (customer.id === row.id ? { ...customer, is_active: newStatus } : customer)));
-
-    try {
-      await UpdateCustomerStatusService({
-        id: row.id,
-        status: newStatus
-      });
-    } catch (error) {
-      console.error('Failed to update status:', error);
-      // Revert on error
-      setLocalRows((prevRows) =>
-        prevRows.map((customer) => (customer.id === row.id ? { ...customer, is_active: row.is_active } : customer))
-      );
-    }
-  };
-
-  if (rows.length === 0) {
-    return <Typography>No customers found</Typography>;
-  }
-
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>S.NO</TableCell>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Phone</TableCell>
-            <TableCell>Organization Name</TableCell>
-            <TableCell align="center">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {localRows.map((row, index) => (
-            <TableRow key={row.id} hover>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.first_name}</TableCell>
-              <TableCell>{row.last_name || '-'}</TableCell>
-              <TableCell>{row.email || '-'}</TableCell>
-              <TableCell>{row.phone || '-'}</TableCell>
-              <TableCell>{row.organizations?.name || '-'}</TableCell>
-              <TableCell align="right">
-                <Stack direction="row" spacing={1} justifyContent="center">
-                  <Tooltip title="View Details">
-                    <IconButton
-                      sx={{
-                        color: '#1778ff',
-                        '&:hover': {
-                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
-                        }
-                      }}
-                      onClick={() => handleViewPage(row.id)}
-                    >
-                      <FaEye />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Edit">
-                    <IconButton
-                      sx={{
-                        color: '#1778ff',
-                        '&:hover': {
-                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
-                        }
-                      }}
-                      onClick={() => handleEditPage(row.id)}
-                    >
-                      <FaEdit />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title={row.is_active === 1 ? 'Deactivate' : 'Activate'}>
-                    <IconButton>
-                      <Switch checked={row.is_active === 1} size="small" onChange={(e) => handleStatusChange(e, row)} />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
   );
 }

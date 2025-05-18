@@ -33,10 +33,13 @@ import * as Yup from 'yup';
 // Project Components (unchanged)
 import AnimateButton from 'components/@extended/AnimateButton';
 import IconButton from 'components/@extended/IconButton';
+const GoogleIcon = '/assets/images/icons/google.svg';
+
 
 // Config (unchanged)
 import { APP_DEFAULT_PATH } from 'config';
 import { Login } from 'api/services/AuthenticationAPI.Service';
+import { Box } from '@mui/material';
 
 interface FormValues {
   email: string;
@@ -44,20 +47,20 @@ interface FormValues {
   submit: string | null;
 }
 
-export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
+export default function AuthLogin({ providers, csrfToken }: { providers: any, csrfToken: any }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
-  
+
   const [checked, setChecked] = useState(false);
   const [capsWarning, setCapsWarning] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event: React.SyntheticEvent) => event.preventDefault();
   const onKeyDown = (e: React.KeyboardEvent) => setCapsWarning(e.getModifierState('CapsLock'));
 
-  const handleSubmit = async (values: FormValues, { setErrors, setSubmitting }: { 
+  const handleSubmit = async (values: FormValues, { setErrors, setSubmitting }: {
     setErrors: (errors: { submit?: string }) => void;
     setSubmitting: (isSubmitting: boolean) => void;
   }) => {
@@ -78,8 +81,46 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
     }
   };
 
+const handleGoogleSignIn = () => {
+  setGoogleLoading(true);
+  
+
+  window.location.href = `http://localhost:3000/api/auth/google`;
+}
   return (
     <>
+         {/* Google Sign-in */}
+      <Box sx={{ mt: 3 }}>
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
+          <AnimateButton>
+            <Button
+              variant="outlined"
+              color="secondary"
+              fullWidth={downSM}
+              startIcon={
+                googleLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <Image src={GoogleIcon} alt="Google" width={16} height={16} />
+                )
+              }
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+              sx={{
+                justifyContent: 'center',
+                height: 46,
+                borderRadius: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(66, 133, 244, 0.04)'
+                }
+              }}
+            >
+              {!downSM && (googleLoading ? 'Connecting...' : 'Sign in')}
+            </Button>
+          </AnimateButton>
+        </Stack>
+      </Box>
+
       <Formik
         initialValues={{ email: '', password: '', submit: null }}
         validationSchema={Yup.object().shape({
@@ -96,6 +137,8 @@ export default function AuthLogin({ csrfToken }: { csrfToken: string }) {
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+
+            
 
             <Grid container spacing={3}>
               <Grid item xs={12}>

@@ -23,6 +23,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
 import { GetAllCompanyService } from 'api/services';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 
 type Company = {
   id: number;
@@ -78,7 +79,7 @@ export default function CompanyTable() {
     setPage(0);
   };
 
-    const handleCreatePage = () => {
+  const handleCreatePage = () => {
     router.push(`company/create`);
   }
 
@@ -92,7 +93,7 @@ export default function CompanyTable() {
   };
 
   console.log("rows", rows);
-  
+
 
   const filteredRows = rows
     .filter((row) => {
@@ -120,10 +121,10 @@ export default function CompanyTable() {
           </Button>
         </Stack>
 
-        
-            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Tabs value={tab} onChange={handleChangeTab} aria-label="customer tabs">
-                   </Tabs>
+          </Tabs>
 
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
             <TextField
@@ -167,14 +168,16 @@ function CompanyTableContent({ rows }: { rows: Company[] }) {
     router.push(`/company/view/${id}`);
   };
 
-  const handleEditPage = (id:any) => {
+  const handleEditPage = (id: any) => {
     router.push(`/company/edit/${id}`);
   };
 
 
 
   if (rows.length === 0) {
-    return <Typography>No companies found</Typography>;
+    return (
+      <NoDataLottieComponent />
+    )
   }
 
   return (

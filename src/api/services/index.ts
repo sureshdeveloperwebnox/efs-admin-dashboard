@@ -6,3 +6,4 @@ export * from './AssetAPIService';
 export * from './ServiceAPIService';
 export * from './WorkOrderAPIService';
 export * from './MaintenancePlanAPIService';
+export * from './EquipmentAPIService';

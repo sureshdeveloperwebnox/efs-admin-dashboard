@@ -17,5 +17,7 @@
   "Company": "Company",
   "Assets": "Assets",
   "Services": "Services",
-  "Work Orders": "Work Orders"
+  "Work Orders": "Work Orders",
+  "Settings": "Settings",
+  "Equipments": "Equipments"
 }

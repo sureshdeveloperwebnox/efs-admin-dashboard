@@ -153,7 +153,7 @@ export default function AuthOrganizationRegister({ providers, csrfToken }: AuthR
       if (result.error) {
         setErrors(prev => ({ ...prev, submit: result.error }));
       } else {
-        window.location.href = APP_DEFAULT_PATH;
+        window.location.href = '/login';
       }
     } catch (error: any) {
       console.error("Registration error:", error);

@@ -1,5 +1,7 @@
 import { toast } from "sonner";
 import { setCookie } from 'cookies-next';
+import { POSTAPIService } from "./MainAPIService";
+import { CurrentDateTime } from "utils";
 
 export interface LoginPayload {
     email: string;
@@ -18,6 +20,15 @@ interface LoginResponse {
     message?: string;
     success?: boolean;
     [key: string]: any;
+}
+
+export interface RegisterPayload {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    password: string;
+    user_type: string;
 }
 
 export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
@@ -48,7 +59,7 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
         });
-        
+
         setCookie('refreshToken', result.data?.refreshToken, {
             path: '/',
             secure: process.env.NODE_ENV === 'production',
@@ -69,3 +80,32 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
         throw error;
     }
 };
+
+export const Register = async (data: RegisterPayload) => {
+    console.log('data', data);
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify({...data, date_time: CurrentDateTime})
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || 'Login failed');
+        }
+
+        toast.success(result.message); // Show success toast only after confirming success
+
+        return result;
+    } catch (error: any) {
+        toast.error(error.message || 'Unexpected error occurred'); // Optional: show an error toast too
+        throw new Error(error.message || 'Unexpected error occurred');
+    }
+};
+
+

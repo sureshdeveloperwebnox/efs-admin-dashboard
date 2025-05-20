@@ -7,3 +7,4 @@ export * from './ServiceAPIService';
 export * from './WorkOrderAPIService';
 export * from './MaintenancePlanAPIService';
 export * from './EquipmentAPIService';
+export * from './AuthenticationAPI.Service';

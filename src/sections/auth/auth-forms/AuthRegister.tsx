@@ -30,12 +30,12 @@ import FirebaseSocial from './FirebaseSocial';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
-import { authRegister } from 'api/services/authRegister';
 import { APP_DEFAULT_PATH } from 'config';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import { IconButton } from '@mui/material';
 import { StringColorProps } from 'types/password';
 import AnimateButton from 'components/@extended/AnimateButton';
+import { Register } from 'api/services';
 
 // Assets
 const Auth0 = '/assets/images/icons/auth0.svg';
@@ -84,10 +84,11 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
         last_name: values.lastname.trim(),
         email: trimmedEmail,
         password: values.password,
-        phone: phone
+        phone: phone,
+        user_type: 'ADMIN'
       };
 
-      const result = await authRegister(payload);
+      const result = await Register(payload);
 
       if (result.error) {
         setErrors({ submit: result.error });

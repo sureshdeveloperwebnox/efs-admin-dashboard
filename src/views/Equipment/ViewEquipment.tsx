@@ -49,21 +49,19 @@ export default function ViewEquipment() {
       <Grid item xs={12}>
         <MainCard title="Equipment Details">
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
-              <Stack spacing={0.5} alignItems="center">
-                <Avatar
-                  alt={data.name}
-                  style={{ width: 100, height: 100, fontSize: 32, backgroundColor: '#1976d2' }}
-                >
-                  {data.name?.charAt(0)}
-                </Avatar>
-                <Typography variant="h5">{data.name}</Typography>
-              </Stack>
-            </Grid>
+        
             <Grid item xs={12} md={8}>
               <TableContainer>
                 <Table>
                   <TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <Typography variant="body">Equipment Name:</Typography>
+                      </TableCell>
+                       <TableCell>
+                        <Typography variant="subtitle1">{data.name}</Typography>
+                      </TableCell>
+                    </TableRow>
                     <TableRow>
                       <TableCell>
                         <Typography variant="body">Equipment Type:</Typography>

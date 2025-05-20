@@ -13,8 +13,6 @@ import { CreateEquipmentService } from 'api/services';
 import DatePickerComponent from 'components/CustomComponents/DatePickerComponent';
 import dayjs from 'dayjs';
 import DateTimePickerComponent from 'components/CustomComponents/DateTimePickerComponent';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -29,8 +27,7 @@ export default function CreateEquipment() {
     equipment_type: '',
     status: '',
     availability_date: '',
-    location: '',
-    date_time: ''
+    location: ''
   });
 
   const EquipmentStatus = ['AVAILABLE', 'IN_USE', 'UNDER_MAINTENANCE', 'DAMAGED'];
@@ -42,12 +39,7 @@ export default function CreateEquipment() {
     }));
   };
 
-  const handleDateTimeChange = (date: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      date_time: date ? date : ''
-    }));
-  };
+
 
   const handleStatusChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
@@ -101,15 +93,7 @@ export default function CreateEquipment() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <DateTimePickerComponent
-              label="Date Time"
-              value={dayjs(formData.date_time)}
-              onChange={handleDateTimeChange}
-              fullWidth
-              required
-            />
-          </Grid>
+         
 
           <Grid item xs={6}>
             <TextField name="location" label="Location" value={formData.location} onChange={handleChange} fullWidth />

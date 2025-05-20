@@ -44,7 +44,7 @@ const DateTimePickerComponent = React.forwardRef((props, ref) => {
               // Optional: Adjust popper width if needed
               '& .MuiPaper-root': {
                 width: '100%',
-                maxWidth: '400px' // You can adjust this as needed
+                maxWidth: '6000px' // You can adjust this as needed
               }
             }
           }

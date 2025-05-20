@@ -111,8 +111,8 @@ export default function EquipmentTable() {
         </Stack>
 
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Tabs value={tab} onChange={handleChangeTab} aria-label="equipment tabs">
-            <Tab
+          {/* <Tabs value={tab} onChange={handleChangeTab} aria-label="equipment tabs"> */}
+            {/* <Tab
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   All <Chip label={rows.length} size="small" variant="outlined" color="primary" />
@@ -145,7 +145,7 @@ export default function EquipmentTable() {
                 </Box>
               }
             />
-          </Tabs>
+          </Tabs> */}
 
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
             <TextField

@@ -1,6 +1,6 @@
-// project imports
 "use client";
 
+// project imports
 import DashboardLayout from 'layout/DashboardLayout';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 

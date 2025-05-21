@@ -1,3 +1,5 @@
+"use client";
+
 import EditWorkOrder from "views/WorkOrder/EditWorkOrder"
 
 type Props = {}

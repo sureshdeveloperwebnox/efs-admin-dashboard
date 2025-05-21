@@ -1,3 +1,5 @@
+"use client";
+
 import EditCompany from "views/Company/EditCompany"
 
 type Props = {}

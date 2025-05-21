@@ -1,3 +1,5 @@
+"use client";
+
 import CreateAsset from "views/Assets/CreateAsset"
 
 type Props = {}

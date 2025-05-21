@@ -1,3 +1,5 @@
+"use client";
+
 import CreateEquipment from "views/Equipment/CreateEquipment"
 
 type Props = {}

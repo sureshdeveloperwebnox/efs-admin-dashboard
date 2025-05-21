@@ -1,7 +1,5 @@
 'use client';
 
-
-
 import EditEquipment from "views/Equipment/EditEquipment"
 
 type Props = {}

@@ -1,3 +1,5 @@
+"use client";
+
 import CompanyTable from 'sections/Company/CompanyTable';
 
 // ==============================|| PAGE ||============================== //

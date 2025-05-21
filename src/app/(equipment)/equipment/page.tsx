@@ -1,3 +1,5 @@
+"use client";
+
 import EquipmentTable from "sections/Equipment/EquipmentTable"
 
 type Props = {}

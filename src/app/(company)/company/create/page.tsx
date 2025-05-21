@@ -1,3 +1,5 @@
+"use client";
+
 import CreateCompany from "views/Company/CreateCompany"
 
 type Props = {}

@@ -85,9 +85,9 @@ const handleGoogleSignIn = () => {
   setGoogleLoading(true);
   
 
-  // window.location.href = `http://localhost:3000/api/auth/google`;
+  window.location.href = `http://localhost:3000/api/auth/google`;
   // router.push
-  window.location.href = `http://54.237.60.235:3000/api/auth/google`;
+  // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
 }
   return (
     <>

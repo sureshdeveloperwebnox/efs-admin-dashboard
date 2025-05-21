@@ -25,13 +25,13 @@ const mainmenu: NavItemType = {
       url: '/company',
       icon: GrOrganization
     },
-    {
-      id: 'Organization',
-      title: 'Organization',
-      type: 'item',
-      url: '/organization',
-      icon: ApartmentOutlined
-    },
+    // {
+    //   id: 'Organization',
+    //   title: 'Organization',
+    //   type: 'item',
+    //   url: '/organization',
+    //   icon: ApartmentOutlined
+    // },
     {
       id: 'Customers',
       title: 'Customers',

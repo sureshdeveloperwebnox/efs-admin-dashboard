@@ -1,3 +1,5 @@
+"use client";
+
 import EditService from "views/Services/EditService"
 
 type Props = {}

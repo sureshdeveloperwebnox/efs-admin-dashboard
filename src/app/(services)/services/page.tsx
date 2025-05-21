@@ -1,3 +1,5 @@
+"use client";
+
 import ServiceTable from "sections/Services/ServicesTable"
 
 type Props = {}

@@ -1,3 +1,5 @@
+"use client";
+
 import ViewEquipment from "views/Equipment/ViewEquipment"
 
 type Props = {}

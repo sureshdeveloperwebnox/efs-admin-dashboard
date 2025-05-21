@@ -1,3 +1,5 @@
+"use client";
+
 import CreateWorkOrder from "views/WorkOrder/CreateWorkOrder"
 
 type Props = {}

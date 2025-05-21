@@ -1,3 +1,6 @@
+"use client";
+
+
 import WorkOrderTable from "sections/WorkOrder/WorkOrderTable"
 
 type Props = {}

@@ -1,3 +1,5 @@
+'use client';
+
 import CreateService from "views/Services/CreateService"
 
 type Props = {}

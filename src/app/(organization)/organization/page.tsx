@@ -1,3 +1,5 @@
+'use client';
+
 import OrganizationTable from 'sections/organization/OrganizationTable';
 
 // ==============================|| PAGE ||============================== //

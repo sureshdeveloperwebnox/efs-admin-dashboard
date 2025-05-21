@@ -13,7 +13,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import BackButton from 'components/CustomComponents/BackButton';
-import { GetCompanyService, GetCustomerService } from 'api/services';
+import {  GetCustomerService } from 'api/services';
 
 export default function ViewCustomer() {
   const params = useParams();

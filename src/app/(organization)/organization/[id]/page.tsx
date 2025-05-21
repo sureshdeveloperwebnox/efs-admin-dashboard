@@ -1,3 +1,5 @@
+'use client';
+
 import ViewPage from 'views/organization/view-organization-page';
 
 // ==============================|| PAGE ||============================== //

@@ -1,5 +1,5 @@
 import { DashboardOutlined, ApartmentOutlined } from '@ant-design/icons';
-import { GrOrganization } from 'react-icons/gr';
+import { GrOrganization, GrGroup } from 'react-icons/gr';
 import { GoPeople } from "react-icons/go";
 import { BsCassette, BsClipboard2Check } from "react-icons/bs";
 import { GrServices } from "react-icons/gr";
@@ -54,12 +54,20 @@ const mainmenu: NavItemType = {
       icon: GrServices
     },
      {
+      id: 'Crew',
+      title: 'Crew',
+      type: 'item',
+      url: '/crew',
+      icon: GrGroup
+    },
+     {
       id: 'WorkOrders',
       title: 'Work Orders',
       type: 'item',
       url: '/work-orders',
       icon: BsClipboard2Check
-    }
+    },
+
   ]
 };
 

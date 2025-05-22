@@ -1,5 +1,7 @@
-import { JWT_SECRET_KEY } from "./auth.keys";
+// src/utils/decoded.token.data.ts
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET_KEY } from "./auth.keys";
+import Cookies from 'js-cookie'; // Client-side alternative
 
 interface DecodedToken {
   user_id?: string;
@@ -9,32 +11,35 @@ interface DecodedToken {
   phone?: string;
   category?: string;
   provider?: string;
-  [key: string]: any; // Allow for other claims
+  [key: string]: any;
 }
 
+// Client-side cookie access
 export const getAccessTokenFromCookie = (): { accessToken: string | null } => {
-  const cookieMatch = "document.cookie.match(/(^|;\s*)accessToken=([^;]*)/);"
-  return {
-    accessToken: cookieMatch ? cookieMatch[2] : null
-  };
+  if (typeof window === 'undefined') {
+    // Server-side - use different approach
+    return { accessToken: null };
+  }
+  const accessToken = Cookies.get('accessToken') || null;
+  return { accessToken };
 };
 
+// Server-side helper (for getServerSideProps)
+export const getAccessTokenFromRequest = (req: any): { accessToken: string | null } => {
+  const accessToken = req.cookies.accessToken || null;
+  return { accessToken };
+};
 
-
-export const decodeToken = (): DecodedToken | null => {
-  const { accessToken } = getAccessTokenFromCookie();
+export const decodeToken = (token?: string): DecodedToken | null => {
+  const accessToken = token || getAccessTokenFromCookie().accessToken;
   
   if (!accessToken) {
     return null;
   }
 
   try {
-    const decoded = jwt.decode(accessToken) as DecodedToken;
-
-    console.log("dec", decoded);
+    const decoded = jwt.verify(accessToken, JWT_SECRET_KEY) as DecodedToken;
     
-    
-    // Extract only the properties we want to expose
     const { user_id, organization_id, name, email, phone, category, provider } = decoded;
 
     return {
@@ -52,12 +57,6 @@ export const decodeToken = (): DecodedToken | null => {
   }
 };
 
-// Get the decoded token once and reuse it
-const decodedToken = decodeToken();
-
-// console.log("organization_id", decodedToken?.organization_id);
-
-
-export const organization_id = decodedToken?.organization_id;
-export const user_id = decodedToken?.user_id;
-
+// Helper functions (client-side)
+export const organization_id = () => decodeToken()?.organization_id;
+export const user_id = () => decodeToken()?.user_id;

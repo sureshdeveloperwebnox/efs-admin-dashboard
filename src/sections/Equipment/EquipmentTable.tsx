@@ -84,16 +84,16 @@ export default function EquipmentTable() {
   };
 
   const filteredRows = rows
-    .filter((row) => {
-      if (tab === 1) return row.status === 'Active';
-      if (tab === 2) return row.status === 'Inactive';
-      return true;
-    })
+    // .filter((row) => {
+    //   if (tab === 1) return row.status === 'Active';
+    //   if (tab === 2) return row.status === 'Inactive';
+    //   return true;
+    // })
     .filter(
       (row) =>
-        row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        row.equipment_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (row.location?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
+        row?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row?.equipment_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (row?.location?.toLowerCase() ?? '').includes(searchQuery.toLowerCase())
     );
 
   const currentRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);

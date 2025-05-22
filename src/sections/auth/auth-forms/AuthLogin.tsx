@@ -37,7 +37,7 @@ const GoogleIcon = '/assets/images/icons/google.svg';
 
 
 // Config (unchanged)
-import { APP_DEFAULT_PATH } from 'config';
+import { APP_DEFAULT_PATH, NEXT_GOOGLE_CALLBACK_URL } from 'config';
 import { Login } from 'api/services/AuthenticationAPI.Service';
 import { Box } from '@mui/material';
 
@@ -83,9 +83,10 @@ export default function AuthLogin({ providers, csrfToken }: { providers: any, cs
 
 const handleGoogleSignIn = () => {
   setGoogleLoading(true);
-  
+console.log("NEXT_GOOGLE_CALLBACK_URL", NEXT_GOOGLE_CALLBACK_URL);
 
-  window.location.href = `http://localhost:3000/api/auth/google`;
+  window.location.href = NEXT_GOOGLE_CALLBACK_URL
+  // window.location.href = `http://localhost:3000/api/auth/google`;
   // router.push
   // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
 }

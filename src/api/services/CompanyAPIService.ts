@@ -2,11 +2,10 @@ import { organization_id } from 'utils';
 import { GETAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } from './MainAPIService';
 
 
-
 export const CreateCompanyService = async (companydata: any) => {
    const response = await POSTAPIService({
     routename: "company",
-    payload: {...companydata, organization_id} 
+    payload: {...companydata, organization_id: organization_id} 
    });
     return response;
 };

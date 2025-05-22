@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
       transform: '@mui/icons-material/{{member}}'
     }
   },
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL, // Make sure this matches
+    NEXT_GOOGLE_CALLBACK_URL: process.env.NEXT_GOOGLE_CALLBACK_URL
+  },
   images: {
     remotePatterns: [
       {

@@ -7,6 +7,8 @@ import { DefaultConfigProps } from 'types/config';
 // ==============================|| THEME CONSTANT ||============================== //
 
 export const APP_DEFAULT_PATH = '/dashboard';
+export const NEXT_GOOGLE_CALLBACK_URL = `${process.env.NEXT_GOOGLE_CALLBACK_URL}`;
+
 export const HORIZONTAL_MAX_ITEM = 7;
 export const DRAWER_WIDTH = 260;
 export const MINI_DRAWER_WIDTH = 60;

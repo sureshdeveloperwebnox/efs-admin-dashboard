@@ -38,7 +38,7 @@ export const decodeToken = (token?: string): DecodedToken | null => {
   }
 
   try {
-    const decoded = jwt.verify(accessToken, JWT_SECRET_KEY) as DecodedToken;
+    const decoded = jwt.decode(accessToken) as DecodedToken;
     
     const { user_id, organization_id, name, email, phone, category, provider } = decoded;
 
@@ -58,5 +58,5 @@ export const decodeToken = (token?: string): DecodedToken | null => {
 };
 
 // Helper functions (client-side)
-export const organization_id = () => decodeToken()?.organization_id;
-export const user_id = () => decodeToken()?.user_id;
+export const organization_id = decodeToken()?.organization_id;
+export const user_id  = decodeToken()?.user_id;

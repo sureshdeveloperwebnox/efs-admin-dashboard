@@ -1,11 +1,11 @@
 'use client';
 
-import CrewTable from "sections/Crew/CrewTable"
+import CrewMemberTable from "sections/Crew-Member/CrewMemberTable";
 
 type Props = {}
 
-export default function CrewTablePage({}: Props) {
+export default function CrewMemberTablePage({}: Props) {
   return (
-    <CrewTable/>
+    <CrewMemberTable />
   )
 };

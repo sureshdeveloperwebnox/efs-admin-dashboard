@@ -20,13 +20,27 @@ import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useRouter } from 'next/navigation';
-import { GetAllCrewService } from 'api/services';
+import { GetAllCrewMemberService } from 'api/services';
 import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 
-interface Customer {
-  id: number;
+interface Crews {
   name: string;
 }
+
+
+interface User {
+    id: string;
+    name: string;
+}
+
+interface CrewMember {
+  id: number;
+  role: string;
+  name: string;
+  crews: Crews;
+  users: User;
+}
+
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
   const { children, value, index, ...other } = props;
@@ -37,30 +51,33 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
   );
 }
 
-export default function CrewTable() {
+export default function CrewMemberTable() {
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Customer[]>([]);
+  const [rows, setRows] = useState<CrewMember[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
 useEffect(() => {
-  const fetchCrews = async () => {
+  const fetchCrewMembers = async () => {
     try {
       setIsLoading(true);
-      const crewRows = await GetAllCrewService();
+      const crewRows = await GetAllCrewMemberService();
+      console.log("crewRows", crewRows);
+      
       setRows(Array.isArray(crewRows) ? crewRows : []); // Ensure array
     } catch (error) {
-      console.error('Failed to fetch crews:', error);
+      console.error('Failed to fetch crew members:', error);
       setRows([]); // Reset to empty array on error
     } finally {
       setIsLoading(false);
     }
   };
-  fetchCrews();
+  fetchCrewMembers();
 }, []);
+
 
 
   const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
@@ -69,7 +86,7 @@ useEffect(() => {
   };
 
   const handleCreatePage = () => {
-    router.push(`/crew/create`);
+    router.push(`/crew-member/create`);
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -96,7 +113,7 @@ const currentRows = filteredRows.slice(
     <MainCard>
       <Box>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Crews</Typography>
+          <Typography variant="h3">Crew Members</Typography>
           <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
             Add
           </Button>
@@ -118,10 +135,10 @@ const currentRows = filteredRows.slice(
         <TabPanel value={tab} index={tab}>
           {isLoading ? (
             <div>
-              <Typography>Loading crews...</Typography>
+              <Typography>Loading crews members...</Typography>
             </div>
           ) : (
-            <CrewTableContent rows={currentRows} />
+            <CrewMemberTableContent rows={rows} />
           )}
         </TabPanel>
 
@@ -139,16 +156,19 @@ const currentRows = filteredRows.slice(
   );
 }
 
-function CrewTableContent({ rows }: { rows: Customer[] }) {
+function CrewMemberTableContent({ rows }: { rows: CrewMember[] }) {
   const router = useRouter();
 
   const handleViewPage = (id: number) => {
-    router.push(`/crew/view/${id}`);
+    router.push(`/crew-member/view/${id}`);
   };
 
   const handleEditPage = (id: number) => {
-    router.push(`/crew/edit/${id}`);
+    router.push(`/crew-member/edit/${id}`);
   };
+
+  console.log("rows", rows);
+  
 
   if (rows.length === 0) {
     return <NoDataLottieComponent />;
@@ -161,8 +181,10 @@ function CrewTableContent({ rows }: { rows: Customer[] }) {
           <TableRow>
             <TableCell>S.NO</TableCell>
             <TableCell>Crew Name</TableCell>
-            <TableCell>Leader Name</TableCell>
-            <TableCell>Leader Email</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Crew Member Name</TableCell>
+            <TableCell>Crew Member Email</TableCell>
+            <TableCell>Crew Member Phone</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -170,9 +192,11 @@ function CrewTableContent({ rows }: { rows: Customer[] }) {
           {rows.map((row, index) => (
             <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{row?.name}</TableCell>
+              <TableCell>{row?.crews?.name}</TableCell>
+              <TableCell>{row?.role}</TableCell>
               <TableCell>{row?.users?.name}</TableCell>
               <TableCell>{row?.users?.email}</TableCell>
+              <TableCell>{row?.users?.phone}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">

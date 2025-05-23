@@ -3,36 +3,45 @@ import { GETAPIService, POSTAPIService, PUTAPIService, GETALLAPIBYIDService } fr
 
 
 
-export const CreateCrewService = async (crewdata: any) => {
+export const CreateCrewMemberService = async (crewdata: any) => {
    const response = await POSTAPIService({
-    routename: "crew",
+    routename: "crew-members",
     payload: {...crewdata, organization_id} 
    });
     return response;
 };
 
-export const GetCrewService = async (id: number) => {
+export const GetCrewMemberService = async (id: number) => {
    const response = await GETAPIService({
-    routename: "crew",
+    routename: "crew-members",
     id: Number(id)
    });
     return response;
 };
 
-export const UpdateCrewService = async (crewdata: any) => {
+export const UpdateCrewMemberService = async (crewdata: any) => {
   const { id } = crewdata;
    const response = await PUTAPIService({
-    routename: "crew",
+    routename: "crew-members",
     id: Number(id),
     payload: crewdata
    });
     return response;
 };
 
-export const GetAllCrewService = async () => {
+export const GetAllCrewMemberService = async () => {
    const response = await GETALLAPIBYIDService({
-    routename: "crew/getAllCrew",
+    routename: "crew-members/getAllCrewMember",
     payload: { organization_id: organization_id }
+   });
+    return response;
+};
+
+
+export const GetAllCrewMemberByIDService = async (crewdata: any) => {
+   const response = await GETALLAPIBYIDService({
+    routename: "crew-members/getAllCrewByID",
+    payload: crewdata
    });
     return response;
 };

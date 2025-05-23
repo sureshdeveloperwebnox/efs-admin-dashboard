@@ -9,3 +9,4 @@ export * from './MaintenancePlanAPIService';
 export * from './EquipmentAPIService';
 export * from './AuthenticationAPI.Service';
 export * from  './CrewAPIService';
+export * from './UserAPIService';

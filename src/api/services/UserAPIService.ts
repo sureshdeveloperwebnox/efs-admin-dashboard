@@ -4,7 +4,7 @@ import { GETAPIService, GETALLAPIService, POSTAPIService, PUTAPIService, GETALLA
 
 export const GetAllUserService = async (data: any) => {
    const response = await GETALLAPIBYIDService({
-    routename: "auth/getAllUser",
+    routename: "user/getAllUser",
     payload: { ...data, organization_id: organization_id }
    });
     return response;

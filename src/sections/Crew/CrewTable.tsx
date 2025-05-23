@@ -161,6 +161,9 @@ function CrewTableContent({ rows }: { rows: Customer[] }) {
           <TableRow>
             <TableCell>S.NO</TableCell>
             <TableCell>Crew Name</TableCell>
+            <TableCell>Leader Name</TableCell>
+            <TableCell>Leader Email</TableCell>
+            <TableCell>Leader Phone</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -168,7 +171,10 @@ function CrewTableContent({ rows }: { rows: Customer[] }) {
           {rows.map((row, index) => (
             <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{row.name}</TableCell>
+              <TableCell>{row?.name}</TableCell>
+              <TableCell>{row?.users?.name}</TableCell>
+              <TableCell>{row?.users?.email}</TableCell>
+              <TableCell>{row?.users?.phone}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">

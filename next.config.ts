@@ -23,7 +23,11 @@ const nextConfig: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL, // Make sure this matches
-    NEXT_GOOGLE_CALLBACK_URL: process.env.NEXT_GOOGLE_CALLBACK_URL
+    NEXT_GOOGLE_CALLBACK_URL: process.env.NEXT_GOOGLE_CALLBACK_URL,
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXT_PUBLIC_JWT_SECRET: process.env.NEXT_PUBLIC_JWT_SECRET,
+    NEXT_PUBLIC_JWT_TIMEOUT: process.env.NEXT_PUBLIC_JWT_TIMEOUT
   },
   images: {
     remotePatterns: [

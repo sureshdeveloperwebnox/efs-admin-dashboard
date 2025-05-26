@@ -19,7 +19,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { FaPlus, FaEye, FaEdit } from 'react-icons/fa';
+import { FaPlus, FaEye, FaEdit, FaRegUser } from 'react-icons/fa';
 import MainCard from 'components/MainCard';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -29,6 +29,7 @@ import dayjs from 'dayjs';
 import Avatar from '@mui/material/Avatar';
 import { getInitials, stringToColor } from 'utils/color.code';
 import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
+import WorkOrderAssignForm from './WorkOrderAssignForm';
 interface Customer {
   id: number;
   email?: string;
@@ -74,6 +75,8 @@ const iconButtonStyles = {
 
 function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+
 
   const handleViewPage = (id: number) => {
     router.push(`/work-orders/view/${id}`);
@@ -90,174 +93,193 @@ function WorkOrderTableContent({ rows }: { rows: WorkOrder[] }) {
 
   if (rows.length === 0) {
     return (
-         <NoDataLottieComponent />
+      <NoDataLottieComponent />
     );
   }
 
+
+
   return (
-    <TableContainer
-      component={Paper}
-    >
-      <Table aria-label="Work orders table">
-        <TableHead sx={{ backgroundColor: (theme) => theme.palette.grey[100] }}>
-          <TableRow>
-            <TableCell sx={{ fontWeight: 600 }}>S.NO</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Work Order</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Schedule Date</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Work Order Date</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Priority</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Estimated Cost</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Actual Cost</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-            <TableCell align="center" sx={{ fontWeight: 600 }}>
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => (
-            <TableRow
-              key={row.id}
-              hover
-              sx={{
-                '&:last-child td': { borderBottom: 0 },
-                '&:hover': { backgroundColor: (theme) => theme.palette.action.hover }
-              }}
-            >
-              <TableCell sx={{ color: 'text.secondary' }}>{index + 1}</TableCell>
-              <TableCell>
-                <Typography fontWeight={500}>{row.title || '-'}</Typography>
-              </TableCell>
-              <TableCell>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Avatar
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      fontSize: 14,
-                      bgcolor: stringToColor(row?.customer?.name || '')
-                    }}
-                  >
-                    {getInitials(row?.customer?.first_name || '')}
-                  </Avatar>
-                  <Typography>{row?.customer?.name || '-'}</Typography>
-                </Box>
-              </TableCell>
-              <TableCell>
-                <Box display="flex" flexDirection="column">
-                  <Typography variant="body2" fontWeight={500}>
-                    {dayjs(row.scheduled_start_date).format('DD-MM-YYYY')}
-                  </Typography>
-                  {row.scheduled_end_date && (
-                    <Typography variant="caption" color="text.secondary">
-                   to {dayjs(row.scheduled_end_date).format('DD-MM-YYYY')}
-                    </Typography>
-                  )}
-                </Box>
-              </TableCell>
-              <TableCell>
-                <Box display="flex" flexDirection="column">
-                  <Typography variant="body2">
-                    {row.actual_start_date ? dayjs(row.actual_start_date).format('DD-MM-YYYY') : '-'}
-                  </Typography>
-                  {row.actual_end_date && (
-                    <Typography variant="caption" color="text.secondary">
-                      to {dayjs(row.actual_end_date).format('DD-MM-YYYY')}
-                    </Typography>
-                  )}
-                </Box>
-              </TableCell>
-              <TableCell>
-                <Chip
-                  label={row.priority || '-'}
-                  size="small"
-                  sx={{
-                    fontWeight: 500,
-                    backgroundColor:
-                      row.priority === 'High' ? 'error.light' : row.priority === 'Medium' ? 'warning.light' : 'success.light',
-                    color:
-                      row.priority === 'High'
-                        ? 'error.contrastText'
-                        : row.priority === 'Medium'
-                          ? 'warning.contrastText'
-                          : 'success.contrastText'
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <Typography fontWeight={500}>{formatCurrency(row.estimated_cost)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  fontWeight={500}
-                  color={
-                    row.actual_cost > row.estimated_cost ? 'error.main' : row.actual_cost < row.estimated_cost ? 'success.main' : 'inherit'
-                  }
-                >
-                  {formatCurrency(row.actual_cost)}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Chip
-                  label={row.status || 'Unknown'}
-                  size="small"
-                  sx={{
-                    fontWeight: 500,
-                    backgroundColor:
-                      row.status === 'Completed'
-                        ? 'success.light'
-                        : row.status === 'In Progress'
-                          ? 'warning.light'
-                          : row.status === 'Pending'
-                            ? 'info.light'
-                            : 'default',
-                    color:
-                      row.status === 'Completed'
-                        ? 'success.dark'
-                        : row.status === 'In Progress'
-                          ? 'warning.dark'
-                          : row.status === 'Pending'
-                            ? 'info.dark'
-                            : 'text.primary'
-                  }}
-                />
-              </TableCell>
-              <TableCell align="right">
-                <Stack direction="row" spacing={1} justifyContent="flex-end">
-                  <Tooltip title="View Details">
-                    <IconButton
-                      sx={{
-                        ...iconButtonStyles,
-                        '&:hover': { backgroundColor: 'primary.light', color: 'primary.main' }
-                      }}
-                      onClick={() => handleViewPage(row.id)}
-                      aria-label="View details"
-                    >
-                      <FaEye />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit">
-                    <IconButton
-                      sx={{
-                        ...iconButtonStyles,
-                        '&:hover': { backgroundColor: 'secondary.light', color: 'secondary.main' }
-                      }}
-                      onClick={() => handleEditPage(row.id)}
-                      aria-label="Edit"
-                    >
-                      <FaEdit />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
+    <>
+      <TableContainer
+        component={Paper}
+      >
+        <Table aria-label="Work orders table">
+          <TableHead sx={{ backgroundColor: (theme) => theme.palette.grey[100] }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>S.NO</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Work Order</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Schedule Date</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Work Order Date</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Priority</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Estimated Cost</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Actual Cost</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>
+                Actions
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, index) => (
+              <>
+                <TableRow
+                  key={row.id}
+                  hover
+                  sx={{
+                    '&:last-child td': { borderBottom: 0 },
+                    '&:hover': { backgroundColor: (theme) => theme.palette.action.hover }
+                  }}
+                >
+                  <TableCell sx={{ color: 'text.secondary' }}>{index + 1}</TableCell>
+                  <TableCell>
+                    <Typography fontWeight={500}>{row.title || '-'}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Avatar
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          fontSize: 14,
+                          bgcolor: stringToColor(row?.customer?.name || '')
+                        }}
+                      >
+                        {getInitials(row?.customer?.first_name || '')}
+                      </Avatar>
+                      <Typography>{row?.customer?.name || '-'}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" flexDirection="column">
+                      <Typography variant="body2" fontWeight={500}>
+                        {dayjs(row.scheduled_start_date).format('DD-MM-YYYY')}
+                      </Typography>
+                      {row.scheduled_end_date && (
+                        <Typography variant="caption" color="text.secondary">
+                          to {dayjs(row.scheduled_end_date).format('DD-MM-YYYY')}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" flexDirection="column">
+                      <Typography variant="body2">
+                        {row.actual_start_date ? dayjs(row.actual_start_date).format('DD-MM-YYYY') : '-'}
+                      </Typography>
+                      {row.actual_end_date && (
+                        <Typography variant="caption" color="text.secondary">
+                          to {dayjs(row.actual_end_date).format('DD-MM-YYYY')}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.priority || '-'}
+                      size="small"
+                      sx={{
+                        fontWeight: 500,
+                        backgroundColor:
+                          row.priority === 'High' ? 'error.light' : row.priority === 'Medium' ? 'warning.light' : 'success.light',
+                        color:
+                          row.priority === 'High'
+                            ? 'error.contrastText'
+                            : row.priority === 'Medium'
+                              ? 'warning.contrastText'
+                              : 'success.contrastText'
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography fontWeight={500}>{formatCurrency(row.estimated_cost)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      fontWeight={500}
+                      color={
+                        row.actual_cost > row.estimated_cost ? 'error.main' : row.actual_cost < row.estimated_cost ? 'success.main' : 'inherit'
+                      }
+                    >
+                      {formatCurrency(row.actual_cost)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.status || 'Unknown'}
+                      size="small"
+                      sx={{
+                        fontWeight: 500,
+                        backgroundColor:
+                          row.status === 'Completed'
+                            ? 'success.light'
+                            : row.status === 'In Progress'
+                              ? 'warning.light'
+                              : row.status === 'Pending'
+                                ? 'info.light'
+                                : 'default',
+                        color:
+                          row.status === 'Completed'
+                            ? 'success.dark'
+                            : row.status === 'In Progress'
+                              ? 'warning.dark'
+                              : row.status === 'Pending'
+                                ? 'info.dark'
+                                : 'text.primary'
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <Tooltip title="View Details">
+                        <IconButton
+                          sx={{
+                            ...iconButtonStyles,
+                            '&:hover': { backgroundColor: 'primary.light', color: 'primary.main' }
+                          }}
+                          onClick={() => handleViewPage(row.id)}
+                          aria-label="View details"
+                        >
+                          <FaEye />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton
+                          sx={{
+                            ...iconButtonStyles,
+                            '&:hover': { backgroundColor: 'secondary.light', color: 'secondary.main' }
+                          }}
+                          onClick={() => handleEditPage(row.id)}
+                          aria-label="Edit"
+                        >
+                          <FaEdit />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Assign">
+                        <IconButton color="primary" aria-label="assign" size="medium" onClick={() => setOpen(true)}>
+                          <FaRegUser />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+                {open && <WorkOrderAssignForm open={open} setOpen={setOpen} row={row} />}
+
+              </>
+
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+    </>
+
+
   );
+
 }
+
 
 export default function WorkOrderTable() {
   const router = useRouter();

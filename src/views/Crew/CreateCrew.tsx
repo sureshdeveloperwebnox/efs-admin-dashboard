@@ -39,7 +39,7 @@ export default function CreateCrew() {
     const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        const response = await GetAllUserService({user_type: "STAFF"});
+        const response = await GetAllUserService({user_type: "TECHNICIAN"});
         // Ensure the response is an array of User objects
         const users: User[] = Array.isArray(response) ? response : [];
         setUserData(users);
@@ -97,7 +97,7 @@ export default function CreateCrew() {
             <Autocomplete
               disablePortal
               options={userData}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => option.first_name}
               value={selectedUser}
               onChange={handleUserChange}
               loading={isLoading}

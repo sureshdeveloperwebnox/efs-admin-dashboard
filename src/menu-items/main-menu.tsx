@@ -2,8 +2,9 @@ import { DashboardOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { GrOrganization, GrGroup } from 'react-icons/gr';
 import { GoPeople } from "react-icons/go";
 import { BsCassette, BsClipboard2Check } from "react-icons/bs";
-import { GrServices } from "react-icons/gr";
+import { GrServices,  GrUserSettings  } from "react-icons/gr";
 import { MdOutlinePerson4 } from "react-icons/md";
+
 
 
 import { NavItemType } from 'types/menu';
@@ -75,7 +76,13 @@ const mainmenu: NavItemType = {
       url: '/work-orders',
       icon: BsClipboard2Check
     },
-
+     {
+      id: 'Employees',
+      title: 'Employers',
+      type: 'item',
+      url: '/employees',
+      icon: GrUserSettings
+    }
   ]
 };
 

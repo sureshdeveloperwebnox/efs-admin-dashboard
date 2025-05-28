@@ -167,7 +167,7 @@ export default function AssetTable() {
           <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '300px' }}>
             <TextField
               variant="outlined"
-              size="small"
+              size="small"  
               placeholder="Search assets..."
               onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth

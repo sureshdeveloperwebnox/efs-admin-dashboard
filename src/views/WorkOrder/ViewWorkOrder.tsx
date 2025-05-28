@@ -56,7 +56,6 @@ export default function ViewWorkOrder() {
         <Grid container spacing={3}>
             <Grid item xs={12} md={12}>
                 <BackButton />
-
                 <MainCard title="Work Order Details">
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12}>
@@ -490,7 +489,7 @@ export default function ViewWorkOrder() {
             </Grid>
 
 
-              <Grid item xs={12} sm={12} lg={12}>
+            <Grid item xs={12} sm={12} lg={12}>
                 <MainCard title="Assets Details">
                     <Stack spacing={3}>
                         <Table>
@@ -528,6 +527,81 @@ export default function ViewWorkOrder() {
                     </Stack>
                 </MainCard>
             </Grid>
+            {(data?.crew) && (
+                <Grid item xs={12} sm={12} lg={12}>
+                    <MainCard title="Crew Details">
+                        <Stack spacing={3}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell width={30}>#</TableCell>
+                                        <TableCell>Crew Name</TableCell>
+                                        <TableCell>Assigned Date</TableCell>
+                                        <TableCell>Leader Name</TableCell>
+                                        <TableCell>Leader Email</TableCell>
+                                        <TableCell width={30}></TableCell>
+                                    </TableRow>
+                                </TableHead>
+
+                                <TableBody>
+                                    {data?.crew?.map((crew, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>
+                                                {crew.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                {dayjs(crew?.assigned_at).format('DD-MM-YYYY')}
+                                            </TableCell>
+                                            <TableCell>
+                                                {crew?.leader_first_name + crew?.leader_last_name}
+                                            </TableCell>
+                                            <TableCell>
+                                                {crew?.leader_email}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Stack>
+                    </MainCard>
+                </Grid>
+            )}
+
+            {(data?.technicians) && (
+                <Grid item xs={12} sm={12} lg={12}>
+                    <MainCard title="Technician Details">
+                        <Stack spacing={3}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell width={30}>#</TableCell>
+                                        <TableCell>Technician Name</TableCell>
+                                        <TableCell>Technician Email</TableCell>
+                                        <TableCell>Technician Phone</TableCell>
+                                        <TableCell width={30}></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>{"#"}</TableCell>
+                                        <TableCell>
+                                            {data?.technicians.first_name + data?.technicians.last_name}
+                                        </TableCell>
+                                        <TableCell>
+                                            {data?.technicians?.email}
+                                        </TableCell>
+                                        <TableCell>
+                                            {data?.technicians?.phone}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </Stack>
+                    </MainCard>
+                </Grid>
+            )}
+
         </Grid>
     );
 }

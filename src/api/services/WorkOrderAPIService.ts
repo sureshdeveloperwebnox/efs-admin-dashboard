@@ -41,3 +41,13 @@ export const GetAllWorkOrderService = async () => {
 
 
 
+export const AssignWorkOrderToTechnician = async (workorderdata: any) => {
+   const response = await POSTAPIService({
+    routename: "work-order/assignWorkOrderToTechnician",
+    payload: {...workorderdata, organization_id} 
+   });
+    return response;
+};
+
+
+

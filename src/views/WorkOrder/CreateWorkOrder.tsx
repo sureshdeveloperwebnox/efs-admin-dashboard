@@ -111,7 +111,15 @@ export default function CreateWorkOrder() {
     assets: [] as AssetCard[],
   });
 
-  const WorkOrderStatus = ['DRAFT', 'OPEN', 'SCHEDULED', 'IN_PROGRESS', 'ON_HOLD', 'COMPLETED', 'CANCELLED'];
+  const WorkOrderStatus = [
+    "PENDING",
+    "ASSIGNED",
+    "CONFIRMED",
+    "ACTIVE",
+    "COMPLETED",
+    "APPROVED",
+    "CLOSED",
+    "CANCELLED"];
   const PriorityStatus = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
   const WorkOrderTaskStatus = ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD'];
 
@@ -257,7 +265,7 @@ export default function CreateWorkOrder() {
   const handleWorkOrderTaskStatusChange = (event: SelectChangeEvent, index: number) => {
     const value = event.target.value;
     setSelectWorkOrderTaskStatus(value);
-    
+
     const updatedCards = [...formData.tasks];
     updatedCards[index].status = value;
     setFormData({ ...formData, tasks: updatedCards });
@@ -361,7 +369,7 @@ export default function CreateWorkOrder() {
   };
 
   const validateForm = () => {
-    const { title, customer_id,  status } = formData;
+    const { title, customer_id, status } = formData;
     if (!title || !customer_id || !status) {
       alert('Please fill in all required fields');
       return false;
@@ -489,7 +497,7 @@ export default function CreateWorkOrder() {
                 label="Schedule End Date"
                 value={dayjs(formData.scheduled_end_date)}
                 onChange={handleScheduledEndDateChange}
-                disablePast
+                
               />
             </Grid>
 
@@ -498,7 +506,7 @@ export default function CreateWorkOrder() {
                 label="Order Start Date"
                 value={dayjs(formData.actual_start_date)}
                 onChange={handleActualStartDateChange}
-                disablePast
+                
               />
             </Grid>
 
@@ -588,7 +596,7 @@ export default function CreateWorkOrder() {
                           </TableCell>
                           <TableCell>
                             <TextField
-                             type="number"
+                              type="number"
                               name="quantity"
                               placeholder="Quantity"
                               fullWidth
@@ -596,9 +604,9 @@ export default function CreateWorkOrder() {
                               onChange={(e) => handleServiceCardFieldChange(index, 'quantity', e.target.value)}
                             />
                           </TableCell>
-                            <TableCell>
+                          <TableCell>
                             <TextField
-                             type="number"
+                              type="number"
                               name="service_cost"
                               placeholder="Service Cost"
                               fullWidth

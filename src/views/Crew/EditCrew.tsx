@@ -42,7 +42,7 @@ export default function EditCrew() {
         const fetchUsers = async () => {
             try {
                 setIsUserLoading(true);
-                const response = await GetAllUserService({ user_type: "STAFF" });
+                const response = await GetAllUserService({ user_type: "TECHNICIAN" });
                 const users: User[] = Array.isArray(response) ? response : [];
                 setUserData(users);
             } catch (error) {

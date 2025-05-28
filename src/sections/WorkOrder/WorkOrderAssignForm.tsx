@@ -3,30 +3,31 @@ import {
     Button,
     Checkbox,
     DialogActions,
-    FormControlLabel,
     Paper,
     Tab,
     TableBody,
-    Tabs
-} from "@mui/material";
-import { Box } from "@mui/material";
-import { TableCell, TableHead, TableRow } from "@mui/material";
-import {
+    Tabs,
+    Box,
+    TableCell,
+    TableHead,
+    TableRow,
     Dialog,
     DialogContent,
     DialogTitle,
-    Chip,
     Divider,
     Stack,
     TableContainer,
     TextField,
     Typography,
-    Table
+    Table,
+    Grid
 } from "@mui/material";
-import { GetAllCrewService, GetAllUserService } from "api/services";
+import { AssignWorkOrderToTechnician, GetAllCrewService, GetAllUserService } from "api/services";
 import { CreateWorkOrderCrewService } from "api/services/WorkOrderCrew";
 import MainCard from "components/MainCard";
 import { useEffect, useState } from "react";
+import dayjs, { Dayjs } from 'dayjs';
+import DatePickerComponent from "components/CustomComponents/DatePickerComponent";
 
 interface Staff {
     id: number;
@@ -51,11 +52,24 @@ interface Crew {
     name: string;
     members?: Staff[];
     leader?: CrewMember;
+    users?: CrewMember;
+}
+
+interface WorkOrderCrew {
+    id: number;
+    work_order_id: number;
+    crew_id: number;
+    assigned_at: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface WorkOrder {
     id: string;
     name: string;
+    assigned_to: number | null;
+    assigned_crew_id: number | null;
+    crews: WorkOrderCrew[];
 }
 
 interface WorkOrderAssignFormProps {
@@ -66,12 +80,35 @@ interface WorkOrderAssignFormProps {
 
 export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAssignFormProps) {
     const [searchText, setSearchText] = useState<string>('');
-    const [selectedId, setSelectedId] = useState<number | null>(null); // Changed to single selection
+    const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isLoader, setIsLoader] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<number>(0);
     const [staffData, setStaffData] = useState<Staff[]>([]);
     const [crewData, setCrewData] = useState<Crew[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [workOrderDate, setWorkOrderDate] = useState<string>('');
+
+    const handleWorkOrderDateChange = (date: Dayjs | null) => {
+        setWorkOrderDate(date ? date.toISOString() : '');
+    };
+
+    useEffect(() => {
+        if (open) {
+            // Set initial selection based on existing assignment
+            if (activeTab === 0 && row.assigned_to) {
+                setSelectedId(row.assigned_to);
+            } else if (activeTab === 1 && row.assigned_crew_id) {
+                setSelectedId(row.assigned_crew_id);
+            } else {
+                setSelectedId(null);
+            }
+
+            // Set initial date from existing crew assignment if available
+            if (row.crews?.length > 0) {
+                setWorkOrderDate(row.crews[0].assigned_at);
+            }
+        }
+    }, [open, activeTab, row.assigned_to, row.assigned_crew_id, row.crews]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -120,28 +157,38 @@ export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAss
     };
 
     const handleCheckBox = (id: number) => {
-        setSelectedId(prevId => prevId === id ? null : id); // Toggle selection
+        setSelectedId(prevId => prevId === id ? null : id);
+    };
+
+    const isChecked = (id: number) => {
+        if (selectedId !== null) {
+            return selectedId == id;
+        }
+        if (activeTab == 0) {
+            return row.assigned_to == id;
+        } else {
+            return row.assigned_crew_id == id || row.crews?.some(crew => crew.crew_id == id);
+        }
     };
 
     const handleSubmit = async () => {
         if (selectedId === null) return;
 
         setIsLoader(true);
+
         try {
             const payload = {
                 work_order_id: row.id,
-                assignee: {
-                    id: selectedId,
-                }
+                assigned_at: workOrderDate || new Date().toISOString(),
+                [activeTab === 0 ? 'assigned_to' : 'crew_id']: selectedId,
             };
 
-            const result = await CreateWorkOrderCrewService(id)
-
-            // Replace with your actual API call
-            // const response = await yourAssignmentApiCall(payload);
-
+            if (activeTab === 0) {
+                await AssignWorkOrderToTechnician(payload);
+            } else {
+                await CreateWorkOrderCrewService(payload);
+            }
             setOpen(false);
-            setSelectedId(null);
         } catch (error) {
             console.error('Assignment error:', error);
         } finally {
@@ -160,7 +207,13 @@ export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAss
             <DialogTitle>
                 <Stack direction="row" justifyContent="space-between">
                     <Typography variant="h3">Assign Work Order</Typography>
-                    <Chip label={row.name} color="primary" />
+                    <Grid item xs={2}>
+                        <DatePickerComponent
+                            label="Assign Date"
+                            value={dayjs(workOrderDate || row.crews?.[0]?.assigned_at || new Date())}
+                            onChange={handleWorkOrderDateChange}
+                        />
+                    </Grid>
                 </Stack>
             </DialogTitle>
             <Divider />
@@ -227,8 +280,9 @@ export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAss
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={selectedId === staff.id}
+                                                            checked={isChecked(staff.id)}
                                                             onChange={() => handleCheckBox(staff.id)}
+                                                            color="primary"
                                                         />
                                                     </TableCell>
                                                 </TableRow>
@@ -259,8 +313,9 @@ export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAss
                                                     </TableCell>
                                                     <TableCell>
                                                         <Checkbox
-                                                            checked={selectedId === crew.id}
+                                                            checked={isChecked(crew.id)}
                                                             onChange={() => handleCheckBox(crew.id)}
+                                                            color="primary"
                                                         />
                                                     </TableCell>
                                                 </TableRow>
@@ -302,5 +357,5 @@ export default function WorkOrderAssignForm({ open, setOpen, row }: WorkOrderAss
                 </Button>
             </DialogActions>
         </Dialog>
-    )
+    );
 }

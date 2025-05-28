@@ -171,7 +171,7 @@ function CrewTableContent({ rows }: { rows: Customer[] }) {
             <TableRow key={row.id} hover>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{row?.name}</TableCell>
-              <TableCell>{row?.users?.name}</TableCell>
+              <TableCell>{row?.users?.first_name}</TableCell>
               <TableCell>{row?.users?.email}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">

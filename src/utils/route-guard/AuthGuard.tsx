@@ -4,6 +4,24 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loader from 'components/Loader';
 import { GuardProps } from 'types/auth';
+import Cookies from 'js-cookie'; // Client-side alternative
+
+// Client-side cookie access
+export const getAccessTokenFromCookie = (): { accessToken: string | null } => {
+  if (typeof window === 'undefined') {
+    // Server-side - use different approach
+    return { accessToken: null };
+  }
+  const accessToken = Cookies.get('accessToken') || null;
+  return { accessToken };
+};
+
+// Server-side helper (for getServerSideProps)
+export const getAccessTokenFromRequest = (req: any): { accessToken: string | null } => {
+  const accessToken = req.cookies.accessToken || null;
+  return { accessToken };
+};
+
 
 export default function AuthGuard({ children }: GuardProps) {
   const router = useRouter();
@@ -13,8 +31,7 @@ export default function AuthGuard({ children }: GuardProps) {
     const verifyAuth = () => {
       try {
         // Client-side token check
-        const cookies = document.cookie;
-        const accessToken = cookies.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+        const accessToken = getAccessTokenFromCookie().accessToken;
         
         if (!accessToken) {
           throw new Error('No token found');

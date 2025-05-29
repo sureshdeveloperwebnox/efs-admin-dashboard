@@ -35,12 +35,7 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(data),
-            credentials: 'include' // Important for cookies
-
         });
 
         const result: LoginResponse = await response.json();

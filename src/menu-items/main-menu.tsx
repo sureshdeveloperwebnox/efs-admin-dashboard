@@ -4,7 +4,7 @@ import { GoPeople } from "react-icons/go";
 import { BsCassette, BsClipboard2Check } from "react-icons/bs";
 import { GrServices,  GrUserSettings  } from "react-icons/gr";
 import { MdOutlinePerson4 } from "react-icons/md";
-
+import { FaUserTie } from "react-icons/fa6";
 
 
 import { NavItemType } from 'types/menu';
@@ -81,7 +81,7 @@ const mainmenu: NavItemType = {
       title: 'Employers',
       type: 'item',
       url: '/employees',
-      icon: GrUserSettings
+      icon: FaUserTie
     }
   ]
 };

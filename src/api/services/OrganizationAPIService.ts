@@ -14,12 +14,14 @@ export const CreateOrganizationService = async (orgdata: any) => {
 
 
 export const GetOrganizationService = async (id: number) => {
-   const response = await GETAPIService({
+   const response = await GETAPIService({ 
     routename: "organization",
     id: Number(id)
    });
     return response;
 };
+
+
 
 export const UpdateOrganizationService = async (orgdata: any) => {
   const { id } = orgdata;

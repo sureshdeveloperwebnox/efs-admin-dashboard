@@ -1,21 +1,26 @@
 "use client";
 
-import { Button, FormControl, InputLabel, MenuItem } from "@mui/material";
+import { Box, InputLabel, TextField } from "@mui/material";
+import { RadioGroup } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
+import { FormControlLabel } from "@mui/material";
+import { FormControl } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import { Select } from "@mui/material";
-import { Box, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
-import { Grid } from "@mui/material"; // Correct import for Grid
-import { margin, Stack } from "@mui/system";
+import { Radio } from "@mui/material";
+import { Stack } from "@mui/material";
 import MultiTextInput from "components/CustomComponents/MultiTextInput";
 import MainCard from "components/MainCard";
 import PhoneInputField from "components/phone/PhoneInputField";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { employee_role } from "utils/constants/EMPLOYEE_ROLE";
 
-
-export default function CreateEmployee() {
+export default function EditEmployee() {
   const employerRole = employee_role;
-  
+  const params = useParams();
+  const id = params.id;
+
   interface FormData {
     organization_id: string;
     first_name: string;
@@ -59,7 +64,7 @@ export default function CreateEmployee() {
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, skill: requiredSkills }));
-  }, [requiredSkills]);
+}, [requiredSkills]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value} = e.target;
@@ -86,12 +91,13 @@ export default function CreateEmployee() {
             </Box>
 
             {/* organizationID */}
-            <TextField 
+            <TextField
               name="organization_id" 
               label="ID NO" 
               margin="normal" 
-              value={formData.organization_id} 
+              value={id} 
               onChange={handleChange}
+              inputProps={{ readOnly: true }}
               fullWidth 
             />
 
@@ -187,10 +193,10 @@ export default function CreateEmployee() {
             {/* SKILL  */}
             <Box sx={{marginTop: "1rem"}}>
                 <MultiTextInput
-                  label="Required Skills"
-                  values={requiredSkills}
-                  onChange={setRequiredSkills}
-                  maxItems={10}
+                    label="Required Skills"
+                    values={requiredSkills}
+                    onChange={setRequiredSkills}
+                    maxItems={10}
                 />
             </Box>
 
@@ -213,7 +219,7 @@ export default function CreateEmployee() {
 
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Button variant="outlined" onClick={goToPreviousPage}>Back</Button>
-        <Button variant="contained" onClick={handleSubmit}>Create Employee</Button>
+        <Button variant="contained" onClick={handleSubmit}>Update Employee</Button>
       </Stack>
     </form>
     

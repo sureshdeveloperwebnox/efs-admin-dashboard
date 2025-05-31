@@ -36,7 +36,8 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/login`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
             },
             body: JSON.stringify(data),
             credentials: 'include' // Important for cookies
@@ -56,7 +57,7 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
         }
         setCookie('accessToken', result.data?.accessToken, {
             path: '/',
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV == 'production',
             sameSite: 'lax',
         });
 

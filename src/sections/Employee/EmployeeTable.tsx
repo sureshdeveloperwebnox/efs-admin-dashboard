@@ -220,14 +220,14 @@ export default function EmployeeTable() {
 
                                 <Tooltip title="Edit">
                                     <IconButton
-                                    sx={{
-                                        color: '#1778ff',
-                                        '&:hover': {
-                                        backgroundColor: 'rgba(23, 120, 255, 0.1)'
-                                        }
-                                    }}
-                                    onClick={() => onEdit(employee.organization_id)}
-                                    >
+                                      sx={{
+                                          color: '#1778ff',
+                                          '&:hover': {
+                                          backgroundColor: 'rgba(23, 120, 255, 0.1)'
+                                          }
+                                      }}
+                                      onClick={() => onEdit(employee.organization_id)}
+                                      >
                                     <FaEdit />
                                     </IconButton>
                                 </Tooltip>

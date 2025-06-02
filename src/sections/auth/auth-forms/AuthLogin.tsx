@@ -85,8 +85,7 @@ const handleGoogleSignIn = () => {
   setGoogleLoading(true);
 console.log("NEXT_GOOGLE_CALLBACK_URL", NEXT_GOOGLE_CALLBACK_URL);
 
-  window.location.href = NEXT_GOOGLE_CALLBACK_URL
-  // window.location.href = `http://localhost:3000/api/auth/google`;
+router.push(NEXT_GOOGLE_CALLBACK_URL)  // window.location.href = `http://localhost:3000/api/auth/google`;
   // router.push
   // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
 }

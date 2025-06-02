@@ -1,81 +1,80 @@
-import { IconButton, Switch } from '@mui/material'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material'
-import MainCard from 'components/MainCard'
-import React, { useEffect, useState } from 'react'
-import { FaEdit } from 'react-icons/fa'
-import { MdDelete } from 'react-icons/md'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Switch, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
+import MainCard from 'components/MainCard';
+import React, { useState } from 'react';
+import { FaEdit } from 'react-icons/fa';
+import { UpdateEmployeeRoleService, ToggleEmployeeRoleStatusService } from 'api/services/EmployeeRolesAPIService';
 
-export function EmployerRolesTable(props: any) {
+export function EmployerRolesTable(props: { roles: any[] }) {
+	const [employeeRoles, setEmployeeRoles] = useState(props.roles || []);
+	const [dialogueView, setDialogueView] = useState(false);
+	const [selectedRole, setSelectedRole] = useState<string>("");
 
-	const temp_employee_role: any =[ 
-    { organization_id: "ORG002", name: "Creative Solutions", active: false },
-    { organization_id: "ORG001", name: "Tech Innovators", active: true },
-    { organization_id: "ORG003", name: "Future Vision", active: true },
-    { organization_id: "ORG004", name: "Green Earth", active: false },
-    { organization_id: "ORG005", name: "NextGen Systems", active: true },
-    { organization_id: "ORG006", name: "Skyline Technologies", active: false },
-    { organization_id: "ORG007", name: "Elite Developers", active: true },
-    { organization_id: "ORG008", name: "Cybernetics Inc.", active: false },
-    { organization_id: "ORG009", name: "Quantum Solutions", active: true },
-    { organization_id: "ORG010", name: "InnovateX", active: false },
-    { organization_id: "ORG011", name: "Pioneer Labs", active: true },
-    { organization_id: "ORG012", name: "Bright Future Corp.", active: false },
-    { organization_id: "ORG013", name: "Virtuoso Tech", active: true },
-    { organization_id: "ORG014", name: "Synergy Systems", active: false },
-    { organization_id: "ORG015", name: "Dynamic Solutions", active: true },
-    { organization_id: "ORG016", name: "Agile Innovations", active: false },
-    { organization_id: "ORG017", name: "Visionary Enterprises", active: true },
-    { organization_id: "ORG018", name: "EcoTech Solutions", active: false },
-    { organization_id: "ORG019", name: "AI Nexus", active: true },
-    { organization_id: "ORG020", name: "Urban Futurists", active: false },
-    { organization_id: "ORG021", name: "DeepMind Labs", active: true },
-    { organization_id: "ORG022", name: "Neural Analytics", active: false },
-    { organization_id: "ORG023", name: "Hyperloop Innovations", active: true },
-    { organization_id: "ORG024", name: "Omega Systems", active: false },
-    { organization_id: "ORG025", name: "Blockchain Gurus", active: true },
-    { organization_id: "ORG026", name: "NextWave Technologies", active: false },
-    { organization_id: "ORG027", name: "Horizon Tech", active: true },
-    { organization_id: "ORG028", name: "Elevate Solutions", active: false },
-    { organization_id: "ORG029", name: "AI Disruptors", active: true },
-    { organization_id: "ORG030", name: "SmartCity Innovations", active: false }
-]
-
-	const [ employeeRole, setEmployeeRole] = useState<any>(temp_employee_role);
-	useEffect(()=>{
-		switch (props.status) {
-			case "all": {
-				break;
+	// Toggle role status using API
+	async function onStatusChange(id: number) {
+		try {
+			const updatedRole = await ToggleEmployeeRoleStatusService({ id });
+			if (updatedRole) {
+				setEmployeeRoles((prev) =>
+					prev.map((ele) => (ele.id === id ? { ...ele, is_active: updatedRole.is_active } : ele))
+				);
 			}
-			case "active": {
-				let activeRoles = employeeRole.filter((role: any)=>role.active===true);
-				setEmployeeRole(activeRoles)
-				break;
-			}
-			case "inactive": {
-				let activeRoles = employeeRole.filter((role: any)=>role.active!==true);
-				setEmployeeRole(activeRoles)
-				break;
-			}
+		} catch (error) {
+			console.error("Failed to update role status:", error);
 		}
-	},[])
-
-	function onEdit( index: number) {
-		
 	}
 
-	function onDelete( index: number){
+	const handleDialogueOpen = () => setDialogueView(true);
+	const handleDialogueClose = () => setDialogueView(false);
 
-	}
-	function onStatusChange( event: any, organization_id: string, index: number) {
-		setEmployeeRole((prev: any) => 
-            prev.map((ele: any, i:number) => 
-              ele.organization_id === organization_id ? { ...ele, active: !ele.active } : ele
-            )
-        );  
+	function handleEdit(index: number) {
+		console.log(`Editing role at index ${index}`);
 	}
 
-  return (
-    <MainCard>
+	// Handle new role creation
+	async function handleUpdate(roleName: string) {
+		try {
+			if (!roleName.trim()) return;
+			const response = await UpdateEmployeeRoleService({ name: roleName });
+			if (response) {
+				console.log(response);
+				setEmployeeRoles((prev) =>
+					prev.map((ele) => (ele.id === response.id ? { ...ele, name: response.name } : ele))
+				);
+			}
+			handleDialogueClose();
+		} catch (error) {
+			console.error("Error updating role:", error);
+		}
+	}
+
+	function DialogueForRole() {
+		return (
+			<Dialog open={dialogueView} onClose={handleDialogueClose}>
+				<DialogTitle>Create Employer Role</DialogTitle>
+				<DialogContent>
+					<TextField
+						autoFocus
+						required
+						margin="dense"
+						id="role"
+						name="role"
+						label="Role"
+						fullWidth
+						variant="standard"
+						onChange={(e) => setSelectedRole(e.target.value)}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleDialogueClose}>Cancel</Button>
+					<Button type="submit" onClick={() => handleUpdate(selectedRole)}>Create</Button>
+				</DialogActions>
+			</Dialog>
+		);
+	}
+
+	return (
+		<MainCard>
 			<TableContainer>
 				<Table>
 					<TableHead>
@@ -84,64 +83,50 @@ export function EmployerRolesTable(props: any) {
 							<TableCell>Employer Roles</TableCell>
 							<TableCell>Actions</TableCell>
 						</TableRow>
-				</TableHead>
-				<TableBody>
-				{
-					employeeRole.map((role: any, index: number)=>(
-						<TableRow>
-							<TableCell>{index+1}</TableCell>
-							<TableCell>{role.name}</TableCell>
-							<TableCell>
-								<Tooltip title="Edit">
-									<IconButton
-										sx={{
-											color: '#1778ff',
-											'&:hover': {
-											backgroundColor: 'rgba(23, 120, 255, 0.1)'
-											}
-										}}
-										onClick={() => onEdit(index)}
-									>
-										<FaEdit />
-									</IconButton>
-								</Tooltip>
-								<Tooltip title={role.active ? 'Deactivate' : 'Activate'}>
-									<IconButton>
-									<Switch
-										checked={role.active === true} 
-										size="small" 
-										onChange={(e) => onStatusChange(e, role.organization_id, index)} 
-									/>
-									</IconButton>
-								</Tooltip>
-								{
-									(props.status==="inactive")&&
-									<Tooltip title="Drop">
-										<IconButton
-											sx={{
-												color: '#1778ff',
-												'&:hover': {
-												backgroundColor: 'rgba(23, 120, 255, 0.1)'
-												}
-											}}
-											onClick={() => onEdit(index)}
-										>
-											<MdDelete/>
-										</IconButton>
-									</Tooltip>
-								}
-							</TableCell>
-						</TableRow>
-					))
-				}
-						<TableRow>
-								<TableCell></TableCell>
-						</TableRow>
-				</TableBody>
+					</TableHead>
+					<TableBody>
+						{employeeRoles.length > 0 ? (
+							employeeRoles.map((role, index) => (
+								<TableRow key={role.id || index}>
+									<TableCell>{index + 1}</TableCell>
+									<TableCell>{role.name}</TableCell>
+									<TableCell>
+										<Tooltip title="Edit">
+											<IconButton
+												sx={{
+													color: '#1778ff',
+													'&:hover': { backgroundColor: 'rgba(23, 120, 255, 0.1)' }
+												}}
+												onClick={() => handleEdit(index)}
+											>
+												<FaEdit />
+											</IconButton>
+										</Tooltip>
+										<Tooltip title={role.is_active === 1 ? 'Deactivate' : 'Activate'}>
+											<IconButton>
+												<Switch
+													checked={role.is_active === 1}
+													size="small"
+													onChange={() => onStatusChange(role.id)}
+												/>
+											</IconButton>
+										</Tooltip>
+									</TableCell>
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell colSpan={3}>
+									<NoDataLottieComponent />
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
 				</Table>
 			</TableContainer>
-    </MainCard>
-  )
+			<DialogueForRole />
+		</MainCard>
+	);
 }
 
-export default EmployerRolesTable
+export default EmployerRolesTable;

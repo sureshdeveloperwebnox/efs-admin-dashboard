@@ -11,7 +11,7 @@ export const CreateCustomerService = async (customerdata: any) => {
     return response;
 };
 
-
+ 
 export const GetCustomerService = async (id: number) => {
    const response = await GETAPIService({
     routename: "customers",

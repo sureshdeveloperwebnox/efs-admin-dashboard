@@ -37,6 +37,17 @@ const nextConfig: NextConfig = {
         pathname: '**'
       }
     ]
+  },
+  experimental: {
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      '@mui/lab',
+      '@mui/x-date-pickers'
+    ]
+  },
+  compiler: {
+    styledComponents: true
   }
 };
 

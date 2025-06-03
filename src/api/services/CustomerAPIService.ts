@@ -57,4 +57,4 @@ export const GetAllCustomerByIDService = async (customerdata: any) => {
     payload: customerdata
    });
     return response;
-};
+}; 

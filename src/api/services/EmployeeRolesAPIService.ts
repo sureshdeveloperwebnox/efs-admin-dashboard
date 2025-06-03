@@ -56,12 +56,12 @@ export const GetAllEmployeeRoleService = async () => {
 	}
 };
 
-export const ToggleEmployeeRoleStatusService = async (data: { id: number }) => {
+export const ToggleEmployeeRoleStatusService = async (data: { id: number, is_active: number }) => {
 	try {
 		const response = await PUTAPIService({
             routename: 'employee-role/toggleEmployeeRoleStatus',
             id: data.id,
-            payload: undefined
+            payload: data
         });
 		return response;
 	} catch (error) {

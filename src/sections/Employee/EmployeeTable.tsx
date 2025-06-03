@@ -1,6 +1,7 @@
 'use client';
 import { Box, Button, IconButton, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import Paper from '@mui/material';
+import { GetAllEmployeeService } from 'api/services/EmployeeAPIService';
 
 import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
 import { useRouter } from 'next/navigation';
@@ -19,7 +20,7 @@ type Employee = {
     experience_years: string,
     is_active: boolean
 }
-
+ 
 export default function EmployeeTable() {
 
     const TEMP_EMPLOYEES = [
@@ -135,19 +136,15 @@ export default function EmployeeTable() {
     }
   ]
 
-    const employeeCount : number= 1;
-    const [employees, setEmployees] = useState<Employee[]>(TEMP_EMPLOYEES)
-    console.log("Current Employees",employees)
+    const [employees, setEmployees] = useState<Employee[]>([])
 
-    if (employeeCount === 0) {
-        return (
-            <NoDataLottieComponent />
-        )
-    }
-
-    useEffect(() => {
-
-    },[employees])
+    useEffect( () => {
+      async function getEmployees() {
+        const response: any = await GetAllEmployeeService();
+        setEmployees(response);
+      }
+      getEmployees();
+    },[])
 
     function onStatusChange(event: React.ChangeEvent<HTMLInputElement>, organization_id: string, row: number) {
         setEmployees((prev) => 
@@ -168,6 +165,20 @@ export default function EmployeeTable() {
     function onEdit(id: number) {
       router.push("/employees/edit/"+id);
     }
+
+    if (employees.length === 0) {
+        return (
+            <Box>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Typography variant="h3">Employers</Typography>
+                  <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
+                      Create Employee
+                  </Button>
+              </Stack>
+              <NoDataLottieComponent />
+          </Box>
+        )
+    } 
 
     return (
       <>
@@ -196,7 +207,7 @@ export default function EmployeeTable() {
                 {
                     employees.map((employee: any, row: any) => (   
                     <TableRow key={employee.organization_id+":"+employee.first_name}>
-                        <TableCell>{employee.organization_id}</TableCell>
+                        <TableCell>{row+1}</TableCell>
                         <TableCell>{employee.first_name +" "+ employee.last_name || "-"}</TableCell>
                         <TableCell>{employee.email || "-"}</TableCell>
                         <TableCell>{employee.phone || "-"}</TableCell>

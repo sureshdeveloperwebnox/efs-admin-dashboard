@@ -11,130 +11,19 @@ import {getEmployeeRoleById} from "utils/constants/EMPLOYEE_ROLE"
 
 type Employee = {
     organization_id: string,
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone: string,
-    job_title: string,
     employee_role_id: string,
     experience_years: string,
     is_active: boolean
+    users : {
+      first_name: string,
+      last_name: string,
+      email: string,
+      phone: string,
+      job_title: string
+    }
 }
  
 export default function EmployeeTable() {
-
-    const TEMP_EMPLOYEES = [
-    {
-      "organization_id": "ORG001",
-      "first_name": "John",
-      "last_name": "Doe",
-      "email": "john.doe@example.com",
-      "phone": "+91-9876543210",
-      "job_title": "Software Engineer",
-      "employee_role_id": "1",
-      "experience_years": "5",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG001",
-      "first_name": "Jane",
-      "last_name": "Smith",
-      "email": "jane.smith@example.com",
-      "phone": "+91-9876543211",
-      "job_title": "Product Manager",
-      "employee_role_id": "2",
-      "experience_years": "7",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG002",
-      "first_name": "Raj",
-      "last_name": "Kumar",
-      "email": "raj.kumar@example.com",
-      "phone": "+91-9876543212",
-      "job_title": "Data Analyst",
-      "employee_role_id": "3",
-      "experience_years": "4",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG002",
-      "first_name": "Aditi",
-      "last_name": "Sharma",
-      "email": "aditi.sharma@example.com",
-      "phone": "+91-9876543213",
-      "job_title": "HR Manager",
-      "employee_role_id": "4",
-      "experience_years": "6",
-      "is_active": false
-    },
-    {
-      "organization_id": "ORG003",
-      "first_name": "Robert",
-      "last_name": "Brown",
-      "email": "robert.brown@example.com",
-      "phone": "+91-9876543214",
-      "job_title": "Marketing Executive",
-      "employee_role_id": "5",
-      "experience_years": "3",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG003",
-      "first_name": "Emily",
-      "last_name": "Clark",
-      "email": "emily.clark@example.com",
-      "phone": "+91-9876543215",
-      "job_title": "UX Designer",
-      "employee_role_id": "6",
-      "experience_years": "5",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG004",
-      "first_name": "Mohammed",
-      "last_name": "Ali",
-      "email": "mohammed.ali@example.com",
-      "phone": "+91-9876543216",
-      "job_title": "DevOps Engineer",
-      "employee_role_id": "7",
-      "experience_years": "8",
-      "is_active": false
-    },
-    {
-      "organization_id": "ORG004",
-      "first_name": "Sophia",
-      "last_name": "Wilson",
-      "email": "sophia.wilson@example.com",
-      "phone": "+91-9876543217",
-      "job_title": "Finance Analyst",
-      "employee_role_id": "8",
-      "experience_years": "6",
-      "is_active": true
-    },
-    {
-      "organization_id": "ORG005",
-      "first_name": "David",
-      "last_name": "Johnson",
-      "email": "david.johnson@example.com",
-      "phone": "+91-9876543218",
-      "job_title": "Sales Manager",
-      "employee_role_id": "9",
-      "experience_years": "7",
-      "is_active": false
-    },
-    {
-      "organization_id": "ORG005",
-      "first_name": "Priya",
-      "last_name": "Verma",
-      "email": "priya.verma@example.com",
-      "phone": "+91-9876543219",
-      "job_title": "Software Architect",
-      "employee_role_id": "0",
-      "experience_years": "10",
-      "is_active": true
-    }
-  ]
 
     const [employees, setEmployees] = useState<Employee[]>([])
 
@@ -208,10 +97,10 @@ export default function EmployeeTable() {
                     employees.map((employee: any, row: any) => (   
                     <TableRow key={employee.organization_id+":"+employee.first_name}>
                         <TableCell>{row+1}</TableCell>
-                        <TableCell>{employee.first_name +" "+ employee.last_name || "-"}</TableCell>
-                        <TableCell>{employee.email || "-"}</TableCell>
-                        <TableCell>{employee.phone || "-"}</TableCell>
-                        <TableCell>{employee.job_title || "-"}</TableCell>
+                        <TableCell>{employee.users.first_name +" "+ employee.users.last_name || "-"}</TableCell>
+                        <TableCell>{employee.users.email || "-"}</TableCell>
+                        <TableCell>{employee.users.phone || "-"}</TableCell>
+                        <TableCell>{employee.users.job_title || "-"}</TableCell>
                         <TableCell>{ getEmployeeRoleById(employee.employee_role_id) || "-"}</TableCell>
                         <TableCell align="right">
                             <Stack direction="row" spacing={1} justifyContent="center">

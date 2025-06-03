@@ -178,6 +178,16 @@ export default function CreateEmployee() {
               fullWidth
             />
 
+            <TextField
+              name="job_title"
+              label="Job Title"
+              margin="normal"
+              type="text"
+              value={formData.job_title}
+              onChange={handleChange}
+              fullWidth
+            />
+
             <Box mt={2}>
               <Typography>Gender:</Typography>
               <RadioGroup

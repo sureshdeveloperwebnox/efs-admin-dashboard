@@ -33,7 +33,7 @@ export default function GuestGuard({ children }: GuardProps) {
     // eslint-disable-next-line
   }, [session]);
 
-  if (status === 'loading' || session?.user) return <Loader />;
+  if (status === 'loading' || session) return <Loader />;
 
   return children;
 }

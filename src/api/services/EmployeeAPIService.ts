@@ -9,7 +9,7 @@ export const CreateEmployeeService = async (employeeData: any) => {
     payload: {...employeeData, organization_id} 
    });
     return response;
-};
+}; 
 
  
 export const GetEmployeeService = async (id: number) => {
@@ -18,7 +18,7 @@ export const GetEmployeeService = async (id: number) => {
     id: Number(id)
    });
     return response;
-};
+}; 
 
 export const UpdateEmployeeService = async (employeeData: any) => {
   const { id } = employeeData;

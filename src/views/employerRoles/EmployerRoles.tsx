@@ -187,16 +187,16 @@ const EmployerRoles = () => {
 					<TabList onChange={handleTabs}>
 						<Tab
 							label={
-								<Box display="flex" gap={1}>
-									All <Chip label={employeeRoles.length} size="small" />
+								<Box display="flex" gap={1} alignItems={"center"}>
+									All <Chip label={employeeRoles.length} size="small" variant="outlined" color="primary" />
 								</Box>
 							}
 							value="all"
 						/>
 						<Tab
 							label={
-								<Box display="flex" gap={1}>
-									Active <Chip label={activeRoles.length} size="small" />
+								<Box display="flex" gap={1} alignItems={"center"}>
+									Active <Chip label={activeRoles.length} size="small" variant="outlined" color="primary" />
 								</Box>
 							}
 							value="active"
@@ -204,7 +204,7 @@ const EmployerRoles = () => {
 						<Tab
 							label={
 								<Box display="flex" gap={1}>
-									Inactive <Chip label={inactiveRoles.length} size="small" />
+									Inactive <Chip label={inactiveRoles.length} size="small" variant="outlined" color="primary"/>
 								</Box>
 							}
 							value="inactive"

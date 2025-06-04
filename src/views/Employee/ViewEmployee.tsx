@@ -1,237 +1,162 @@
 "use client";
 
-import { TableBody, TableRow } from "@mui/material";
-import { TableCell } from "@mui/material";
-import { Avatar, Button, Grid, Stack, Table, TableContainer, Typography } from "@mui/material";
-// import BackButton from "components/CustomComponents/BackButton";
+import {
+  TableBody,
+  TableRow,
+  TableCell,
+  Avatar,
+  Button,
+  Grid,
+  Stack,
+  Table,
+  TableContainer,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import { GetEmployeeService } from "api/services/EmployeeAPIService";
 import MainCard from "components/MainCard";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { getEmployeeRoleById } from "utils/constants/EMPLOYEE_ROLE";
 
+export default function ViewEmployee() {
+  const params = useParams();
+  const id = Number(params.id);
+  const router = useRouter();
 
-export default function ViewEmployee(){
-    const router = useRouter();
-    interface Employee {
-        organization_id: string;
-        first_name: string;
-        last_name: string;
-        email: string;
-        phone: string;
-        password: string;
-        job_title: string;
-        employee_role_id: string;
-        gender: string;
-        address: string;
-        city: string;
-        state: string;
-        country: string;
-        pincode: string;
-        skill: Array<string>;
-        experience_years: string;
+  interface Employee {
+    organization_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    password: string;
+    job_title: string;
+    employee_role_id: string;
+    gender: string;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    pincode: string;
+    skill: string[];
+    experience_years: string;
+  }
+
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchEmployee() {
+      try {
+        const response = await GetEmployeeService(id);
+        if (response) {
+          const emp : any = response;
+          const user = emp?.users;
+
+          const data: Employee = {
+            organization_id: user?.organization_id || "-",
+            first_name: user?.first_name || "-",
+            last_name: user?.last_name || "-",
+            email: user?.email || "-",
+            phone: user?.phone || "-",
+            password: "-",
+            job_title: user?.job_title || "-",
+            employee_role_id: emp?.employee_role_id || "-",
+            gender: emp?.gender || "-",
+            address: emp?.address || "-",
+            city: emp?.city || "-",
+            state: emp?.state || "-",
+            country: emp?.country || "-",
+            pincode: emp?.pincode || "-",
+            skill: emp?.skill || "-",
+            experience_years: emp?.experience_years || "0",
+          };
+
+          setEmployee(data);
+        }
+      } catch (error) {
+        console.error("Error fetching employee:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    const data: Employee = {
-        organization_id: "21221",
-        first_name: "Emily",
-        last_name: "Smith",
-        email: "emily.smith@example.com",
-        phone: "+1987654321",
-        password: "hr@secure2024",
-        job_title: "HR Manager",
-        employee_role_id: "1",
-        gender: "Female",
-        address: "456 Oak Avenue",
-        city: "Chicago",
-        state: "IL",
-        country: "USA",
-        pincode: "60601",
-        skill: ["Recruitment", "Employee Relations", "Payroll"],
-        experience_years: "8",
-    }
+    fetchEmployee();
+  }, [id]);
 
-    return(
-        <MainCard>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                        <Typography variant="h3">View Employee</Typography>
-                        <Button variant="outlined" onClick={()=>{router.back()}}>Back</Button>
-                        {/* <BackButton /> */}
-                    </Stack>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={4}>
-                    <Stack spacing={0.5} alignItems="center">
-                        <Avatar
-                        src={data?.first_name+" "+data?.last_name}
-                        alt={data?.first_name || 'Customer Avatar'}
-                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                        />
-                        <Stack spacing={0.2} alignItems="center">
-                        <Typography variant="h5">{data?.first_name + " " + data?.last_name || 'No name available'}</Typography>
-                        </Stack>
-                    </Stack>
-                </Grid>
-                <Grid item xs={12} sm={8} >
-                    <TableContainer>
-                        <Table>
-                            <>
-                            {/* <TableBody>
-                                {
-                                    Object.keys(data).map((key)=>(
-                                        (key !== "organization_id") &&
-                                        <TableRow>
-                                            <TableCell>
-                                                <Typography
-                                                    variant="body"
-                                                    sx={{
-                                                    textWrap: 'nowrap'
-                                                    }}
-                                                >
-                                                    {formatUnderScoreString(key)}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography variant="subtitle1">{ (Array.isArray(data[key])? formatArrayAsString(data[key], ", ") : data[key]) || "-"}</Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                }
-                            </TableBody> */}
-                            </>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Name</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.first_name + " " + data?.last_name  || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
+  if (isLoading) {
+    return (
+      <Stack alignItems="center" justifyContent="center" height={300}>
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Email:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.email || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
+  if (!employee) {
+    return (
+      <Typography color="error" align="center" mt={4}>
+        Failed to load employee data.
+      </Typography>
+    );
+  }
 
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Phone:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.phone || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
+  return (
+    <MainCard>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h3">View Employee</Typography>
+            <Button variant="outlined" onClick={() => router.back()}>Back</Button>
+          </Stack>
+        </Grid>
+      </Grid>
 
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Gender:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.gender || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4}>
+          <Stack spacing={0.5} alignItems="center">
+            <Avatar
+              alt={employee.first_name}
+              sx={{ width: 100, height: 100 }}
+            />
+            <Typography variant="h5">{employee.first_name} {employee.last_name}</Typography>
+          </Stack>
+        </Grid>
 
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Job Title</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.job_title || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Employer Role:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{ getEmployeeRoleById(data?.employee_role_id || "-")}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Gender:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.gender || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Address</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.address || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>City:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.city || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>State</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.state || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Country:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.country || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Pincode:</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.pincode || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Skill</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.skill || "-"}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body"sx={{textWrap: 'nowrap'}}>Experience</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{data?.experience_years}</Typography>
-                                    </TableCell>
-                                </TableRow>
-
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Grid>
-            </Grid>
-        </MainCard>
-    )
+        <Grid item xs={12} sm={8}>
+          <TableContainer>
+            <Table>
+              <TableBody>
+                {[
+                  { label: "Name", value: `${employee.first_name} ${employee.last_name}` },
+                  { label: "Email", value: employee.email },
+                  { label: "Phone", value: employee.phone },
+                  { label: "Gender", value: employee.gender },
+                  { label: "Job Title", value: employee.job_title },
+                  { label: "Employer Role", value: getEmployeeRoleById(employee.employee_role_id) },
+                  { label: "Address", value: employee.address },
+                  { label: "City", value: employee.city },
+                  { label: "State", value: employee.state },
+                  { label: "Country", value: employee.country },
+                  { label: "Pincode", value: employee.pincode },
+                //   { label: "Skills", value: employee.skill.join(", ") || "-" },
+                  { label: "Skills", value: employee.skill},
+                  { label: "Experience (years)", value: employee.experience_years }
+                ].map((row, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell>
+                      <Typography variant="body1" sx={{ whiteSpace: "nowrap" }}>{row.label}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle1">{row.value || "-"}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </MainCard>
+  );
 }

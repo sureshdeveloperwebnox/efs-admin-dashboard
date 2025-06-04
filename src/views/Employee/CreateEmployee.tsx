@@ -106,7 +106,10 @@ export default function CreateEmployee() {
     event.preventDefault();
     try {
       const response = await CreateEmployeeService(formData);
-      console.log("CreateEmployee>>>>", response);
+      console.log("Post Result>>>>",response?.data)
+      if (response?.data) {
+        router.back();
+      }
     } catch (error) {
       console.error("Error creating employee:", error);
     }

@@ -1,4 +1,3 @@
-// useEmployeeRolesStore.ts
 import {
   CreateEmployeeRoleService,
   GetAllEmployeeRoleService,
@@ -40,41 +39,51 @@ export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
   isLoading: false,
   error: null,
 
-  setSelectedRole: (selectedRole: EmployeeRole | null) => {
+  setSelectedRole: (selectedRole) => {
     set({ selectedRole });
   },
 
   createEmployeeRoles: async (name: string) => {
     try {
       const response = await CreateEmployeeRoleService({ name });
-      if (response?.status) {
-        const createdRole: EmployeeRole = {
-          id: response?.id,
-          organization_id: response?.organization_id,
-          name: response?.name,
-          is_active: response?.is_active,
-          created_at: response?.created_at,
-          updated_at: response?.updated_at
-        };
-        const updatedRoles = [...get().employeeRoles, createdRole];
-        set({ employeeRoles: updatedRoles });
-        get().switchEmployeeRoles();
+
+      if (!response?.status) {
+        throw new Error("API did not return a successful status");
       }
-    } catch (error) {
+
+      const createdRole: EmployeeRole = {
+        id: response.data?.id,
+        organization_id: response.data?.organization_id,
+        name: response.data?.name,
+        is_active: response.data?.is_active,
+        created_at: response.data?.created_at,
+        updated_at: response.data?.updated_at,
+      };
+      console.log("Created Roles>>>", response)
+      const updatedRoles = [...get().employeeRoles, createdRole];
+      set({ employeeRoles: updatedRoles });
+      get().switchEmployeeRoles();
+    } catch (error: any) {
       console.error("Error creating role:", error);
-      set({ error: "Failed to create Employee Role" });
+      set({ error: error?.message || "Failed to create Employee Role" });
+      throw error;
     }
   },
 
   getEmployeeRoles: async () => {
     try {
       set({ isLoading: true, error: null });
-      const response = await GetAllEmployeeRoleService();
-      set({ employeeRoles: response, isLoading: false });
-      get().switchEmployeeRoles();
+      const response : any = await GetAllEmployeeRoleService();
+      console.log("GetEmployeeRoles>>>", response)
+      if(response !==""){
+        set({ employeeRoles: response});
+        get().switchEmployeeRoles();
+      }
     } catch (error) {
       console.error("Error in getEmployeeRoles:", error);
       set({ error: "Failed to fetch Employee Roles", isLoading: false });
+    } finally {
+      set({isLoading: false})
     }
   },
 
@@ -88,8 +97,6 @@ export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
         );
         set({ employeeRoles: updatedRoles });
         get().switchEmployeeRoles();
-      } else {
-        console.warn("Unexpected toggle response:", response);
       }
     } catch (error) {
       console.error("Error in toggleEmployeeRole:", error);
@@ -107,8 +114,6 @@ export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
         );
         set({ employeeRoles: updatedRoles });
         get().switchEmployeeRoles();
-      } else {
-        console.warn("Unexpected update response:", response);
       }
     } catch (error) {
       console.error("Error updating role:", error);

@@ -59,23 +59,32 @@ const EmployerRoles = () => {
   };
 
   const handleCreate = async () => {
-    if (!roleName.trim()) return;
-    const exists = employeeRoles.some((role) => role.name === roleName);
-    if (exists) return alert("Role already exists");
+    if (!roleName.trim()) {
+      alert("Role name cannot be empty");
+      return;
+    }
+
+    const exists = employeeRoles.some(
+      (role) => role.name.toLowerCase() === roleName.toLowerCase()
+    );
+    if (exists) {
+      alert("Role already exists");
+      return;
+    }
 
     setIsCreating(true);
     try {
-      await createEmployeeRoles(roleName);
+      await createEmployeeRoles(roleName); // Will throw on error
       handleDialogueClose();
     } catch (err: any) {
-      alert("Error saving role: " + err.message);
+      alert("Error saving role: " + (err.message || "Unknown error"));
     } finally {
       setIsCreating(false);
     }
   };
 
   if (isLoading) return <Loader />;
-  if (error) return <Typography color="error">{error}</Typography>;
+  // if (error) return <Typography color="error">{error}</Typography>;
 
   return (
     <MainCard>
@@ -146,7 +155,7 @@ const EmployerRoles = () => {
         <DialogActions>
           <Button onClick={handleDialogueClose}>Cancel</Button>
           <Button onClick={handleCreate} disabled={isCreating}>
-            Create
+            {isCreating ? "Creating..." : "Create"}
           </Button>
         </DialogActions>
       </Dialog>

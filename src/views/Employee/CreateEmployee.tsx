@@ -139,6 +139,7 @@ const CreateEmployee = () => {
     }
 
     setIsSubmitting(true);
+    
     await createEmployee(formData);
     setIsSubmitting(false);
 

@@ -32,6 +32,11 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import { DeleteTwoTone } from '@ant-design/icons';
+import { MdOutlineWorkHistory, MdOutlineWorkOutline } from 'react-icons/md';
+import { Drawer, Typography } from '@mui/material';
+import RecurringWork from './RecurringWork';
+import { IoClose } from "react-icons/io5";
+import { height, minHeight } from '@mui/system';
 
 interface Customer {
   id: string;
@@ -110,6 +115,9 @@ export default function CreateWorkOrder() {
     tasks: [] as TaskCard[],
     assets: [] as AssetCard[],
   });
+
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringDrawerView, setRecurringDrawerView] = useState(false);
 
   const WorkOrderStatus = [
     "PENDING",
@@ -398,6 +406,10 @@ export default function CreateWorkOrder() {
     router.back();
   };
 
+  const toggleDrawer = (view: boolean) => () => {
+    setRecurringDrawerView(view);
+  };
+
   return (
     <Box sx={{ padding: 2 }}>
       <Stack direction="row" justifyContent="right" spacing={2} mt={2} padding={2}>
@@ -497,7 +509,7 @@ export default function CreateWorkOrder() {
                 label="Schedule End Date"
                 value={dayjs(formData.scheduled_end_date)}
                 onChange={handleScheduledEndDateChange}
-                
+
               />
             </Grid>
 
@@ -506,7 +518,7 @@ export default function CreateWorkOrder() {
                 label="Order Start Date"
                 value={dayjs(formData.actual_start_date)}
                 onChange={handleActualStartDateChange}
-                
+
               />
             </Grid>
 
@@ -563,6 +575,32 @@ export default function CreateWorkOrder() {
 
             <Grid item xs={6}>
               <TextField name="postal_code" label="Postal code" value={formData.postal_code} onChange={handleChange} fullWidth />
+            </Grid>
+
+            <Grid item xs={6}>
+              <Button
+                variant={isRecurring ? 'outlined' : 'contained'}
+                color="primary"
+                fullWidth
+                onClick={() => { setIsRecurring(false) }}
+                startIcon={<MdOutlineWorkOutline />}
+              >
+                One Time Work
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant={isRecurring ? 'contained' : 'outlined'}
+                color="primary"
+                fullWidth
+                onClick={() => {
+                  setIsRecurring(true);
+                  setRecurringDrawerView(true)
+                }}
+                startIcon={<MdOutlineWorkHistory />}
+              >
+                Recurring Work
+              </Button>
             </Grid>
 
             <Grid item xs={12} sm={12} lg={12}>
@@ -763,6 +801,19 @@ export default function CreateWorkOrder() {
             </Grid>
           </Grid>
         </form>
+        <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
+          <Box p={2} sx={{ width: { xs: "100vw", lg: "50vw" }, minHeight: "100vh"}}>
+            <MainCard>
+            <Box>
+              <Stack alignItems={"center"} direction={"row"} justifyContent={"space-between"} marginBottom={"20px"}>
+                <Typography variant="h3">Recurring Job</Typography>
+                <IoClose size={20} onClick={toggleDrawer(false)}/>
+              </Stack>
+              <RecurringWork />
+            </Box>
+          </MainCard>
+          </Box>
+        </Drawer>
       </MainCard>
     </Box>
   );

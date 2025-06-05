@@ -64,13 +64,13 @@ export default function EmployeeTable() {
     );
   }
 
-  if (error) {
-    return (
-      <Typography color="error" align="center" mt={4}>
-        {error}
-      </Typography>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <Typography color="error" align="center" mt={4}>
+  //       {error}
+  //     </Typography>
+  //   );
+  // }
 
   if (!employees || employees.length === 0) {
     return (

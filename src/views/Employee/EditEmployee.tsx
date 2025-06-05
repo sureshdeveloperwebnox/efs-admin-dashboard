@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Box,
   InputLabel,
   TextField,
   Button,
@@ -18,112 +17,73 @@ import {
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { GetEmployeeService, UpdateEmployeeService } from "api/services/EmployeeAPIService";
-import { GetAllEmployeeRoleService } from "api/services/EmployeeRolesAPIService";
-import MultiTextInput from "components/CustomComponents/MultiTextInput";
 import MainCard from "components/MainCard";
+import MultiTextInput from "components/CustomComponents/MultiTextInput";
 import PhoneInputField from "components/phone/PhoneInputField";
-
-interface FormData {
-  id: string,
-  user_id: string,
-  organization_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  job_title: string;
-  gender: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  pincode: string;
-  skill: string[];
-  experience_years: string;
-  employee_role_id: string;
-}
+import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
+import { useEmployeeStore, Employee } from "store/useEmployeeStore";
 
 export default function EditEmployee() {
   const params = useParams();
-  const id = Number(params.id);
+  const id = String(params.id);
   const router = useRouter();
 
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const { employeeRoles, getEmployeeRoles } = useEmployeeRolesStore();
+  const {
+    getEmployeeById,
+    selectedEmployee,
+    updateEmployee,
+    error
+  } = useEmployeeStore();
+
+  const [formData, setFormData] = useState<Employee | null>(null);
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
-  const [employeeRoles, setEmployeeRoles] = useState<any[]>([]);
-  const [prevEmployee, setPrevEmployee] = useState<any>();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [rolesResponse, employeeResponse] = await Promise.all([
-          GetAllEmployeeRoleService(),
-          GetEmployeeService(id)
-        ]);
-
-        setEmployeeRoles(rolesResponse || []);
-
-        if (employeeResponse) {
-          const emp = employeeResponse;
-          const user = emp.users;
-
-          setFormData({
-            id: user.id || "",
-            user_id: emp.id || "",
-            organization_id: emp.organization_id || "",
-            first_name: user.first_name || "",
-            last_name: user.last_name || "",
-            email: user.email || "",
-            phone: user.phone || "",
-            job_title: user.job_title || "",
-            gender: emp.gender || "male",
-            address: emp.address || "",
-            city: emp.city || "",
-            state: emp.state || "",
-            country: emp.country || "",
-            pincode: emp.pincode || "",
-            skill: emp.skill || [],
-            experience_years: emp.experience_years || "",
-            employee_role_id: emp.employee_role_id || ""
-          });
-
-          setRequiredSkills(emp.skill || []);
-        }
-      } catch (error) {
-        console.error("Error loading data:", error);
-      }
-    }
-
-    fetchData();
+    getEmployeeRoles();
+    getEmployeeById(id);
   }, [id]);
 
   useEffect(() => {
-    setFormData((prev) => prev ? { ...prev, skill: requiredSkills } : null);
+    if (selectedEmployee) {
+      setFormData(selectedEmployee);
+      setRequiredSkills(selectedEmployee.skill || []);
+    }
+  }, [selectedEmployee]);
+
+  useEffect(() => {
+    setFormData((prev) =>
+      prev ? { ...prev, skill: requiredSkills } : null
+    );
   }, [requiredSkills]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => prev ? { ...prev, [name]: value } : null);
+    setFormData((prev) =>
+      prev ? { ...prev, [name]: value } : null
+    );
+  };
+
+  const handleSelectChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prev) =>
+      prev ? { ...prev, [name]: value } : null
+    );
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    try {
-      const response = await UpdateEmployeeService(formData);
-      if (response?.data) {
-        router.back();
-      }
-    } catch (error) {
-      console.error('Failed to update Employee:', error);
-      alert('Failed to update Employee. Please try again.');
+    if (!formData) return;
+
+    await updateEmployee(formData);
+    if (!error) {
+      router.back();
     }
   };
 
   const goToPreviousPage = () => router.back();
 
-  if (!formData) return <Typography>Loading...</Typography>;
+  if (!formData) return <Typography>Loading employee data...</Typography>;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -159,7 +119,9 @@ export default function EditEmployee() {
             <PhoneInputField
               value={formData.phone}
               onChange={(value) =>
-                setFormData((prev) => prev ? { ...prev, phone: value } : null)
+                setFormData((prev) =>
+                  prev ? { ...prev, phone: value } : null
+                )
               }
               defaultCountry="IN"
             />
@@ -179,6 +141,7 @@ export default function EditEmployee() {
             >
               <FormControlLabel value="male" control={<Radio />} label="Male" />
               <FormControlLabel value="female" control={<Radio />} label="Female" />
+              <FormControlLabel value="other" control={<Radio />} label="Other" />
             </RadioGroup>
           </MainCard>
         </Grid>
@@ -193,11 +156,7 @@ export default function EditEmployee() {
                 labelId="employee_role_label"
                 name="employee_role_id"
                 value={formData.employee_role_id}
-                onChange={(e) =>
-                  setFormData((prev) =>
-                    prev ? { ...prev, employee_role_id: e.target.value } : null
-                  )
-                }
+                onChange={handleSelectChange}
               >
                 {employeeRoles
                   .filter((role) => role.is_active === 1)
@@ -218,7 +177,7 @@ export default function EditEmployee() {
 
             <TextField
               name="address"
-              label="Location"
+              label="Address"
               value={formData.address}
               onChange={handleChange}
               fullWidth
@@ -245,7 +204,7 @@ export default function EditEmployee() {
                 />
                 <TextField
                   name="experience_years"
-                  label="Total Experience (years)"
+                  label="Experience (years)"
                   value={formData.experience_years}
                   onChange={handleChange}
                   fullWidth

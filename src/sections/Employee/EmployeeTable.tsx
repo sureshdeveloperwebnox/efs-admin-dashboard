@@ -1,158 +1,170 @@
-'use client';
-import { Box, Button, IconButton, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
-import Paper from '@mui/material';
-import { GetAllEmployeeService } from 'api/services/EmployeeAPIService';
+"use client";
 
-import NoDataLottieComponent from 'components/CustomComponents/NoDataLottie';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FaEdit, FaEye, FaPlus } from 'react-icons/fa';
-import { getEmployeeRoleById } from "utils/constants/EMPLOYEE_ROLE"
-
-type Employee = {
-    id: string,
-    organization_id: string,
-    employee_role_id: string,
-    experience_years: string,
-    is_active: boolean,
-    users: {
-        id: string,
-        first_name: string,
-        last_name: string,
-        email: string,
-        phone: string,
-        job_title: string
-    }
-}
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+  CircularProgress
+} from "@mui/material";
+import Paper from "@mui/material/Paper";
+import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { FaEdit, FaEye, FaPlus } from "react-icons/fa";
+import { useEmployeeStore } from "store/useEmployeeStore";
+import { getEmployeeRoleById } from "utils/constants/EMPLOYEE_ROLE";
 
 export default function EmployeeTable() {
+  const router = useRouter();
 
-    const [employees, setEmployees] = useState<Employee[]>([])
+  const {
+    employees,
+    isLoading,
+    error,
+    getAllEmployees,
+    toggleEmployeeStatus
+  } = useEmployeeStore();
 
-    useEffect(() => {
-        async function getEmployees() {
-            const response: any = await GetAllEmployeeService();
-            setEmployees(response);
-        }
-        getEmployees();
-    }, [])
+  useEffect(() => {
+    getAllEmployees();
+  }, []);
 
-    function onStatusChange(event: React.ChangeEvent<HTMLInputElement>, id: string, row: number) {
-        setEmployees((prev) =>
-            prev.map((ele, i) =>
-                row === i ? { ...ele, is_active: !ele.is_active } : ele
-            )
-        );
-    }
+  const handleCreatePage = () => {
+    router.push("/employees/create");
+  };
 
-    const router = useRouter();
+  const onView = (id: string) => {
+    router.push("/employees/view/" + id);
+  };
 
-    const handleCreatePage = () => {
-        router.push("/employees/create");
-    }
-    function onView(id: number) {
-        router.push("/employees/view/" + id);
-    }
-    function onEdit(id: number) {
-        router.push("/employees/edit/" + id);
-    }
+  const onEdit = (id: string) => {
+    router.push("/employees/edit/" + id);
+  };
 
-    if (employees.length === 0) {
-        return (
-            <Box>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Typography variant="h3">Employers</Typography>
-                    <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
-                        Create Employee
-                    </Button>
-                </Stack>
-                <NoDataLottieComponent />
-            </Box>
-        )
-    }
+  const onStatusChange = async (id: string, currentStatus: number) => {
+    const newStatus = currentStatus === 1 ? 0 : 1;
+    await toggleEmployeeStatus(id, newStatus);
+  };
 
+  if (isLoading) {
     return (
-        <>
-            <Box>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Typography variant="h3">Employers</Typography>
-                    <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
-                        Create Employee
-                    </Button>
-                </Stack>
-            </Box>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>S.NO</TableCell>
-                            <TableCell>Full Name</TableCell>
-                            <TableCell>email</TableCell>
-                            <TableCell>Phone Number</TableCell>
-                            <TableCell>job_title</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell align="center">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            employees.map((employee: any, row: any) => (
-                                <TableRow key={employee.organization_id + ":" + employee.first_name}>
-                                    <TableCell>{row + 1}</TableCell>
-                                    <TableCell>{employee.users.first_name + " " + employee.users.last_name || "-"}</TableCell>
-                                    <TableCell>{employee.users.email || "-"}</TableCell>
-                                    <TableCell>{employee.users.phone || "-"}</TableCell>
-                                    <TableCell>{employee.users.job_title || "-"}</TableCell>
-                                    <TableCell>{getEmployeeRoleById(employee.employee_role_id) || "-"}</TableCell>
-                                    <TableCell align="right">
-                                        <Stack direction="row" spacing={1} justifyContent="center">
-                                            <Tooltip title="View Details">
-                                                <IconButton
-                                                    sx={{
-                                                        color: '#1778ff',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(23, 120, 255, 0.1)'
-                                                        }
-                                                    }}
-                                                    onClick={() => onView(employee.id)}
-                                                >
-                                                    <FaEye />
-                                                </IconButton>
-                                            </Tooltip>
+      <Stack alignItems="center" justifyContent="center" height={300}>
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
-                                            <Tooltip title="Edit">
-                                                <IconButton
-                                                    sx={{
-                                                        color: '#1778ff',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(23, 120, 255, 0.1)'
-                                                        }
-                                                    }}
-                                                    onClick={() => onEdit(employee.id)}
-                                                >
-                                                    <FaEdit />
-                                                </IconButton>
-                                            </Tooltip>
+  if (error) {
+    return (
+      <Typography color="error" align="center" mt={4}>
+        {error}
+      </Typography>
+    );
+  }
 
-                                            <Tooltip title={employee.is_active ? 'Deactivate' : 'Activate'}>
-                                                <IconButton>
-                                                    <Switch
-                                                        checked={employee.is_active === true}
-                                                        size="small"
-                                                        onChange={(e) => onStatusChange(e, employee.id, row)}
-                                                    />
-                                                </IconButton>
-                                            </Tooltip>
+  if (!employees || employees.length === 0) {
+    return (
+      <Box>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h3">Employees</Typography>
+          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
+            Create Employee
+          </Button>
+        </Stack>
+        <NoDataLottieComponent />
+      </Box>
+    );
+  }
 
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </>
-    )
+  return (
+    <>
+      <Box>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h3">Employees</Typography>
+          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
+            Create Employee
+          </Button>
+        </Stack>
+      </Box>
 
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>S.NO</TableCell>
+              <TableCell>Full Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Phone Number</TableCell>
+              <TableCell>Job Title</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell align="center">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {employees.map((emp, index) => (
+              <TableRow key={emp.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{emp.first_name + " " + emp.last_name || "-"}</TableCell>
+                <TableCell>{emp.email || "-"}</TableCell>
+                <TableCell>{emp.phone || "-"}</TableCell>
+                <TableCell>{emp.job_title || "-"}</TableCell>
+                <TableCell>{getEmployeeRoleById(emp.employee_role_id) || "-"}</TableCell>
+                <TableCell align="right">
+                  <Stack direction="row" spacing={1} justifyContent="center">
+                    <Tooltip title="View Details">
+                      <IconButton
+                        sx={{
+                          color: "#1778ff",
+                          "&:hover": {
+                            backgroundColor: "rgba(23, 120, 255, 0.1)"
+                          }
+                        }}
+                        onClick={() => onView(emp.id)}
+                      >
+                        <FaEye />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Edit">
+                      <IconButton
+                        sx={{
+                          color: "#1778ff",
+                          "&:hover": {
+                            backgroundColor: "rgba(23, 120, 255, 0.1)"
+                          }
+                        }}
+                        onClick={() => onEdit(emp.id)}
+                      >
+                        <FaEdit />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title={emp.is_active === 1 ? "Deactivate" : "Activate"}>
+                      <IconButton>
+                        <Switch
+                          checked={emp.is_active === 1}
+                          size="small"
+                          onChange={() => onStatusChange(emp.id, emp.is_active)}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
+  );
 }

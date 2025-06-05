@@ -36,7 +36,7 @@ export const GetAllEmployeeService = async () => {
     routename: "employee/getAllEmployee",
     payload: {organization_id: organization_id}
    });
-    return response;
+    return response; 
 };
 
 
@@ -53,8 +53,22 @@ export const UpdateEmployeeStatusService = async (employeeData: any) => {
 
 export const GetAllEmployeeByIDService = async (employeeData: any) => {
    const response = await GETALLAPIBYIDService({
-    routename: "customers/getAllCustomerByID",
+    routename: "employee/getAllCustomerByID",
     payload: employeeData
    });
     return response;
+};
+
+export const ToggleEmployeeStatusService = async (data: { id: number, is_active: number }) => {
+	try {
+		const response = await PUTAPIService({
+            routename: 'employee/toggleEmployeeStatus',
+            id: data.id,
+            payload: data
+        });
+		return response;
+	} catch (error) {
+		console.error('Error toggling employee role status:', error);
+		return null;
+	}
 };

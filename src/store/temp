@@ -1,0 +1,43 @@
+{
+            "id": "21",
+            "user_id": "41",
+            "organization_id": "2",
+            "gender": "male",
+            "address": "location",
+            "city": "Kallakurichi",
+            "state": "TamilNadu",
+            "country": "India",
+            "pincode": "606402",
+            "skill": "",
+            "experience_years": "2",
+            "employee_role_id": "7",
+            "created_at": "2025-06-03 21:42:22",
+            "updated_at": "",
+            "employee_role": {
+                "id": "7",
+                "organization_id": "2",
+                "name": "UI/Ux Developer",
+                "is_active": 1,
+                "created_at": "2025-06-03 11:14:14",
+                "updated_at": "Wed Jun 04 2025"
+            },
+            "users": {
+                "id": "41",
+                "organization_id": "2",
+                "email": "gokul@gmail.com",
+                "password_hash": "$2b$10$8y9T06g8dYw9HWcEuX8WBOcUAdERkaY9a6cXCAaxDguNHWAH5Ikbi",
+                "isVerified_Email": false,
+                "isVerified_PhoneNumber": false,
+                "name": "",
+                "first_name": "Gokul",
+                "last_name": "Krishna",
+                "phone": "+918883074508",
+                "job_title": "",
+                "user_type": "EMPLOYEE",
+                "is_active": 0,
+                "last_login_at": "",
+                "email_verified": false,
+                "created_at": "2025-06-03 21:42:22",
+                "updated_at": ""
+            }
+        }

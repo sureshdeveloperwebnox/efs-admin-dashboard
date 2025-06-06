@@ -75,6 +75,7 @@ const CreateEmployee = () => {
 
   useEffect(() => {
     getEmployeeRoles();
+    console.log("Employee Roles>>>> ", employeeRoles)
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

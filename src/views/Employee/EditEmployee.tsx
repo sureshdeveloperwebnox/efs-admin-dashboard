@@ -12,7 +12,7 @@ import {
   Select,
   Radio,
   RadioGroup,
-  Stack
+  Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -22,53 +22,61 @@ import MultiTextInput from "components/CustomComponents/MultiTextInput";
 import PhoneInputField from "components/phone/PhoneInputField";
 import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
 import { useEmployeeStore, Employee } from "store/useEmployeeStore";
+import { GetEmployeeService } from "api/services/EmployeeAPIService"; // API Call
 
 export default function EditEmployee() {
   const params = useParams();
-  const id = String(params.id);
+  const id = String(params.id); // Employee ID from route params
   const router = useRouter();
 
   const { employeeRoles, getEmployeeRoles } = useEmployeeRolesStore();
-  const {
-    getEmployeeById,
-    selectedEmployee,
-    updateEmployee,
-    error
-  } = useEmployeeStore();
+  const { getEmployeeById, selectedEmployee, setSelectedEmployee, updateEmployee, error } = useEmployeeStore();
 
-  const [formData, setFormData] = useState<Employee | null>(null);
+  // **Local State for Employee Data**
+  const [formData, setFormData] = useState<Employee | null>(selectedEmployee);
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
 
+  // **Fetch Employee if Zustand clears (like after refresh)**
   useEffect(() => {
+    const fetchEmployee = async () => {
+      if (!selectedEmployee) {
+        try {
+          const response = await GetEmployeeService(id);
+          if (!response) {
+            throw new Error("No employee data received.");
+          }
+          setFormData(response); // Store in local state
+          setSelectedEmployee(response); // Update Zustand store
+        } catch (error) {
+          console.error("Error fetching employee:", error);
+        }
+      } else {
+        setFormData(selectedEmployee); // Use Zustand data
+      }
+    };
+
     getEmployeeRoles();
-    getEmployeeById(id);
-  }, [id]);
+    fetchEmployee();
+  }, [id, selectedEmployee, setSelectedEmployee, getEmployeeRoles]);
 
   useEffect(() => {
-    if (selectedEmployee) {
-      setFormData(selectedEmployee);
-      setRequiredSkills(selectedEmployee.skill || []);
+    if (formData) {
+      setRequiredSkills(formData.skill || []);
     }
-  }, [selectedEmployee]);
+  }, [formData]);
 
   useEffect(() => {
-    setFormData((prev) =>
-      prev ? { ...prev, skill: requiredSkills } : null
-    );
+    setFormData((prev) => (prev ? { ...prev, skill: requiredSkills } : null));
   }, [requiredSkills]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) =>
-      prev ? { ...prev, [name]: value } : null
-    );
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
   const handleSelectChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData((prev) =>
-      prev ? { ...prev, [name]: value } : null
-    );
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -92,53 +100,16 @@ export default function EditEmployee() {
           <MainCard>
             <Typography variant="h5">Employee</Typography>
 
-            <TextField
-              name="first_name"
-              label="First Name"
-              value={formData.first_name}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              name="last_name"
-              label="Last Name"
-              value={formData.last_name}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              name="email"
-              label="Email"
-              value={formData.email}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
+            <TextField name="first_name" label="First Name" value={formData.first_name} onChange={handleChange} fullWidth margin="normal" />
+            <TextField name="last_name" label="Last Name" value={formData.last_name} onChange={handleChange} fullWidth margin="normal" />
+            <TextField name="email" label="Email" value={formData.email} onChange={handleChange} fullWidth margin="normal" />
             <PhoneInputField
               value={formData.phone}
-              onChange={(value) =>
-                setFormData((prev) =>
-                  prev ? { ...prev, phone: value } : null
-                )
-              }
+              onChange={(value) => setFormData((prev) => (prev ? { ...prev, phone: value } : null))}
               defaultCountry="IN"
             />
-            <TextField
-              name="job_title"
-              label="Job Title"
-              value={formData.job_title}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
-            <RadioGroup
-              row
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-            >
+            <TextField name="job_title" label="Job Title" value={formData.job_title} onChange={handleChange} fullWidth margin="normal" />
+            <RadioGroup row name="gender" value={formData.gender} onChange={handleChange}>
               <FormControlLabel value="male" control={<Radio />} label="Male" />
               <FormControlLabel value="female" control={<Radio />} label="Female" />
               <FormControlLabel value="other" control={<Radio />} label="Other" />
@@ -152,82 +123,28 @@ export default function EditEmployee() {
 
             <FormControl fullWidth margin="normal">
               <InputLabel id="employee_role_label">Employee Role</InputLabel>
-              <Select
-                labelId="employee_role_label"
-                name="employee_role_id"
-                value={formData.employee_role_id}
-                onChange={handleSelectChange}
-              >
-                {employeeRoles
-                  .filter((role) => role.is_active === 1)
-                  .map((role) => (
-                    <MenuItem key={role.id} value={role.id}>
-                      {role.name}
-                    </MenuItem>
-                  ))}
+              <Select labelId="employee_role_label" name="employee_role_id" value={formData.employee_role_id} onChange={handleSelectChange}>
+                {employeeRoles.filter((role) => role.is_active === 1).map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
-            <MultiTextInput
-              label="Required Skills"
-              values={requiredSkills}
-              onChange={setRequiredSkills}
-              maxItems={10}
-            />
+            <MultiTextInput label="Required Skills" values={requiredSkills} onChange={setRequiredSkills} maxItems={10} />
 
-            <TextField
-              name="address"
-              label="Address"
-              value={formData.address}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
+            <TextField name="address" label="Address" value={formData.address} onChange={handleChange} fullWidth margin="normal" />
 
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <TextField
-                  name="city"
-                  label="City"
-                  value={formData.city}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  name="state"
-                  label="State"
-                  value={formData.state}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  name="experience_years"
-                  label="Experience (years)"
-                  value={formData.experience_years}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
+                <TextField name="city" label="City" value={formData.city} onChange={handleChange} fullWidth margin="normal" />
+                <TextField name="state" label="State" value={formData.state} onChange={handleChange} fullWidth margin="normal" />
+                <TextField name="experience_years" label="Experience (years)" value={formData.experience_years} onChange={handleChange} fullWidth margin="normal" />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  name="country"
-                  label="Country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  name="pincode"
-                  label="Pincode"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
+                <TextField name="country" label="Country" value={formData.country} onChange={handleChange} fullWidth margin="normal" />
+                <TextField name="pincode" label="Pincode" value={formData.pincode} onChange={handleChange} fullWidth margin="normal" />
               </Grid>
             </Grid>
           </MainCard>

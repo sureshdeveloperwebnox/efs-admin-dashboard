@@ -10,13 +10,13 @@ import {
   Typography,
   InputLabel,
   SelectChangeEvent,
-  Divider
+  Divider,
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import {
   DatePicker,
   LocalizationProvider,
-  TimePicker
+  TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
@@ -41,7 +41,7 @@ const initialFormData: FormData = {
   jobDuration: "",
   jobUnit: "",
   jobRepitition: "",
-  jobFrequency: ""
+  jobFrequency: "",
 };
 
 const RecurringWork: React.FC = () => {
@@ -50,7 +50,7 @@ const RecurringWork: React.FC = () => {
   const handleInputChange = (key: keyof FormData, value: any) => {
     setFormData((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -59,7 +59,47 @@ const RecurringWork: React.FC = () => {
   };
 
   const generateRecurrence = () => {
-    console.log("FormData>>>>", formData);
+    const {
+      startDate,
+      startTime,
+      jobDuration,
+      jobUnit,
+      jobRepitition,
+      jobFrequency,
+    } = formData;
+
+    if (!startDate || !startTime) {
+      console.error("Start date or time missing");
+      return;
+    }
+
+    const start = dayjs(startDate)
+      .hour(dayjs(startTime).hour())
+      .minute(dayjs(startTime).minute())
+      .second(0);
+
+      console.log("start>>>>", start)
+
+    const totalWeeks = jobUnit.toLowerCase().includes("week")
+      ? parseInt(jobDuration)
+      : 0;
+
+    const repeatEvery = parseInt(jobRepitition);
+    const unit = jobFrequency.toLowerCase();
+
+    const dates: Date[] = [];
+
+    for (let week = 0; week < totalWeeks; week++) {
+      let weekStart = start.add(week, "week");
+
+      for (let i = 0; i < 7; i += repeatEvery) {
+        const nextDate = weekStart.add(i, "day");
+        if (nextDate.isBefore(start)) continue;
+        dates.push(nextDate.toDate());
+      }
+    }
+
+    console.log("Generated Dates:", dates.length);
   };
 
   return (

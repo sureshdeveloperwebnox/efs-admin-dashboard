@@ -11,97 +11,57 @@ import {
   Table,
   TableContainer,
   Typography,
-  CircularProgress
 } from "@mui/material";
-import { GetEmployeeService } from "api/services/EmployeeAPIService";
 import MainCard from "components/MainCard";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getEmployeeRoleById } from "utils/constants/EMPLOYEE_ROLE";
-
-interface Employee {
-  organization_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  password: string;
-  job_title: string;
-  employee_role_id: string;
-  gender: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  pincode: string;
-  skill: string[];
-  experience_years: string;
-}
+import { useState, useEffect } from "react";
+import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
+import { useEmployeeStore } from "store/useEmployeeStore";
+import { GetEmployeeService } from "api/services/EmployeeAPIService"; // API Call
 
 export default function ViewEmployee() {
   const params = useParams();
-  const id = Number(params.id);
+  const id = params.id; // Employee ID
   const router = useRouter();
 
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Zustand stores
+  const { selectedEmployee, setSelectedEmployee } = useEmployeeStore();
+  const { getEmployeeRoleById } = useEmployeeRolesStore();
 
+  // **Local State** for storing employee details
+  const [employee, setEmployee] = useState(selectedEmployee);
+
+  // Fetch Employee if `selectedEmployee` is missing (after refresh)
   useEffect(() => {
-    async function fetchEmployee() {
-      try {
-        const response = await GetEmployeeService(id);
-        if (!response) {
-          throw new Error("No employee data received.");
+    const fetchEmployee = async () => {
+      if (!selectedEmployee) {
+        try {
+          const response = await GetEmployeeService(id);
+          if (!response) {
+            throw new Error("No employee data received.");
+          }
+          setEmployee(response); // Store in local state
+          setSelectedEmployee(response); // Also update Zustand store
+        } catch (error) {
+          console.error("Error fetching employee:", error);
         }
-
-        const emp: any = response;
-        const user = emp?.users;
-
-        const data: Employee = {
-          organization_id: user?.organization_id || "-",
-          first_name: user?.first_name || "-",
-          last_name: user?.last_name || "-",
-          email: user?.email || "-",
-          phone: user?.phone || "-",
-          password: "-",
-          job_title: user?.job_title || "-",
-          employee_role_id: emp?.employee_role_id || "-",
-          gender: emp?.gender || "-",
-          address: emp?.address || "-",
-          city: emp?.city || "-",
-          state: emp?.state || "-",
-          country: emp?.country || "-",
-          pincode: emp?.pincode || "-",
-          skill: Array.isArray(emp?.skill) ? emp.skill : [],
-          experience_years: emp?.experience_years || "0"
-        };
-
-        setEmployee(data);
-      } catch (error) {
-        console.error("Error fetching employee:", error);
-        setErrorMsg("Failed to load employee data.");
-      } finally {
-        setIsLoading(false);
+      } else {
+        setEmployee(selectedEmployee); // Use existing Zustand data
       }
-    }
+    };
 
     fetchEmployee();
-  }, [id]);
+  }, [id, selectedEmployee, setSelectedEmployee]);
 
-  if (isLoading) {
+  // Show error screen if employee isn't found
+  if (!employee) {
     return (
-      <Stack alignItems="center" justifyContent="center" height={300}>
-        <CircularProgress />
-      </Stack>
-    );
-  }
-
-  if (errorMsg || !employee) {
-    return (
-      <Typography color="error" align="center" mt={4}>
-        {errorMsg || "Employee not found."}
-      </Typography>
+      <MainCard>
+        <Typography variant="h4" align="center">Employee not found</Typography>
+        <Button variant="outlined" onClick={() => router.back()}>
+          Back
+        </Button>
+      </MainCard>
     );
   }
 
@@ -121,10 +81,7 @@ export default function ViewEmployee() {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
           <Stack spacing={0.5} alignItems="center">
-            <Avatar
-              alt={employee.first_name}
-              sx={{ width: 100, height: 100 }}
-            />
+            <Avatar alt={employee.first_name || "-"} sx={{ width: 100, height: 100 }} />
             <Typography variant="h5">
               {employee.first_name} {employee.last_name}
             </Typography>
@@ -151,16 +108,16 @@ export default function ViewEmployee() {
                     label: "Skills",
                     value: Array.isArray(employee.skill) && employee.skill.length > 0
                       ? employee.skill.join(", ")
-                      : "-"
+                      : "-",
                   },
-                  { label: "Experience (years)", value: employee.experience_years }
+                  { label: "Experience (years)", value: employee.experience_years },
                 ].map((row, idx) => (
                   <TableRow key={idx}>
                     <TableCell sx={{ whiteSpace: "nowrap" }}>
                       <Typography variant="body1">{row.label}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="subtitle1">{row.value}</Typography>
+                      <Typography variant="subtitle1">{row.value || "-"}</Typography>
                     </TableCell>
                   </TableRow>
                 ))}

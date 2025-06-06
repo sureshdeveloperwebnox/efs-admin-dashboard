@@ -73,24 +73,30 @@ export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
   getEmployeeRoles: async () => {
     try {
       set({ isLoading: true, error: null });
-      const response : any = await GetAllEmployeeRoleService();
-      console.log("GetEmployeeRoles>>>", response)
-      if(response !==""){
-        set({ employeeRoles: response});
+      const response: any = await GetAllEmployeeRoleService();
+      if (response !== "") {
+        set({ employeeRoles: response });
         get().switchEmployeeRoles();
       }
     } catch (error) {
       console.error("Error in getEmployeeRoles:", error);
       set({ error: "Failed to fetch Employee Roles", isLoading: false });
     } finally {
-      set({isLoading: false})
+      set({ isLoading: false })
     }
   },
 
+  getEmployeeRoleById: (id: string) => {
+    const { employeeRoles } = get();
+    const employeeRole = employeeRoles.find((role) => role.id === id);
+    console.log("EmployeeRole>>>>", employeeRole);
+    return employeeRole ? employeeRole.name : "-";
+  }, 
+  
   toggleEmployeeRole: async (id: string, is_active: number) => {
     const newStatus = is_active === 1 ? 0 : 1;
     try {
-      const response = await ToggleEmployeeRoleStatusService({ id: Number(id), is_active });
+      const response = await ToggleEmployeeRoleStatusService({ id: Number(id), is_active: newStatus });
       if (response?.data) {
         const updatedRoles = get().employeeRoles.map((role) =>
           role.id === id ? { ...role, is_active: newStatus } : role

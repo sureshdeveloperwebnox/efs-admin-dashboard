@@ -37,6 +37,7 @@ import { Drawer, Typography } from '@mui/material';
 import RecurringWork from './RecurringWork';
 import { IoClose } from "react-icons/io5";
 import { height, minHeight } from '@mui/system';
+import RecurringDrawer from 'components/RecurrenceDrawer/RecurringDrawer';
 
 interface Customer {
   id: string;
@@ -801,19 +802,22 @@ export default function CreateWorkOrder() {
             </Grid>
           </Grid>
         </form>
-        <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
-          <Box p={2} sx={{ width: { xs: "100vw", lg: "50vw" }, minHeight: "100vh"}}>
+        {/* <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
+          <Box p={2} sx={{ width: { xs: "100vw", lg: "50vw" }, minHeight: "100vh" }}>
             <MainCard>
-            <Box>
-              <Stack alignItems={"center"} direction={"row"} justifyContent={"space-between"} marginBottom={"20px"}>
-                <Typography variant="h3">Recurring Job</Typography>
-                <IoClose size={20} onClick={toggleDrawer(false)}/>
-              </Stack>
-              <RecurringWork />
-            </Box>
-          </MainCard>
+              <Box>
+                <Stack alignItems={"center"} direction={"row"} justifyContent={"space-between"} marginBottom={"20px"}>
+                  <Typography variant="h3">Recurring Job</Typography>
+                  <IoClose size={20} onClick={toggleDrawer(false)} />
+                </Stack>
+                <RecurringWork />
+              </Box>
+            </MainCard>
           </Box>
-        </Drawer>
+        </Drawer> */}
+        <MainCard>
+          <RecurringDrawer />
+        </MainCard>
       </MainCard>
     </Box>
   );

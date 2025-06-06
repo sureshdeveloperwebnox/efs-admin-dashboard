@@ -24,24 +24,15 @@ import { FaEdit, FaEye, FaPlus } from "react-icons/fa";
 import { useEmployeeStore } from "store/useEmployeeStore";
 import { getEmployeeRoleById } from "utils/constants/EMPLOYEE_ROLE";
 
-export default function EmployeeTable() {
+export default function EmployeeTable(props) {
   const router = useRouter();
 
+  const employees = props.employeeList;
+
   const {
-    employees,
     isLoading,
-    error,
-    getAllEmployees,
     toggleEmployeeStatus
   } = useEmployeeStore();
-
-  useEffect(() => {
-    getAllEmployees();
-  }, []);
-
-  const handleCreatePage = () => {
-    router.push("/employees/create");
-  };
 
   const onView = (id: string) => {
     router.push("/employees/view/" + id);
@@ -74,28 +65,12 @@ export default function EmployeeTable() {
 
   if (!employees || employees.length === 0) {
     return (
-      <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Employees</Typography>
-          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
-            Create Employee
-          </Button>
-        </Stack>
-        <NoDataLottieComponent />
-      </Box>
+      <NoDataLottieComponent />
     );
   }
 
   return (
     <>
-      <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Employees</Typography>
-          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
-            Create Employee
-          </Button>
-        </Stack>
-      </Box>
 
       <TableContainer component={Paper}>
         <Table>

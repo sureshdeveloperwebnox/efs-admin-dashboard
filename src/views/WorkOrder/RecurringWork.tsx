@@ -10,9 +10,8 @@ import {
   Typography,
   InputLabel,
   SelectChangeEvent,
-  Divider,
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Box } from "@mui/system";
 import {
   DatePicker,
   LocalizationProvider,
@@ -22,13 +21,14 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
 import dayjs from "dayjs";
 import React, { useState } from "react";
+import RecurringTable from "./RecurringTable";
 
 interface FormData {
   startDate: Date | null;
   startTime: Date | null;
   jobDuration: string;
   jobUnit: string;
-  jobRepitition: string;
+  jobRepetition: string;
   jobFrequency: string;
 }
 
@@ -40,12 +40,13 @@ const initialFormData: FormData = {
   startTime: null,
   jobDuration: "",
   jobUnit: "",
-  jobRepitition: "",
+  jobRepetition: "",
   jobFrequency: "",
 };
 
 const RecurringWork: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [recurringDates, setRecurringDates] = useState<string[]>([]);
 
   const handleInputChange = (key: keyof FormData, value: any) => {
     setFormData((prev) => ({
@@ -56,17 +57,11 @@ const RecurringWork: React.FC = () => {
 
   const handleClear = () => {
     setFormData(initialFormData);
+    setRecurringDates([]);
   };
 
   const generateRecurrence = () => {
-    const {
-      startDate,
-      startTime,
-      jobDuration,
-      jobUnit,
-      jobRepitition,
-      jobFrequency,
-    } = formData;
+    const { startDate, startTime, jobDuration, jobUnit, jobRepetition, jobFrequency } = formData;
 
     if (!startDate || !startTime) {
       console.error("Start date or time missing");
@@ -78,16 +73,13 @@ const RecurringWork: React.FC = () => {
       .minute(dayjs(startTime).minute())
       .second(0);
 
-      console.log("start>>>>", start)
+    console.log("start>>>>", start);
 
-    const totalWeeks = jobUnit.toLowerCase().includes("week")
-      ? parseInt(jobDuration)
-      : 0;
-
-    const repeatEvery = parseInt(jobRepitition);
+    const totalWeeks = jobUnit.toLowerCase().includes("week") ? parseInt(jobDuration) : 0;
+    const repeatEvery = parseInt(jobRepetition);
     const unit = jobFrequency.toLowerCase();
 
-    const dates: Date[] = [];
+    const dates: string[] = [];
 
     for (let week = 0; week < totalWeeks; week++) {
       let weekStart = start.add(week, "week");
@@ -95,11 +87,11 @@ const RecurringWork: React.FC = () => {
       for (let i = 0; i < 7; i += repeatEvery) {
         const nextDate = weekStart.add(i, "day");
         if (nextDate.isBefore(start)) continue;
-        dates.push(nextDate.toDate());
+        dates.push(nextDate.format("YYYY-MM-DD HH:mm"));
       }
     }
 
-    console.log("Generated Dates:", dates.length);
+    setRecurringDates(dates);
   };
 
   return (
@@ -112,9 +104,7 @@ const RecurringWork: React.FC = () => {
                 <DatePicker
                   label="Start Date"
                   value={formData.startDate}
-                  onChange={(newValue) =>
-                    handleInputChange("startDate", newValue)
-                  }
+                  onChange={(newValue) => handleInputChange("startDate", newValue)}
                   minDate={dayjs().toDate()}
                 />
               </FormControl>
@@ -125,9 +115,7 @@ const RecurringWork: React.FC = () => {
                 <TimePicker
                   label="Start Time"
                   value={formData.startTime}
-                  onChange={(newValue) =>
-                    handleInputChange("startTime", newValue)
-                  }
+                  onChange={(newValue) => handleInputChange("startTime", newValue)}
                 />
               </FormControl>
             </Grid>
@@ -138,9 +126,7 @@ const RecurringWork: React.FC = () => {
                 type="number"
                 fullWidth
                 value={formData.jobDuration}
-                onChange={(e) =>
-                  handleInputChange("jobDuration", e.target.value)
-                }
+                onChange={(e) => handleInputChange("jobDuration", e.target.value)}
               />
             </Grid>
 
@@ -150,18 +136,11 @@ const RecurringWork: React.FC = () => {
                 <Select
                   labelId="job-unit-label"
                   value={formData.jobUnit}
-                  label="Job Unit"
-                  onChange={(e: SelectChangeEvent<string>) =>
-                    handleInputChange("jobUnit", e.target.value)
-                  }
+                  onChange={(e: SelectChangeEvent<string>) => handleInputChange("jobUnit", e.target.value)}
                 >
-                  <MenuItem value="" disabled>
-                    Select Job Unit
-                  </MenuItem>
+                  <MenuItem value="" disabled>Select Job Unit</MenuItem>
                   {jobUnitArray.map((unit) => (
-                    <MenuItem key={unit} value={unit}>
-                      {unit}
-                    </MenuItem>
+                    <MenuItem key={unit} value={unit}>{unit}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -172,10 +151,8 @@ const RecurringWork: React.FC = () => {
                 label="Repeat Every"
                 type="number"
                 fullWidth
-                value={formData.jobRepitition}
-                onChange={(e) =>
-                  handleInputChange("jobRepitition", e.target.value)
-                }
+                value={formData.jobRepetition}
+                onChange={(e) => handleInputChange("jobRepetition", e.target.value)}
               />
             </Grid>
 
@@ -185,53 +162,32 @@ const RecurringWork: React.FC = () => {
                 <Select
                   labelId="job-frequency-label"
                   value={formData.jobFrequency}
-                  label="Job Frequency"
-                  onChange={(e: SelectChangeEvent<string>) =>
-                    handleInputChange("jobFrequency", e.target.value)
-                  }
+                  onChange={(e: SelectChangeEvent<string>) => handleInputChange("jobFrequency", e.target.value)}
                 >
-                  <MenuItem value="" disabled>
-                    Select Frequency
-                  </MenuItem>
+                  <MenuItem value="" disabled>Select Frequency</MenuItem>
                   {jobFrequencyArray.map((freq) => (
-                    <MenuItem key={freq} value={freq}>
-                      {freq}
-                    </MenuItem>
+                    <MenuItem key={freq} value={freq}>{freq}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
 
             <Grid item xs={6}>
-              <Button
-                color="error"
-                variant="contained"
-                fullWidth
-                onClick={handleClear}
-              >
+              <Button color="error" variant="contained" fullWidth onClick={handleClear}>
                 Clear All
               </Button>
             </Grid>
 
             <Grid item xs={6}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={generateRecurrence}
-                fullWidth
-              >
+              <Button color="primary" variant="contained" fullWidth onClick={generateRecurrence}>
                 Generate Dates
               </Button>
             </Grid>
           </Grid>
         </LocalizationProvider>
       </Box>
-      <Divider />
       <Box>
-        <Stack marginY={"20px"}>
-          <Typography variant="h3">Generated Dates</Typography>
-        </Stack>
-        <NoDataLottieComponent />
+        <RecurringTable dates={recurringDates} />
       </Box>
     </>
   );

@@ -14,6 +14,7 @@ export interface MultiTextInputProps {
   helperText?: string;
   error?: boolean;
   maxItems?: number;
+  sx?: any;
 }
 
 const MultiTextInput: React.FC<MultiTextInputProps> = ({
@@ -26,6 +27,7 @@ const MultiTextInput: React.FC<MultiTextInputProps> = ({
   helperText,
   error = false,
   maxItems,
+  sx,
 }) => {
   const handleChange = (_: any, newValue: string[]) => {
     if (maxItems && newValue.length > maxItems) return;
@@ -59,6 +61,7 @@ const MultiTextInput: React.FC<MultiTextInputProps> = ({
           variant="outlined"
           fullWidth={fullWidth}
           helperText={helperText}
+          sx={sx}
           error={error}
         />
       )}

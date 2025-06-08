@@ -30,11 +30,10 @@ export default function EditEmployee() {
   const router = useRouter();
 
   const { employeeRoles, getEmployeeRoles } = useEmployeeRolesStore();
-  const { getEmployeeById, selectedEmployee, setSelectedEmployee, updateEmployee, error } = useEmployeeStore();
+  const { selectedEmployee, setSelectedEmployee, updateEmployee, error } = useEmployeeStore();
 
   // **Local State for Employee Data**
   const [formData, setFormData] = useState<Employee | null>(selectedEmployee);
-  const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
 
   // **Fetch Employee if Zustand clears (like after refresh)**
   useEffect(() => {
@@ -58,16 +57,6 @@ export default function EditEmployee() {
     getEmployeeRoles();
     fetchEmployee();
   }, [id, selectedEmployee, setSelectedEmployee, getEmployeeRoles]);
-
-  useEffect(() => {
-    if (formData) {
-      setRequiredSkills(formData.skill || []);
-    }
-  }, [formData]);
-
-  useEffect(() => {
-    setFormData((prev) => (prev ? { ...prev, skill: requiredSkills } : null));
-  }, [requiredSkills]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -132,7 +121,13 @@ export default function EditEmployee() {
               </Select>
             </FormControl>
 
-            <MultiTextInput label="Required Skills" values={requiredSkills} onChange={setRequiredSkills} maxItems={10} />
+            <MultiTextInput
+              sx={{marginTop: "5px"}}
+              label="Required Skills"
+              values={formData.skill}
+              onChange={(skills) => setFormData(prev => ({ ...prev, skill: skills }))}
+              maxItems={10}
+            />
 
             <TextField name="address" label="Address" value={formData.address} onChange={handleChange} fullWidth margin="normal" />
 

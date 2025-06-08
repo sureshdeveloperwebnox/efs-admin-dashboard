@@ -1,30 +1,26 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Switch,
   Table,
-  TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Stack,
+  CircularProgress,
   Tooltip,
-  Typography,
-  CircularProgress
+  IconButton,
+  Switch,
 } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
-import { useRouter } from "next/navigation";
 import { FaEdit, FaEye } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import { useEmployeeStore } from "store/useEmployeeStore";
-import { useEffect } from "react";
 import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
+import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
 
-// Define employee type based on usage
 export interface Employee {
   id: string;
   first_name: string;
@@ -40,29 +36,52 @@ interface EmployeeTableProps {
   employeeList: Employee[];
 }
 
-const EmployeeTable: React.FC<EmployeeTableProps> = (props) => {
+const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
   const router = useRouter();
-  const employees = props.employeeList;
-  const { setSelectedEmployee} = useEmployeeStore()
-  const { getEmployeeRoles, getEmployeeRoleById, employeeRoles} = useEmployeeRolesStore();
+  const { setSelectedEmployee, toggleEmployeeStatus, isLoading } = useEmployeeStore();
+  const { getEmployeeRoles, getEmployeeRoleById } = useEmployeeRolesStore();
 
-  useEffect(()=>{
-    getEmployeeRoles();
-  }, []);
+  const [roleNames, setRoleNames] = useState<Record<string, string>>({});
+  const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
 
-  const {
-    isLoading,
-    toggleEmployeeStatus
-  } = useEmployeeStore();
+  useEffect(() => {
+    const fetchRoles = async () => {
+      setLoadingRoles(true);
+      try {
+        await getEmployeeRoles(); // Fetch all roles first
+
+        const rolePromises = employeeList.map(async (emp) => {
+          if (emp.employee_role_id) {
+            return { id: emp.id, roleName: await getEmployeeRoleById(emp.employee_role_id) };
+          }
+          return { id: emp.id, roleName: "-" };
+        });
+
+        const roleResults = await Promise.all(rolePromises);
+        const roleMap = roleResults.reduce((acc, { id, roleName }) => {
+          acc[id] = roleName;
+          return acc;
+        }, {} as Record<string, string>);
+
+        setRoleNames(roleMap);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    fetchRoles();
+  }, [employeeList]);
 
   const onView = (id: string) => {
     setSelectedEmployee(id);
-    router.push("/employees/view/" + id);
+    router.push(`/employees/view/${id}`);
   };
 
-  const onEdit = ( id: string) => {
+  const onEdit = (id: string) => {
     setSelectedEmployee(id);
-    router.push("/employees/edit/" + id);
+    router.push(`/employees/edit/${id}`);
   };
 
   const onStatusChange = async (id: string, currentStatus: number) => {
@@ -70,7 +89,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = (props) => {
     await toggleEmployeeStatus(id, newStatus);
   };
 
-  if (isLoading) {
+  if (isLoading || loadingRoles) {
     return (
       <Stack alignItems="center" justifyContent="center" height={300}>
         <CircularProgress />
@@ -78,7 +97,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = (props) => {
     );
   }
 
-  if (!employees || employees.length === 0) {
+  if (!employeeList || employeeList.length === 0) {
     return <NoDataLottieComponent />;
   }
 
@@ -97,23 +116,21 @@ const EmployeeTable: React.FC<EmployeeTableProps> = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {employees.map((emp, index) => (
+          {employeeList.map((emp, index) => (
             <TableRow key={emp.id}>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{`${emp.first_name} ${emp.last_name}` || "-"}</TableCell>
               <TableCell>{emp.email || "-"}</TableCell>
               <TableCell>{emp.phone || "-"}</TableCell>
               <TableCell>{emp.job_title || "-"}</TableCell>
-              <TableCell>{ emp.employee_role_id && employeeRoles.length > 0 ? getEmployeeRoleById(emp.employee_role_id) : "-" }</TableCell>
+              <TableCell>{roleNames[emp.id] || "-"}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">
                     <IconButton
                       sx={{
                         color: "#1778ff",
-                        "&:hover": {
-                          backgroundColor: "rgba(23, 120, 255, 0.1)"
-                        }
+                        "&:hover": { backgroundColor: "rgba(23, 120, 255, 0.1)" },
                       }}
                       onClick={() => onView(emp.id)}
                     >
@@ -125,9 +142,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = (props) => {
                     <IconButton
                       sx={{
                         color: "#1778ff",
-                        "&:hover": {
-                          backgroundColor: "rgba(23, 120, 255, 0.1)"
-                        }
+                        "&:hover": { backgroundColor: "rgba(23, 120, 255, 0.1)" },
                       }}
                       onClick={() => onEdit(emp.id)}
                     >

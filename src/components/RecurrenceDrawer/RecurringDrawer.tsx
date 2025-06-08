@@ -72,7 +72,7 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
     const isSmallScreen = useMediaQuery((theme: any) => theme.breakpoints.down('md'));
 
     const frequencies =
-      formData.recurrenceUnit === 'Month(s)'
+      initialFormData.recurrenceUnit === 'Month(s)'
         ? ['Day', 'Week', 'Month']
         : formData.recurrenceUnit === 'Week(s)'
           ? ['Day', 'Week']

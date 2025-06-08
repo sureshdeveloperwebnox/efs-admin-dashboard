@@ -12,7 +12,7 @@ export const CreateEmployeeService = async (employeeData: any) => {
 }; 
 
  
-export const GetEmployeeService = async (id: number) => {
+export const GetEmployeeService = async (id: string) => {
    const response = await GETAPIService({
     routename: "employee",
     id: Number(id)

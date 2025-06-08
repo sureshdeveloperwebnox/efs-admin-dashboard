@@ -802,7 +802,7 @@ export default function CreateWorkOrder() {
             </Grid>
           </Grid>
         </form>
-        {/* <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
+        <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
           <Box p={2} sx={{ width: { xs: "100vw", lg: "50vw" }, minHeight: "100vh" }}>
             <MainCard>
               <Box>
@@ -814,10 +814,10 @@ export default function CreateWorkOrder() {
               </Box>
             </MainCard>
           </Box>
-        </Drawer> */}
-        <MainCard>
+        </Drawer>`
+        {/* <MainCard>
           <RecurringDrawer />
-        </MainCard>
+        </MainCard> */}
       </MainCard>
     </Box>
   );

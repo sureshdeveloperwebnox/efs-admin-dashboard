@@ -357,6 +357,12 @@ export default function WorkOrderTable() {
   if (error) {
     return (
       <MainCard>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h3">Work Orders</Typography>
+          <Button variant="contained" onClick={handleCreatePage} startIcon={<FaPlus />}>
+            Add Work Order
+          </Button>
+        </Stack>
         <Alert severity="error" sx={{ my: 2 }}>
           {error}
         </Alert>

@@ -1,6 +1,7 @@
 import {
   CreateEmployeeRoleService,
   GetAllEmployeeRoleService,
+  GetEmployeeRoleService,
   ToggleEmployeeRoleStatusService,
   UpdateEmployeeRoleService
 } from "api/services/EmployeeRolesAPIService";
@@ -29,6 +30,7 @@ interface RoleStore {
   toggleEmployeeRole: (id: string, is_active: number) => Promise<void>;
   updateEmployeeRole: (roleToBeUpdated: EmployeeRole) => Promise<void>;
   switchEmployeeRoles: () => void;
+  getEmployeeRoleById: (id: string) => Promise<string>;
 }
 
 export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
@@ -86,13 +88,25 @@ export const useEmployeeRolesStore = create<RoleStore>((set, get) => ({
     }
   },
 
-  getEmployeeRoleById: (id: string) => {
+  getEmployeeRoleById: async (id: string) => {
     const { employeeRoles } = get();
-    const employeeRole = employeeRoles.find((role) => role.id === id);
-    console.log("EmployeeRole>>>>", employeeRole);
+    let employeeRole;
+    try {
+      employeeRole = employeeRoles.find((role) => role.id === id);
+      if (!employeeRole) {
+        const response: any = await GetEmployeeRoleService(Number(id));
+        if ( response ) {
+          employeeRole = response;
+        }
+      }
+    } catch (error) {
+      console.error("Error in getEmployeeRoles:", error);
+    } 
+    
     return employeeRole ? employeeRole.name : "-";
-  }, 
-  
+    
+  },
+
   toggleEmployeeRole: async (id: string, is_active: number) => {
     const newStatus = is_active === 1 ? 0 : 1;
     try {

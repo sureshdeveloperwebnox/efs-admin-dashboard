@@ -92,9 +92,10 @@ export default function EditEmployee() {
             <TextField name="first_name" label="First Name" value={formData.first_name} onChange={handleChange} fullWidth margin="normal" />
             <TextField name="last_name" label="Last Name" value={formData.last_name} onChange={handleChange} fullWidth margin="normal" />
             <TextField name="email" label="Email" value={formData.email} onChange={handleChange} fullWidth margin="normal" />
-            <PhoneInputField
+             <PhoneInputField
+              label="Phone Number"
               value={formData.phone}
-              onChange={(value) => setFormData((prev) => (prev ? { ...prev, phone: value } : null))}
+              onChange={(value) => handleChange({ target: { name: 'phone', value } } as any)}
               defaultCountry="IN"
             />
             <TextField name="job_title" label="Job Title" value={formData.job_title} onChange={handleChange} fullWidth margin="normal" />

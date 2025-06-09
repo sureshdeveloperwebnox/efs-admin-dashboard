@@ -120,7 +120,7 @@ export default function ViewEmployee() {
                       { label: "Gender", value: employee.gender, icon: (employee.gender === "male") ? <FaMale /> : (employee.gender === "female") ? <FaFemale /> : <FaTransgender /> },
                       { label: "Location", value: employee.city, icon: <IoLocationSharp /> },
                     ].map((row, idx) => (
-                      <Tooltip title={row.label} placement="left" arrow>
+                      <Tooltip key={idx} title={row.label} placement="left" arrow>
                         <TableRow key={idx} sx={{ display: "flex", alignItems: "center" }}>
                           <TableCell>
                             <Box component="span" sx={iconStyle} >{row.icon}</Box>

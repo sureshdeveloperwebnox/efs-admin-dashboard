@@ -72,7 +72,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
     };
 
     fetchRoles();
-  }, [employeeList]);
+  }, []);
 
   const onView = (id: string) => {
     setSelectedEmployee(id);

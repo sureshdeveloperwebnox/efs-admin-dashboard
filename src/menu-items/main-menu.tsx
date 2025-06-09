@@ -78,7 +78,7 @@ const mainmenu: NavItemType = {
     },
      {
       id: 'Employees',
-      title: 'Employers',
+      title: 'Employees',
       type: 'item',
       url: '/employees',
       icon: FaUserTie

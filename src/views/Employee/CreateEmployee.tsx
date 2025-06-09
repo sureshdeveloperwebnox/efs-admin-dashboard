@@ -228,7 +228,7 @@ const CreateEmployee = () => {
             </FormControl>
 
             <MultiTextInput
-              sx = {{marginTop: "30px"}}
+              sx = {{marginTop: "10px"}}
               label="Required Skills"
               values={formData.skill}
               onChange={(skills) => setFormData(prev => ({ ...prev, skill: skills }))}

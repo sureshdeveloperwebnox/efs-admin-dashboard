@@ -44,7 +44,7 @@ const MultiTextInput: React.FC<MultiTextInputProps> = ({
       onChange={handleChange}
       filterSelectedOptions
       renderTags={(value: string[], getTagProps) =>
-        value.map((option: string, index: number) => (
+        value?.map((option: string, index: number) => (
           <Chip
             variant="outlined"
             label={option}

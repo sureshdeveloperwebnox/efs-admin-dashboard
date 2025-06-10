@@ -3,7 +3,7 @@
   "version": "3.4.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9875",
+    "dev": "next dev -p 6945",
     "build": "next build",
     "start": "next start -p 6945",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",

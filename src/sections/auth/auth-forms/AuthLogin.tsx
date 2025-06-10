@@ -47,8 +47,6 @@ interface FormValues {
   submit: string | null;
 }
 
-let NEXT_GOOGLE_CALLBACK_URL: string;
-
 export default function AuthLogin({ providers, csrfToken }: { providers: any, csrfToken: any }) {
   const router = useRouter();
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
@@ -83,19 +81,17 @@ export default function AuthLogin({ providers, csrfToken }: { providers: any, cs
     }
   };
 
-const handleGoogleSignIn = () => {
-  setGoogleLoading(true);
-console.log("NEXT_GOOGLE_CALLBACK_URL", );
-NEXT_GOOGLE_CALLBACK_URL
-
-router.push(NEXT_GOOGLE_CALLBACK_URL)  // window.location.href = `http://localhost:3000/api/auth/google`;
-  // window.location.href = `http://localhost:3000/api/auth/google`;
-  // router.push
-  // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
-}
+  const handleGoogleSignIn = () => {
+    setGoogleLoading(true);
+    router.push(NEXT_GOOGLE_CALLBACK_URL)
+    // window.location.href = `http://localhost:3000/api/auth/google`;
+    // window.location.href = `http://localhost:3000/api/auth/google`;
+    // router.push
+    // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
+  }
   return (
     <>
-         {/* Google Sign-in */}
+      {/* Google Sign-in */}
       <Box sx={{ mt: 3 }}>
         <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
           <AnimateButton>
@@ -144,7 +140,7 @@ router.push(NEXT_GOOGLE_CALLBACK_URL)  // window.location.href = `http://localho
           <form noValidate onSubmit={handleSubmit}>
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
 
-            
+
 
             <Grid container spacing={3}>
               <Grid item xs={12}>

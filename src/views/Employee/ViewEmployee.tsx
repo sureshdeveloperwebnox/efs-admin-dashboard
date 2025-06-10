@@ -125,7 +125,7 @@ export default function ViewEmployee() {
                           <TableCell>
                             <Box component="span" sx={iconStyle} >{row.icon}</Box>
                           </TableCell>
-                          <TableCell sx={{ width: "fit-content"}}>
+                          <TableCell>
                             <Typography variant="subtitle1">{row.value || "-"}</Typography>
                           </TableCell>
                         </TableRow>

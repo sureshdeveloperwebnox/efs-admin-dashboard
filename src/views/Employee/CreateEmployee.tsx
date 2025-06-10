@@ -24,6 +24,7 @@ import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
 import MultiTextInput from "components/CustomComponents/MultiTextInput";
 import MainCard from "components/MainCard";
 import PhoneInputField from "components/phone/PhoneInputField";
+import { toast } from "sonner";
 
 interface FormData {
   user_id: string;
@@ -136,6 +137,7 @@ const CreateEmployee = () => {
     const errorMsg = validateForm();
     if (errorMsg) {
       setFormError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
@@ -147,18 +149,12 @@ const CreateEmployee = () => {
     if (!error) {
       router.back();
     } else {
-      setFormError(error);
+      toast.error(error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      {formError && (
-        <Typography color="error" sx={{ mb: 2 }}>
-          {formError}
-        </Typography>
-      )}
-
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <MainCard>

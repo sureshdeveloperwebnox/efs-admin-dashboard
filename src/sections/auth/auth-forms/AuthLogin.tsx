@@ -47,6 +47,8 @@ interface FormValues {
   submit: string | null;
 }
 
+let NEXT_GOOGLE_CALLBACK_URL: string;
+
 export default function AuthLogin({ providers, csrfToken }: { providers: any, csrfToken: any }) {
   const router = useRouter();
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));

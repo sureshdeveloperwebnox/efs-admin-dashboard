@@ -25,6 +25,8 @@ import RecurringTable from './RecurringTable';
 
 import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import moment from 'moment';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
 type FormData = {
   orderstartdate: Date | null;
@@ -118,6 +120,8 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
     };
 
     const generateRecurrenceDates = () => {
+      // console.log("FormData>>>>", formData);
+      // return;
       const {
         orderstartdate,
         orderstarttime,
@@ -271,7 +275,7 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
             <AppBar position="sticky" sx={{ backgroundColor: 'white', boxShadow: 'none' }}>
               <Stack justifyContent="space-between" direction="row" alignItems="center">
                 <Typography variant="h3" sx={{ mb: 1, color: 'black' }}>
-                  PPM Complaint
+                  Job Recurrence
                 </Typography>
                 <IconButton
                   color="error"
@@ -302,53 +306,56 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
 
           <Box p={3}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={12}>
-                <FormControl fullWidth>
-                  <DatePicker
-                    fullWidth
-                    label="Start Date"
-                    name="orderstartdate"
-                    value={formData.orderstartdate ? moment(formData.orderstartdate) : null}
-                    onChange={(newValue) =>
-                      setFormData({
-                        ...formData,
-                        orderstartdate: newValue
-                      })
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        error={!formData.orderstartdate} // Red outline if no date selected
-                        helperText={!formData.orderstartdate ? 'Please select a start date' : ''}
-                      />
-                    )}
-                  />
-                </FormControl>
-              </Grid>
 
-              {/* <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TimePicker
-                label=" Start Time"
-                value={formData.orderstarttime ? moment(formData.orderstarttime) : null}
-                onChange={(newValue) =>
-                  setFormData({
-                    ...formData,
-                    ['orderstarttime']: newValue
-                  })
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    error={!formData.orderstarttime} // Red outline if no time selected
-                    helperText={!formData.orderstarttime ? 'Please select a start time' : ''}
-                  />
-                )}
-              />
-            </FormControl>
-          </Grid> */}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <DatePicker
+                      fullWidth
+                      label="Start Date"
+                      name="orderstartdate"
+                      value={formData.orderstartdate ? dayjs(formData.orderstartdate) : null}
+                      onChange={(newValue) =>
+                        setFormData({
+                          ...formData,
+                          orderstartdate: newValue
+                        })
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          error={!formData.orderstartdate} // Red outline if no date selected
+                          helperText={!formData.orderstartdate ? 'Please select a start date' : ''}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <TimePicker
+                      label=" Start Time"
+                      value={formData.orderstarttime ? dayjs(formData.orderstarttime) : null}
+                      onChange={(newValue) =>
+                        setFormData({
+                          ...formData,
+                          orderstarttime: newValue
+                        })
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          error={!formData.orderstarttime} // Red outline if no time selected
+                          helperText={!formData.orderstarttime ? 'Please select a start time' : ''}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                </Grid>
+              </LocalizationProvider>
 
               <Grid item xs={12} md={6}>
                 <TextField
@@ -375,14 +382,6 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
                 </TextField>
               </Grid>
 
-              {/* <Grid item xs={12} md={6}>
-              <TimePicker
-                label="Job End Time"
-                value={formData.endTime}
-                onChange={(newValue) => handleInputChange('endTime', newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth />}
-              />
-            </Grid> */}
               <Grid item xs={12} md={6}>
                 <TextField
                   label="Repeat Every"
@@ -505,9 +504,6 @@ const RecurringDrawer: React.FC<RecurringDrawerProps> = React.memo(
               </Grid>
             </Grid>
           </Box>
-
-          {console.log('RecurringTablerows', rows)}
-
           {rows?.length > 0 && <RecurringTable rows={rows} setRows={setRows} />}
         </Drawer>
       </Drawer>

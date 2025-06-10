@@ -77,6 +77,36 @@ interface AssetCard {
   quantity: number;
 }
 
+type RecurrenceForm = {
+  orderstartdate: Date | null;
+  orderstarttime: Date | null;
+  recurrenceDuration: string;
+  recurrenceUnit: string;
+  frequency: string;
+  monthsSelected: string[];
+  daysOfMonthSelected: number[];
+  daysOfWeekSelected: string[];
+  repeatEvery: string;
+};
+
+type Job = {
+  orderstartdate: Date;
+  orderstarttime: Date;
+};
+
+
+export const initialRecurrenceFormData: RecurrenceForm = {
+  orderstartdate: null,
+  orderstarttime: null,
+  recurrenceDuration: '',
+  recurrenceUnit: '',
+  frequency: '',
+  monthsSelected: [],
+  daysOfMonthSelected: [],
+  daysOfWeekSelected: [],
+  repeatEvery: ''
+};
+
 export default function CreateWorkOrder() {
   const router = useRouter();
   const [customerData, setCustomerData] = useState<Customer[]>([]);
@@ -117,8 +147,11 @@ export default function CreateWorkOrder() {
     assets: [] as AssetCard[],
   });
 
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringDrawerView, setRecurringDrawerView] = useState(false);
+  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [recurrenceDrawerView, setRecurrenceDrawerView] = useState<boolean>(false);
+  const [recurrenceFormData, setRecurrenceFormData] = useState<RecurrenceForm>(initialRecurrenceFormData);
+  const [recurrenceRows, setRecurrenceRows] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([])
 
   const WorkOrderStatus = [
     "PENDING",
@@ -408,7 +441,7 @@ export default function CreateWorkOrder() {
   };
 
   const toggleDrawer = (view: boolean) => () => {
-    setRecurringDrawerView(view);
+    setRecurrenceDrawerView(view);
   };
 
   return (
@@ -596,7 +629,7 @@ export default function CreateWorkOrder() {
                 fullWidth
                 onClick={() => {
                   setIsRecurring(true);
-                  setRecurringDrawerView(true)
+                  setRecurrenceDrawerView(true)
                 }}
                 startIcon={<MdOutlineWorkHistory />}
               >
@@ -802,7 +835,7 @@ export default function CreateWorkOrder() {
             </Grid>
           </Grid>
         </form>
-        <Drawer anchor="right" open={recurringDrawerView} onClose={toggleDrawer(false)}>
+        {/* <Drawer anchor="right" open={recurrenceDrawerView} onClose={toggleDrawer(false)}>
           <Box p={2} sx={{ width: { xs: "100vw", lg: "50vw" }, minHeight: "100vh" }}>
             <MainCard>
               <Box>
@@ -814,10 +847,19 @@ export default function CreateWorkOrder() {
               </Box>
             </MainCard>
           </Box>
-        </Drawer>`
-        {/* <MainCard>
-          <RecurringDrawer />
-        </MainCard> */}
+        </Drawer>` */}
+        <MainCard>
+          <RecurringDrawer 
+            open = {recurrenceDrawerView} 
+            setOpen = {setRecurrenceDrawerView}
+            formData = {recurrenceFormData}
+            setFormData = {setRecurrenceFormData}
+            rows = {recurrenceRows}
+            setRows = {setRecurrenceRows}
+            jobs = {jobs}
+            setJobs = {setJobs}
+          />
+        </MainCard>
       </MainCard>
     </Box>
   );

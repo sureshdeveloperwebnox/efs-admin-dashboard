@@ -9,12 +9,13 @@ import {
   IconButton,
   TextField
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { format } from "date-fns";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { DeleteTwoTone } from "@ant-design/icons";
 import { IoAdd } from "react-icons/io5";
 import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface Row {
   orderstartdate: Date | null;
@@ -77,20 +78,22 @@ const RecurringTable: React.FC<RecurringTableProps> = ({ rows, setRows }) => {
                       <TableRow ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
-                          <DatePicker
-                            value={row.orderstartdate ? dayjs(row.orderstartdate) : null}
-                            onChange={(newValue) =>
-                              handleInputChange(index, "orderstartdate", newValue?.toDate() ?? null)
-                            }
-                            format="DD MMM YYYY"
-                            slotProps={{
-                              textField: {
-                                fullWidth: true,
-                                error: !row.orderstartdate,
-                                helperText: !row.orderstartdate ? "Please select a date" : ""
+                          <LocalizationProvider dateAdapter={AdapterDayjs} >
+                            <DatePicker
+                              value={row.orderstartdate ? dayjs(row.orderstartdate) : null}
+                              onChange={(newValue) =>
+                                handleInputChange(index, "orderstartdate", newValue?.toDate() ?? null)
                               }
-                            }}
-                          />
+                              format="DD MMM YYYY"
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !row.orderstartdate,
+                                  helperText: !row.orderstartdate ? "Please select a date" : ""
+                                }
+                              }}
+                            />
+                          </LocalizationProvider>
                         </TableCell>
                         <TableCell>
                           <TextField

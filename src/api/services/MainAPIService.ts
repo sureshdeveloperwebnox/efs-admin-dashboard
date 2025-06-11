@@ -39,7 +39,7 @@ interface APIResponse {
 const commonHeaders = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${accessToken}`,
-    date_time: CurrentDateTime
+    // date_time: CurrentDateTime
 };
 
 const handleResponse = async (response: Response): Promise<APIResponse> => {

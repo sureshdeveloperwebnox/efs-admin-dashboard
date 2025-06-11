@@ -96,7 +96,6 @@ const CreateEmployee = () => {
 
   const validateForm = (): string | null => {
     const {
-      user_id,
       first_name,
       last_name,
       email,
@@ -114,7 +113,7 @@ const CreateEmployee = () => {
     } = formData;
 
     if (
-      !user_id || !first_name || !last_name || !email || !phone || !password ||
+      !first_name || !last_name || !email || !phone || !password ||
       !job_title || !employee_role_id || !address || !city || !state || !country ||
       !pincode || !experience_years || skill.length === 0
     ) {
@@ -147,10 +146,12 @@ const CreateEmployee = () => {
     setIsSubmitting(false);
 
     if (!error) {
-      router.back();
+      toast.success("Employee Created Successfully!");
+      router.back()
     } else {
       toast.error(error);
     }
+
   };
 
   return (
@@ -161,7 +162,7 @@ const CreateEmployee = () => {
             <Typography variant="h5">Employee</Typography>
 
             {[
-              { name: "user_id", label: "ID No" },
+              // { name: "user_id", label: "ID No" },
               { name: "first_name", label: "First Name" },
               { name: "last_name", label: "Last Name" },
               { name: "email", label: "Email" },

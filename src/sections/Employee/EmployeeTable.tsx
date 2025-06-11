@@ -39,40 +39,38 @@ interface EmployeeTableProps {
 const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
   const router = useRouter();
   const { setSelectedEmployee, toggleEmployeeStatus, isLoading } = useEmployeeStore();
-  const { getEmployeeRoles, getEmployeeRoleById } = useEmployeeRolesStore();
+  // const { getEmployeeRoles, getEmployeeRoleById } = useEmployeeRolesStore();
 
-  const [roleNames, setRoleNames] = useState<Record<string, string>>({});
-  const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
+  // const [roleNames, setRoleNames] = useState<Record<string, string>>({});
+  // const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      setLoadingRoles(true);
-      try {
-        await getEmployeeRoles(); // Fetch all roles first
+  // useEffect(() => {
+  //   const fetchRoles = async () => {
+  //     setLoadingRoles(true);
+  //     try {
+  //       await getEmployeeRoles(); // Fetch all roles first
 
-        const rolePromises = employeeList.map(async (emp) => {
-          if (emp.employee_role_id) {
-            return { id: emp.id, roleName: await getEmployeeRoleById(emp.employee_role_id) };
-          }
-          return { id: emp.id, roleName: "-" };
-        });
+  //       const rolePromises = employeeList.map(async (emp) => {
+  //         if (emp.employee_role_id) {
+  //           return { id: emp.id, roleName: await getEmployeeRoleById(emp.employee_role_id) };
+  //         }
+  //         // return { id: emp.id, roleName: "-" };
+  //       });
 
-        const roleResults = await Promise.all(rolePromises);
-        const roleMap = roleResults.reduce((acc, { id, roleName }) => {
-          acc[id] = roleName;
-          return acc;
-        }, {} as Record<string, string>);
+  //       const roleResults = await Promise.all(rolePromises);
+  //       const roleMap = roleResults.reduce((acc, { id, roleName }) => {
+  //         acc[id] = roleName;
+  //         return acc;
+  //       }, {} as Record<string, string>);
 
-        setRoleNames(roleMap);
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      } finally {
-        setLoadingRoles(false);
-      }
-    };
-
-    fetchRoles();
-  }, []);
+  //       setRoleNames(roleMap);
+  //     } catch (error) {
+  //       console.error("Error fetching roles:", error);
+  //     } finally {
+  //       setLoadingRoles(false);
+  //     }
+  //   };
+  // }, []);
 
   const onView = (id: string) => {
     setSelectedEmployee(id);
@@ -89,7 +87,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
     await toggleEmployeeStatus(id, newStatus);
   };
 
-  if (isLoading || loadingRoles) {
+  if (isLoading) {
     return (
       <Stack alignItems="center" justifyContent="center" height={300}>
         <CircularProgress />
@@ -111,7 +109,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
             <TableCell>Email</TableCell>
             <TableCell>Phone Number</TableCell>
             <TableCell>Job Title</TableCell>
-            <TableCell>Role</TableCell>
+            {/* <TableCell>Role</TableCell> */}
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -123,7 +121,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
               <TableCell>{emp.email || "-"}</TableCell>
               <TableCell>{emp.phone || "-"}</TableCell>
               <TableCell>{emp.job_title || "-"}</TableCell>
-              <TableCell>{roleNames[emp.id] || "-"}</TableCell>
+              {/* <TableCell>{roleNames[emp.id] || "-"}</TableCell> */}
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Tooltip title="View Details">

@@ -91,7 +91,7 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
 
   getEmployeeById: async (id) => { 
     try { 
-      const response: any = await GetEmployeeService(Number(id)); 
+      const response: any = await GetEmployeeService(id); 
       const employee: Employee = response.data; 
       set({ selectedEmployee: employee }); 
     } catch (error: any) { 

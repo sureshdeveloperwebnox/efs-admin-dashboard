@@ -91,7 +91,7 @@ export default function EditEmployee() {
 
             <TextField name="first_name" label="First Name" value={formData.first_name} onChange={handleChange} fullWidth margin="normal" />
             <TextField name="last_name" label="Last Name" value={formData.last_name} onChange={handleChange} fullWidth margin="normal" />
-            <TextField name="email" label="Email" value={formData.email} onChange={handleChange} fullWidth margin="normal" />
+            <TextField name="email" label="Email" value={formData.email} onChange={handleChange} fullWidth margin="normal" InputProps={{ readOnly: true }} />
              <PhoneInputField
               label="Phone Number"
               value={formData.phone}

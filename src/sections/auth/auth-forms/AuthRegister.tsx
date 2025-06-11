@@ -7,7 +7,6 @@ import { signIn } from 'next-auth/react';
 import { Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
@@ -32,7 +31,7 @@ import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { APP_DEFAULT_PATH } from 'config';
 import PhoneInputField from 'components/phone/PhoneInputField';
-import { IconButton } from '@mui/material';
+import { Checkbox, IconButton } from '@mui/material';
 import { StringColorProps } from 'types/password';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { Register } from 'api/services';
@@ -52,6 +51,7 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
   const [level, setLevel] = useState<StringColorProps>();
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
+  const [TAndC, setTAndC ] = useState<boolean>(false)
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -73,6 +73,11 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
   const handleSubmit = async (values: any, { setErrors, setSubmitting }: any) => {
     try {
       const trimmedEmail = values.email.trim();
+
+      if (!TAndC) {
+        setErrors( {TAndC: "Check the Terms and conditions"});
+        return;
+      }
 
       if (!phone) {
         setErrors({ submit: 'Phone number is required' });
@@ -267,16 +272,24 @@ export default function AuthRegister({ providers, csrfToken }: AuthRegisterProps
                 </FormControl>
               </Grid>
               <Grid item xs={12} sx={{ mt: -1 }}>
-                <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
-                  <Link variant="subtitle2" component={NextLink} href="/terms-of-service">
-                    Terms of Service
-                  </Link>
-                  &nbsp; and &nbsp;
-                  <Link variant="subtitle2" component={NextLink} href="/privacy-policy">
-                    Privacy Policy
-                  </Link>
-                </Typography>
+                <Stack direction={"row"}>
+                  <Checkbox
+                    checked={TAndC}
+                    onChange={(e) => setTAndC(!TAndC)}
+                    color="primary"
+                    size="small"
+                  />
+                  <Typography variant="body2">
+                    By Signing up, you agree to our &nbsp;
+                    <Link variant="subtitle2" component={NextLink} href="/terms-of-service">
+                      Terms of Service
+                    </Link>
+                    &nbsp; and &nbsp;
+                    <Link variant="subtitle2" component={NextLink} href="/privacy-policy">
+                      Privacy Policy
+                    </Link>
+                  </Typography>
+                </Stack>
               </Grid>
               {errors.submit && (
                 <Grid item xs={12}>

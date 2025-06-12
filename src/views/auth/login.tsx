@@ -15,8 +15,8 @@ import AuthWrapper from 'sections/auth/AuthWrapper';
 import AuthLogin from 'sections/auth/auth-forms/AuthLogin';
 
 export default function SignIn() {
-  const csrfToken = getCsrfToken();
-  const providers = getProviders();
+  // const csrfToken = getCsrfToken();
+  // const providers = getProviders();
 
   return (
     <AuthWrapper>
@@ -30,7 +30,7 @@ export default function SignIn() {
           </Stack>
         </Grid>
         <Grid size={12}>
-          <AuthLogin providers={providers} csrfToken={csrfToken} />
+          <AuthLogin />
         </Grid>
       </Grid>
     </AuthWrapper>

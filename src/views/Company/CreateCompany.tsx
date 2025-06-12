@@ -10,6 +10,10 @@ import MainCard from 'components/MainCard';
 import { CreateCompanyService } from 'api/services';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
+import { MenuItem } from '@mui/material';
+
+import { IndustryTypes } from "utils/constants/INDUSTRY_TYPES"
+import { Autocomplete } from '@mui/material';
 
 
 
@@ -28,15 +32,16 @@ export default function CreateCompany() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev:any) => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
+    console.log("CurrentValue>>>", formData);
   };
 
   const handleSave = async () => {
     try {
-     const result = await CreateCompanyService(formData);
+      const result = await CreateCompanyService(formData);
 
-     console.log("company result", result);
-     
+      console.log("company result", result);
+
       router.back();
     } catch (error) {
       console.error('Failed to create company:', error);
@@ -51,24 +56,34 @@ export default function CreateCompany() {
     <Box sx={{ padding: 2 }}>
       <MainCard title="Create Company">
         <TextField name="name" label="Name" value={formData.name} onChange={handleChange} fullWidth margin="normal" />
-            <TextField fullWidth name="email" label="Email" value={formData.email} onChange={handleChange} margin="normal" />
-            <PhoneInputField
-              label="Mobile Number*"
-              value={formData.phone}
-              onChange={(value) => handleChange({ target: { name: 'phone', value } } as any)}
-              defaultCountry="IN"
-            />
-
-      
-        <TextField
-          name="industry"
-          label="Industry Name"
-          value={formData.industry}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
+        <TextField fullWidth name="email" label="Email" value={formData.email} onChange={handleChange} margin="normal" />
+        <PhoneInputField
+          label="Mobile Number*"
+          value={formData.phone}
+          onChange={(value) => handleChange({ target: { name: 'phone', value } } as any)}
+          defaultCountry="IN"
         />
 
+
+        <Autocomplete
+          options={IndustryTypes}
+          value={formData.industry || null}
+          onChange={(event, newValue: string | null) =>
+            setFormData((prev) => ({ ...prev, industry: newValue || '' }))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Industry Name"
+              margin="normal"
+              fullWidth
+            />
+          )}
+          filterSelectedOptions
+          autoHighlight
+          disableClearable
+        />
+        
         <TextField
           name="address"
           label="Address"
@@ -79,11 +94,11 @@ export default function CreateCompany() {
           multiline
           rows={4}
         />
-        
+
 
         <TextField name="website" label="Website" value={formData.website} onChange={handleChange} fullWidth margin="normal" />
 
-      
+
         <TextField
           name="tax_id"
           label="Tax ID"

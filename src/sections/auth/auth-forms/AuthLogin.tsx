@@ -47,7 +47,7 @@ interface FormValues {
   submit: string | null;
 }
 
-export default function AuthLogin({ providers, csrfToken }: { providers: any, csrfToken: any }) {
+export default function AuthLogin() {
   const router = useRouter();
   const downSM = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
@@ -138,7 +138,7 @@ export default function AuthLogin({ providers, csrfToken }: { providers: any, cs
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
-            <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+            {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
 
 
 

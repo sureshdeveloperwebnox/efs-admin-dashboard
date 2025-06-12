@@ -51,20 +51,20 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
             throw new Error(errorMessage);
         }
 
-        if (!result.data?.accessToken) {
-            throw new Error('No access token received');
-        }
-        setCookie('accessToken', result.data?.accessToken, {
-            path: '/',
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        });
+        // if (!result.data?.accessToken) {
+        //     throw new Error('No access token received');
+        // }
+        // setCookie('accessToken', result.data?.accessToken, {
+        //     path: '/',
+        //     secure: process.env.NODE_ENV === 'production',
+        //     sameSite: 'lax',
+        // });
 
-        setCookie('refreshToken', result.data?.refreshToken, {
-            path: '/',
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        });
+        // setCookie('refreshToken', result.data?.refreshToken, {
+        //     path: '/',
+        //     secure: process.env.NODE_ENV === 'production',
+        //     sameSite: 'lax',
+        // });
         toast.success(result.message || 'Login successful');
         return result;
     } catch (error: any) {

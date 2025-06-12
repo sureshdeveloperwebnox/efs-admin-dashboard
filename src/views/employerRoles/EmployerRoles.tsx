@@ -23,6 +23,7 @@ import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
 import Loader from "components/Loader";
 import EmployerRolesTable from "sections/EmployerRoles/EmployerRolesTable";
 import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
+import { toast } from "sonner";
 
 const EmployerRoles = () => {
   const [tabValue, setTabValue] = useState("all");
@@ -68,7 +69,7 @@ const EmployerRoles = () => {
       (role) => role.name.toLowerCase() === roleName.toLowerCase()
     );
     if (exists) {
-      alert("Role already exists");
+      toast.error("Role already exists");
       return;
     }
 
@@ -83,7 +84,7 @@ const EmployerRoles = () => {
     }
   };
 
-  if (isLoading) return <Loader />;
+  // if (isLoading) return <Loader />;
   // if (error) return <Typography color="error">{error}</Typography>;
 
   return (

@@ -10,6 +10,8 @@ import MainCard from 'components/MainCard';
 import PhoneInputField from 'components/phone/PhoneInputField';
 import Grid from '@mui/material/Grid';
 import { GetCompanyService, UpdateCompanyService } from 'api/services';
+import { Autocomplete } from '@mui/material';
+import { IndustryTypes } from 'utils/constants/INDUSTRY_TYPES';
 type Organization = {
   id: number;
   name: string;
@@ -24,10 +26,10 @@ type Organization = {
 export default function EditCompanyPage() {
   const params = useParams();
   const router = useRouter();
-  const id =  Number(params.id);
+  const id = Number(params.id);
 
   console.log("id", (id));
-  
+
 
   const [editedOrg, setEditedOrg] = useState<Organization | null>(null);
   const [formData, setFormData] = useState({
@@ -103,14 +105,24 @@ export default function EditCompanyPage() {
           </Grid>
         </Grid>
 
-      
-        <TextField
-          name="industry"
-          label="Industry Name"
-          value={formData.industry}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
+
+        <Autocomplete
+          options={IndustryTypes}
+          value={formData.industry || null}
+          onChange={(event, newValue: string | null) =>
+            setFormData((prev) => ({ ...prev, industry: newValue || '' }))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Industry Name"
+              margin="normal"
+              fullWidth
+            />
+          )}
+          filterSelectedOptions
+          autoHighlight
+          disableClearable
         />
 
         <TextField

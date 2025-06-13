@@ -75,13 +75,13 @@ const EmployeeTabs = () => {
                     </Box>
 
                     <TabPanel value="all">
-                        <EmployeeTable employeeList={employees} />
+                        <EmployeeTable employeeListType={"all"} />
                     </TabPanel>
                     <TabPanel value="active">
-                        <EmployeeTable employeeList={activeEmployees} />
+                        <EmployeeTable employeeListType={"active"} />
                     </TabPanel>
                     <TabPanel value="inactive">
-                        <EmployeeTable employeeList={inactiveEmployees} />
+                        <EmployeeTable employeeListType={"inactive"} />
                     </TabPanel>
                 </TabContext>
             </Box>

@@ -127,7 +127,7 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
       await ToggleEmployeeStatusService({ id: Number(id), is_active }); 
 
       const updatedEmployees = (get().employees ?? []).map((emp) => 
-        emp.id === id ? { ...emp, is_active } : emp 
+        emp.user_id === id ? { ...emp, is_active } : emp 
       ); 
 
       set({ employees: updatedEmployees }); 

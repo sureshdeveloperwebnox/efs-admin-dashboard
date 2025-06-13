@@ -22,23 +22,35 @@ import { useEmployeeRolesStore } from "store/useEmployeeRoleStore";
 import NoDataLottieComponent from "components/CustomComponents/NoDataLottie";
 
 export interface Employee {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  job_title: string;
-  employee_role_id: string;
-  is_active: number;
+  id: string; 
+  user_id: string; 
+  organization_id: string; 
+  first_name: string; 
+  last_name: string; 
+  email: string; 
+  phone: string; 
+  job_title: string; 
+  gender: string; 
+  address: string; 
+  city: string; 
+  state: string; 
+  country: string; 
+  pincode: string; 
+  skill: string[]; 
+  experience_years: string; 
+  employee_role_id: string; 
+  is_active: number; 
 }
 
 interface EmployeeTableProps {
-  employeeList: Employee[];
+  employeeListType: string;
 }
 
-const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
+
+const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeListType }) => {
   const router = useRouter();
-  const { setSelectedEmployee, toggleEmployeeStatus, isLoading } = useEmployeeStore();
+  const { setSelectedEmployee, toggleEmployeeStatus, isLoading, employees, activeEmployees, inactiveEmployees } = useEmployeeStore();
+
   // const { getEmployeeRoles, getEmployeeRoleById } = useEmployeeRolesStore();
 
   // const [roleNames, setRoleNames] = useState<Record<string, string>>({});
@@ -71,6 +83,8 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
   //     }
   //   };
   // }, []);
+
+  const employeeList : Employee[] = (employeeListType==="all")? employees: (employeeListType==="active")? activeEmployees: inactiveEmployees;
 
   const onView = (id: string) => {
     setSelectedEmployee(id);
@@ -153,7 +167,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employeeList }) => {
                       <Switch
                         checked={emp.is_active === 1}
                         size="small"
-                        onChange={() => onStatusChange(emp.id, emp.is_active)}
+                        onChange={() => onStatusChange(emp.user_id, emp.is_active)}
                       />
                     </IconButton>
                   </Tooltip>

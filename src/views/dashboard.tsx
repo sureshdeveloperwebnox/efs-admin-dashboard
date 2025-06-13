@@ -95,9 +95,9 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Welcome back!</h2>
           <div className="space-y-2">
-            {userData.username && (
+            {userData.name && (
               <p className="text-gray-700">
-                <span className="font-medium">Username:</span> {userData.username}
+                <span className="font-medium">Username:</span> {userData.name}
               </p>
             )}
             {userData.email && (

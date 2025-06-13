@@ -51,20 +51,19 @@ export const Login = async (data: LoginPayload): Promise<LoginResponse> => {
             throw new Error(errorMessage);
         }
 
-        // if (!result.data?.accessToken) {
-        //     throw new Error('No access token received');
-        // }
-        // setCookie('accessToken', result.data?.accessToken, {
-        //     path: '/',
-        //     secure: process.env.NODE_ENV === 'production',
-        //     sameSite: 'lax',
-        // });
+        setCookie('accessToken', result.data?.accessToken, {
+            path: '/',
+            secure: process.env.NODE_ENV == 'production',
+            sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'lax',
+        });
 
-        // setCookie('refreshToken', result.data?.refreshToken, {
-        //     path: '/',
-        //     secure: process.env.NODE_ENV === 'production',
-        //     sameSite: 'lax',
-        // });
+        setCookie('refreshToken', result.data?.refreshToken, {
+            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        });
+
+
         toast.success(result.message || 'Login successful');
         return result;
     } catch (error: any) {
@@ -109,5 +108,26 @@ export const Register = async (data: RegisterPayload) => {
 };
 
 
+export const Logout = async () => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
 
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || 'Logout failed');
+        }
 
+        toast.success(result.message);
+        return result;
+    }
+    catch (error: any) {
+        toast.error(error.message || 'Unexpected error occurred');
+        throw new Error(error.message || 'Unexpected error occurred');
+    }
+}

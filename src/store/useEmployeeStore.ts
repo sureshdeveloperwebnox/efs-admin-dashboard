@@ -81,7 +81,9 @@ export const useEmployeeStore = create<EmployeeStore>((set, get) => ({
     try { 
       const response: any = await GetAllEmployeeService(); 
       console.log("GetAll Employees>>>>", response); 
-      set({ employees: response }); 
+      if (response) {
+        set({ employees: response });
+      } 
       get().switchEmployees(); 
     } catch (error: any) { 
       console.error("Error fetching all employees:", error); 

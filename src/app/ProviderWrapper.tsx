@@ -26,13 +26,13 @@ export default function ProviderWrapper({ children }: { children: ReactElement }
         <RTLLayout>
           <Locales>
             <ScrollTop>
-              <SessionProvider refetchInterval={0}>
+              {/* <SessionProvider refetchInterval={0}> */}
                 <Notistack>
                   <Snackbar />
                   <Toaster richColors position="top-right" /> {/* ✅ Add this */}
                   {children}
                 </Notistack>
-              </SessionProvider>
+              {/* </SessionProvider> */}
             </ScrollTop>
           </Locales>
         </RTLLayout>

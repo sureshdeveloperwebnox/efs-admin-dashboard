@@ -1,7 +1,6 @@
 import { useRef, useState, ReactNode, SyntheticEvent } from 'react';
 // next
 import { useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -32,8 +31,7 @@ import useUser from 'hooks/useUser';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import { deleteCookie, getCookie } from 'cookies-next';
-import jwt from 'jsonwebtoken';
+import { Logout } from 'api/services/AuthenticationAPI.Service';
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -68,27 +66,10 @@ export default function Profile() {
   const router = useRouter();
 
   const handleLogout = () => {
-
-    // Delete Access Token from Cookie
-    deleteCookie('accessToken', {
-      path: '/',
-      secure: true,
-      sameSite: 'lax',
-    });
-
-
-    // Delete Refresh Token from Cookie
-    deleteCookie('refreshToken', {
-      path: '/',
-      secure: true,
-      sameSite: 'lax',
-    });
-
-
-    signOut({ redirect: false });
-
-
+    Logout(); 
+    window.location.reload();
     router.push('/login');
+    return;
   };
 
   const anchorRef = useRef<any>(null);

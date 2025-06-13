@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downXL]);
 
-  if (menuMasterLoading) return <Loader />;
+  // if (menuMasterLoading) return <Loader />;
 
   return (
     <AuthGuard>

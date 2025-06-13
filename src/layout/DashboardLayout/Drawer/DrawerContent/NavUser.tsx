@@ -1,9 +1,9 @@
 import { useState, MouseEvent } from 'react';
+import Cookies from 'js-cookie';
 
 // next
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
 
 // material-ui
 import { styled } from '@mui/material/styles';
@@ -20,10 +20,12 @@ import Box from '@mui/material/Box';
 import Avatar from 'components/@extended/Avatar';
 import useUser from 'hooks/useUser';
 import { useGetMenuMaster } from 'api/menu';
+import { Logout } from 'api/services/AuthenticationAPI.Service';
 
 // assets
 import RightOutlined from '@ant-design/icons/RightOutlined';
-import { deleteCookie } from 'cookies-next';
+
+
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -62,18 +64,12 @@ export default function NavUser() {
 
 
   const handleLogout = () => {
-
-    // // Delete Access Token from Cooke
-    deleteCookie('accessToken', {
-      path: '/',
-      secure: true,
-      sameSite: 'lax',
-    });
-    
-
-    signOut({ redirect: false });
-
-    // router.push('/login');
+    // Logout(); 
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    window.location.reload();
+    router.push('/login');
+    return;
   };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

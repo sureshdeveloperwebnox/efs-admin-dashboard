@@ -21,7 +21,7 @@ export default function SimpleLayout({ children }: Props) {
   const layout: string = pathname === 'landing' || pathname === '/' ? SimpleLayoutType.LANDING : SimpleLayoutType.SIMPLE;
 
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense>
       <Header />
       {children}
       <FooterBlock isFull={layout === SimpleLayoutType.LANDING} />

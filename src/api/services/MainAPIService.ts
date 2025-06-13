@@ -93,7 +93,7 @@ export const GETAPIService = async <R = unknown>(data: GETModel): Promise<R> => 
         });
 
         const result = await handleResponse(response);
-        toast.success(result?.message);
+        // toast.success(result?.message);
         return result?.data;
     } catch (error: any) {
         console.error('GET Error:', error);
@@ -138,7 +138,7 @@ export const GETALLAPIService = async <R = unknown>(data: GETALLModel): Promise<
         });
 
         const result = await handleResponse(response);
-        toast.success(result?.message);
+        // toast.success(result?.message);
         return result?.data;
     } catch (error: any) {
         console.error('GET Error:', error);
@@ -163,7 +163,7 @@ export const GETALLAPIBYIDService = async <R = unknown>(data: GETALLBYIDModel): 
         });
 
         const result = await handleResponse(response);
-        toast.success(result?.message);
+        // toast.success(result?.message);
         return result?.data;
     } catch (error: any) {
         console.error('GET Error:', error);

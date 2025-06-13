@@ -70,10 +70,23 @@ export default function AuthLogin() {
         password: values.password
       });
 
+      console.log("result", result.data);
+
       if (result) {
-        router.push(APP_DEFAULT_PATH); // Use configured default path
+        window.location.href = result?.redirectUrl || "/dashboard";
       }
-    } catch (error: any) {
+
+
+
+
+
+
+      
+
+
+
+    
+    } catch (error: any) {  
       console.error('Login error:', error);
       setErrors({ submit: error.message || 'Login failed. Please check your credentials.' });
     } finally {
@@ -83,12 +96,21 @@ export default function AuthLogin() {
 
   const handleGoogleSignIn = () => {
     setGoogleLoading(true);
-    router.push(NEXT_GOOGLE_CALLBACK_URL)
-    // window.location.href = `http://localhost:3000/api/auth/google`;
-    // window.location.href = `http://localhost:3000/api/auth/google`;
-    // router.push
-    // window.location.href = `http://54.237.60.235:3000/api/auth/google`;
+    
+    // Encode the current path or default dashboard URL as state
+    const state = Buffer.from(
+      JSON.stringify({
+        redirectUrl: window.location.origin + '/dashboard' // or custom redirect
+      })
+    ).toString('base64');
+  
+    // Construct the Google OAuth URL with proper state
+    const authUrl = `${NEXT_GOOGLE_CALLBACK_URL}?state=${encodeURIComponent(state)}`;
+    
+    // Use window.location.href for full page redirect
+    window.location.href = authUrl;
   }
+  
   return (
     <>
       {/* Google Sign-in */}

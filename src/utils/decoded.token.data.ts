@@ -1,6 +1,5 @@
 // src/utils/decoded.token.data.ts
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET_KEY } from "./auth.keys";
 import Cookies from 'js-cookie'; // Client-side alternative
 
 interface DecodedToken {

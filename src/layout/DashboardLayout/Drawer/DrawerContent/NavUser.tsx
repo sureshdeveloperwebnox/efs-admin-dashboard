@@ -24,6 +24,7 @@ import { Logout } from 'api/services/AuthenticationAPI.Service';
 
 // assets
 import RightOutlined from '@ant-design/icons/RightOutlined';
+import { deleteCookie } from 'cookies-next';
 
 
 
@@ -63,12 +64,21 @@ export default function NavUser() {
   const router = useRouter();
 
 
+
   const handleLogout = () => {
-    // Logout(); 
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
-    window.location.reload();
     router.push('/login');
+    // Delete Access Token from Cookie
+    deleteCookie('accessToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
+    // Delete Refresh Token from Cookie
+    deleteCookie('refreshToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
     return;
   };
 

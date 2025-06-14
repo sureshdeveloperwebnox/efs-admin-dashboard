@@ -32,6 +32,7 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import { Logout } from 'api/services/AuthenticationAPI.Service';
+import { deleteCookie } from 'cookies-next/client';
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -65,12 +66,24 @@ export default function Profile() {
   const user = useUser();
   const router = useRouter();
 
+
   const handleLogout = () => {
-    Logout(); 
-    window.location.reload();
     router.push('/login');
+    // Delete Access Token from Cookie
+    deleteCookie('accessToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
+    // Delete Refresh Token from Cookie
+    deleteCookie('refreshToken', {
+      path: '/',
+      secure: true,
+      sameSite: 'lax',
+    });
     return;
   };
+
 
   const anchorRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
